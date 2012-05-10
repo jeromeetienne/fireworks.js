@@ -1,4 +1,4 @@
-particles.js
+firefly.js
 ============
 
 Particles engine in javascript
