@@ -1,0 +1,25 @@
+Fireworks.EffectAge	= function(emitter)
+{
+	this.onCreate	= function(particle){
+		particle.xAge	= {
+			curAge	: 0,
+			maxAge	: 0
+		};
+	}.bind(this);
+
+	this.onBirth	= function(particle){
+		var ctx	= particle.xAge;
+		ctx.curAge	= 0;
+		ctx.maxAge	= 1;
+	}.bind(this);
+	
+	this.onUpdate	= function(particle, deltaTime){
+		var ctx	= particle.xAge;
+		ctx.curAge	+= deltaTime;
+		if( ctx.curAge > ctx.maxAge )	emitter.killParticle(particle);
+	}.bind(this);
+}
+
+// inherit from Fireworks.Effect
+Fireworks.EffectAge.prototype = new Fireworks.Effect();
+Fireworks.EffectAge.prototype.constructor = Fireworks.EffectAge;

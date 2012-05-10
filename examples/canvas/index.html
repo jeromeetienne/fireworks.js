@@ -1,9 +1,14 @@
 <!doctype html><title>Example of firework.js</title>
+
 <script src="../../src/core.js"></script>
 <script src="../../src/emitter.js"></script>
 <script src="../../src/particle.js"></script>
 <script src="../../src/effect.js"></script>
 <script src="../../src/spawner.js"></script>
+<script src="../../src/plugins/effect.base.js"></script>
+<script src="../../src/plugins/effect.age.js"></script>
+<script src="../../src/plugins/spawner.rate.js"></script>
+
 <body><script>
 	var canvas	= document.createElement('canvas');
 	document.body.appendChild(canvas);
@@ -20,19 +25,20 @@
 	ctx.fillStyle	= 'rgba(0,0,0,1)';
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-	var emitter	= new Fireworks.Emitter();
+	var emitter	= new Fireworks.Emitter({
+		nParticles	: 10
+	});
+	emitter.setSpawnerRate().addEffectBase().addEffectAge();
 	emitter.start();
 
 	setInterval(function(){
-		var deltaTime	= 1000/60;
+		var deltaTime	= 1/60;
 		emitter.update(deltaTime);
-		
-		render(emitter)
+		render(emitter);
 	}, 1000/60);
 
 	function render(emitter){
 		// clear the screen
-		//ctx.clearRect(0,0, canvas.width, canvas.height);
 		ctx.save();
 		ctx.globalAlpha = 0.025;
 		ctx.fillStyle = "rgb(0,0,0)";

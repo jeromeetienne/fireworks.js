@@ -1,4 +1,5 @@
-/**
+
+var Fireworks	= {};/**
  * The emitter of particles
 */
 Fireworks.Emitter	= function(opts){
@@ -86,8 +87,7 @@ Fireworks.Emitter.prototype.start	= function()
 		this._particles.forEach(function(particle){
 			effect.onCreate(particle);			
 		})
-	}.bind(this));
-	
+	}.bind(this))
 	return this;	// for chained API
 }
 
@@ -116,10 +116,6 @@ Fireworks.Emitter.prototype.killParticle	= function(particle)
 	console.assert( idx !== -1 )
 	this._liveParticles.splice(idx, 1)
 	this._deadParticles.push(particle);
-	// do the death on all effects
-	emitter.effects().forEach(function(effect){
-		effect.onDeath && effect.onDeath(particle);			
-	}.bind(this));
 }
 
 /**
@@ -134,3 +130,24 @@ Fireworks.Emitter.prototype.spawnParticle	= function(){
 		effect.onBirth && effect.onBirth(particle);			
 	}.bind(this));
 }
+Fireworks.Spawner	= function(){
+}
+/**
+ * The emitter of particles
+*/
+Fireworks.Particle	= function(){
+}
+/**
+ * An effect to apply on particles
+*/
+Fireworks.Effect	= function(){
+}
+
+//Firefly.Effect.prototype.onCreate	= function(){
+//}
+//
+//Firefly.Effect.prototype.onBirth	= function(){
+//}
+//
+//Firefly.Effect.prototype.onUpdate	= function(){
+//}
