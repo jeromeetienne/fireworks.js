@@ -3,11 +3,50 @@
 <script src="../src/firefly.emitter.js"></script>
 <script src="../src/firefly.particle.js"></script>
 <script src="../src/firefly.effect.js"></script>
-<script src="../src/firefly.sprouter.js"></script>
+<script src="../src/firefly.generator.js"></script>
 <body><script>
 	var canvas	= document.createElement('canvas');
+	document.body.appendChild(canvas);
 	canvas.width	= window.innerWidth;
 	canvas.height	= window.innerHeight;
-	document.appendChild(canvas);
+	// canvas.style
+	canvas.style.position	= "absolute";
+	canvas.style.left	= 0;
+	canvas.style.top	= 0;
+	// setup ctx
 	var ctx		= canvas.getContext('2d');
+	
+	
+	ctx.fillStyle	= 'rgba(0,0,0,1)';
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+	var emitter	= new FireFly.Emitter();
+	emitter.start();
+
+	setInterval(function(){
+		var deltaTime	= 1000/60;
+		emitter.update();
+		
+		render(emitter)
+	}, 1000/60);
+
+	function render(emitter){
+		// clear the screen
+		//ctx.clearRect(0,0, canvas.width, canvas.height);
+		ctx.save();
+		ctx.globalAlpha = 0.025;
+		ctx.fillStyle = "rgb(0,0,0)";
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+		ctx.restore();
+		// set the fillStyle of the particles
+		ctx.fillStyle	= 'rgba(127,0,255, 0.5)';
+		emitter.liveParticles().forEach(function(particle){
+			var eData	= particle.xBase;
+			var x	= eData.x;
+			var y	= eData.y;
+			ctx.beginPath();
+			ctx.arc(x, y, 30, 0, Math.PI*2, true); 
+			ctx.fill();			
+		});
+	}
 </script></body>
