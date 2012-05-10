@@ -1,9 +1,9 @@
-<!doctype html><title>Example of firefly.js</title>
-<script src="../src/firefly.core.js"></script>
-<script src="../src/firefly.emitter.js"></script>
-<script src="../src/firefly.particle.js"></script>
-<script src="../src/firefly.effect.js"></script>
-<script src="../src/firefly.generator.js"></script>
+<!doctype html><title>Example of firework.js</title>
+<script src="../src/core.js"></script>
+<script src="../src/emitter.js"></script>
+<script src="../src/particle.js"></script>
+<script src="../src/effect.js"></script>
+<script src="../src/spawner.js"></script>
 <body><script>
 	var canvas	= document.createElement('canvas');
 	document.body.appendChild(canvas);
@@ -20,12 +20,12 @@
 	ctx.fillStyle	= 'rgba(0,0,0,1)';
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-	var emitter	= new FireFly.Emitter();
+	var emitter	= new Fireworks.Emitter();
 	emitter.start();
 
 	setInterval(function(){
 		var deltaTime	= 1000/60;
-		emitter.update();
+		emitter.update(deltaTime);
 		
 		render(emitter)
 	}, 1000/60);
@@ -39,7 +39,7 @@
 		ctx.fillRect(0, 0, canvas.width, canvas.height);
 		ctx.restore();
 		// set the fillStyle of the particles
-		ctx.fillStyle	= 'rgba(127,0,255, 0.5)';
+		ctx.fillStyle	= 'rgba(127,0,255, 0.2)';
 		emitter.liveParticles().forEach(function(particle){
 			var eData	= particle.xBase;
 			var x	= eData.x;
