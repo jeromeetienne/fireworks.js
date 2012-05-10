@@ -88,7 +88,8 @@ Fireworks.Emitter.prototype.start	= function()
 		this._particles.forEach(function(particle){
 			effect.onCreate(particle);			
 		})
-	}.bind(this))
+	}.bind(this));
+	
 	return this;	// for chained API
 }
 
@@ -117,6 +118,10 @@ Fireworks.Emitter.prototype.killParticle	= function(particle)
 	console.assert( idx !== -1 )
 	this._liveParticles.splice(idx, 1)
 	this._deadParticles.push(particle);
+	// do the death on all effects
+	emitter.effects().forEach(function(effect){
+		effect.onDeath && effect.onDeath(particle);			
+	}.bind(this));
 }
 
 /**
@@ -150,6 +155,9 @@ Fireworks.Effect	= function(){
 //Firefly.Effect.prototype.onBirth	= function(){
 //}
 //
+//Firefly.Effect.prototype.onDeath	= function(){
+//}
+//
 //Firefly.Effect.prototype.onUpdate	= function(){
 //}
 Fireworks.EffectAge	= function(emitter)
@@ -164,7 +172,7 @@ Fireworks.EffectAge	= function(emitter)
 	this.onBirth	= function(particle){
 		var ctx	= particle.xAge;
 		ctx.curAge	= 0;
-		ctx.maxAge	= 3*1000;
+		ctx.maxAge	= 1;
 	}.bind(this);
 	
 	this.onUpdate	= function(particle, deltaTime){
@@ -195,11 +203,12 @@ Fireworks.EffectBase	= function(emitter, opts)
 		ctx.x	= 0;
 		ctx.y	= 0;
 		ctx.z	= 0;
-		ctx.x	= window.innerWidth/2;
-		ctx.y	= window.innerHeight/2;
-		ctx.velocityX	= 2*(Math.random()-0.5) * 6;
-		ctx.velocityY	= 2*(Math.random()-0.5) * 6;
-		ctx.velocityZ	= 2*(Math.random()-0.5) * 6;
+		//ctx.x	= window.innerWidth/2;
+		//ctx.y	= window.innerHeight/2;
+		var mult	= 0.01; 
+		ctx.velocityX	= 2*(Math.random()-0.5) * mult;
+		ctx.velocityY	= 2*(Math.random()-0.5) * mult;
+		ctx.velocityZ	= 2*(Math.random()-0.5) * mult;
 	}.bind(this);
 	
 	this.onUpdate	= function(particle){
