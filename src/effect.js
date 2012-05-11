@@ -1,4 +1,34 @@
 /**
+ * Basic Fireworks.Effect builder
+*/
+Fireworks.createEffect	= function(){
+	var effect	= new Fireworks.Effect();
+	var methods	= {
+		onCreate: function(val){
+			effect.onCreate	= val;
+			return methods;
+		},
+		onBirth: function(val){
+			effect.onBirth	= val;
+			return methods;
+		},
+		onUpdate: function(val){
+			effect.onUpdate	= val;
+			return methods;
+		},
+		onDeath: function(val){
+			effect.onDeath	= val;
+			return methods;
+		},
+		pushTo	: function(emitter){
+			emitter.effects().push(effect);
+			return methods;
+		}
+	}
+	return methods;
+}
+
+/**
  * An effect to apply on particles
 */
 Fireworks.Effect	= function(){
@@ -23,3 +53,4 @@ Fireworks.Effect	= function(){
 //
 //Fireworks.Effect.prototype.onUpdate	= function(){
 //}
+
