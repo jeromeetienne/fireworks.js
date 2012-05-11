@@ -5,9 +5,14 @@
 <script src="../../src/particle.js"></script>
 <script src="../../src/effect.js"></script>
 <script src="../../src/spawner.js"></script>
+<script src="../../src/shape.js"></script>
+<script src="../../src/vector.js"></script>
 <script src="../../src/plugins/effect.base.js"></script>
 <script src="../../src/plugins/effect.age.js"></script>
 <script src="../../src/plugins/spawner.rate.js"></script>
+<script src="../../src/plugins/shape.sphere.js"></script>
+
+<script src="effect.applyForce.js"></script>
 
 <body><script>
 	var canvas	= document.createElement('canvas');
@@ -24,11 +29,20 @@
 	
 	ctx.fillStyle	= 'rgba(0,0,0,1)';
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	
+	ctx.translate(window.innerWidth/2, window.innerHeight/2)
 
 	var emitter	= new Fireworks.Emitter({
-		nParticles	: 10
+		nParticles	: 200
 	});
-	emitter.setSpawnerRate().addEffectBase().addEffectAge();
+	emitter.setSpawner(new Fireworks.SpawnerRate(50));
+	emitter.effects().push(new Fireworks.EffectBase(emitter));
+	emitter.effects().push(new Fireworks.EffectAge(emitter, 3));
+		
+	//emitter.effects().push(new Fireworks.Effect.ApplyForce(emitter, {
+	//	vector	: new Fireworks.Vector(0, +3, 0)
+	//}));
+
 	emitter.start();
 
 	setInterval(function(){
@@ -42,16 +56,14 @@
 		ctx.save();
 		ctx.globalAlpha = 0.025;
 		ctx.fillStyle = "rgb(0,0,0)";
-		ctx.fillRect(0, 0, canvas.width, canvas.height);
+		ctx.fillRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height);
 		ctx.restore();
 		// set the fillStyle of the particles
 		ctx.fillStyle	= 'rgba(127,0,255, 0.2)';
 		emitter.liveParticles().forEach(function(particle){
-			var eData	= particle.xBase;
-			var x	= eData.x;
-			var y	= eData.y;
+			var position	= particle.xBase.position;
 			ctx.beginPath();
-			ctx.arc(x, y, 30, 0, Math.PI*2, true); 
+			ctx.arc(position.x, position.y, 3, 0, Math.PI*2, true); 
 			ctx.fill();			
 		});
 	}

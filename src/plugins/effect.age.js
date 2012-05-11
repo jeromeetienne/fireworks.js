@@ -1,5 +1,6 @@
-Fireworks.EffectAge	= function(emitter)
+Fireworks.EffectAge	= function(emitter, maxAge)
 {
+	maxAge	= maxAge !== undefined ? maxAge : 1;
 	this.onCreate	= function(particle){
 		particle.xAge	= {
 			curAge	: 0,
@@ -10,7 +11,7 @@ Fireworks.EffectAge	= function(emitter)
 	this.onBirth	= function(particle){
 		var ctx	= particle.xAge;
 		ctx.curAge	= 0;
-		ctx.maxAge	= 1;
+		ctx.maxAge	= maxAge;
 	}.bind(this);
 	
 	this.onUpdate	= function(particle, deltaTime){

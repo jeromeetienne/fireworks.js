@@ -4,14 +4,22 @@
 Fireworks.Effect	= function(){
 }
 
-//Firefly.Effect.prototype.onCreate	= function(){
+/**
+ * Callback called on particle creation
+*/
+//Fireworks.Effect.prototype.onCreate	= function(){
 //}
 //
-//Firefly.Effect.prototype.onBirth	= function(){
+/**
+ * Callback called when a particle is spawning
+ *
+ * TODO to rename onSpawn
+*/
+//Fireworks.Effect.prototype.onBirth	= function(){
 //}
 //
-//Firefly.Effect.prototype.onDeath	= function(){
+//Fireworks.Effect.prototype.onDeath	= function(){
 //}
 //
-//Firefly.Effect.prototype.onUpdate	= function(){
+//Fireworks.Effect.prototype.onUpdate	= function(){
 //}

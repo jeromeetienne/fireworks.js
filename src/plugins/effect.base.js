@@ -2,33 +2,26 @@ Fireworks.EffectBase	= function(emitter, opts)
 {
 	this.onCreate	= function(particle){
 		particle.xBase	= {
-			x	: 0,
-			y	: 0,
-			z	: 0,
-			velocityX	: 0,
-			velocityY	: 0,
-			velocityZ	: 0
+			position	: new Fireworks.Vector(),
+			velocity	: new Fireworks.Vector(),
+			acceleration	: new Fireworks.Vector(),
+			damping		: 1.0
 		};
 	}.bind(this);
 
 	this.onBirth	= function(particle){
 		var ctx	= particle.xBase;
-		ctx.x	= 0;
-		ctx.y	= 0;
-		ctx.z	= 0;
-		//ctx.x	= window.innerWidth/2;
-		//ctx.y	= window.innerHeight/2;
-		var mult	= 0.01; 
-		ctx.velocityX	= 2*(Math.random()-0.5) * mult;
-		ctx.velocityY	= 2*(Math.random()-0.5) * mult;
-		ctx.velocityZ	= 2*(Math.random()-0.5) * mult;
+		ctx.position.set(0,0,0);
+		ctx.velocity.random().setLength( Math.random() * 3 );
+		ctx.acceleration.set(0,0,0);
+		ctx.friction	= 0.99
 	}.bind(this);
 	
 	this.onUpdate	= function(particle){
 		var ctx	= particle.xBase;
-		ctx.x	+= ctx.velocityX;
-		ctx.y	+= ctx.velocityY;
-		ctx.z	+= ctx.velocityZ;
+		ctx.velocity.addSelf(ctx.acceleration);
+		ctx.velocity.multiplyScalar(ctx.friction);
+		ctx.position.addSelf(ctx.velocity);
 	}.bind(this);
 }
 

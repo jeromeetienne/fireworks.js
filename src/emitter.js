@@ -38,27 +38,8 @@ Fireworks.Emitter.prototype.deadParticles	= function(){
 	return this._deadParticles;
 }
 
-//////////////////////////////////////////////////////////////////////////////////
-//		configuration helper						//
-//		TODO put that elsewhere.. in each plugins ?? 			//
-//////////////////////////////////////////////////////////////////////////////////
-
-Fireworks.Emitter.prototype.addEffectBase	= function(){
-	var emitter	= this;
-	var effect	= new Fireworks.EffectBase(emitter);
-	this._effects.push( effect );
-	return this;	// for chained API
-}
-
-Fireworks.Emitter.prototype.addEffectAge	= function(){
-	var emitter	= this;
-	var effect	= new Fireworks.EffectAge(emitter);
-	this._effects.push( effect );
-	return this;	// for chained API
-}
-
-Fireworks.Emitter.prototype.setSpawnerRate	= function(){
-	this._spawner	= new Fireworks.SpawnerRate();
+Fireworks.Emitter.prototype.setSpawner	= function(spawner){
+	this._spawner	= spawner;
 	return this;	// for chained API
 }
 
