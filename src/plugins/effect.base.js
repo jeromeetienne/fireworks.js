@@ -1,3 +1,13 @@
+/**
+ * Shortcut to create Fireworks.EffectBase
+*/
+Fireworks.Emitter.prototype.pushBase	= function(maxAge){
+	var emitter	= this;
+	emitter.effects().push(new Fireworks.EffectBase(emitter, maxAge));
+	return this;	// for chained API
+};
+
+
 Fireworks.EffectBase	= function(emitter, opts)
 {
 	this.onCreate	= function(particle){

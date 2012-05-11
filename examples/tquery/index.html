@@ -23,20 +23,42 @@
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
 	var object	= tQuery.createTorus().addTo(world);
-	
+	object.rotateX(Math.PI/6)
 	
 	var emitter	= new Fireworks.Emitter({
 		nParticles	: 100
 	});
-	emitter.setSpawner(new Fireworks.SpawnerRate(50));
-	emitter.addEffectTquery();
-	emitter.effects().push(new Fireworks.EffectBase(emitter));
-	emitter.effects().push(new Fireworks.EffectAge(emitter, 3));
+	emitter.setSpawner(new Fireworks.SpawnerRate(40));
+	emitter.pushTquery().pushBase().pushAge(2);
+	
+	
 	emitter.pushInit2Shapes({
-		origin	: Fireworks.createBox(0, 0, 0, 10, 10, 10),
-		target	: Fireworks.createSphere(400, -400, 0, 200),
-		speed	: 0.01
+		origin	: Fireworks.createSphere(0, 0, 0, 0.1),
+		target	: Fireworks.createSphere(0, 40, -60, 20),
+		speed	: 0.15
 	});
+	emitter.effects().push({ onUpdate: function(particle){
+		var ctx	= emitter.getParticleData(particle, 'xBase')
+		ctx.acceleration.y	-= 0.0001;
+	}});
+	emitter.effects().push({
+		onBirth: function(particle){
+			var xTquery	= emitter.getParticleData(particle, 'xTquery')
+			var tObject3d	= xTquery.object3d.get(0);
+			var scale	= 1/10;
+			tObject3d.scale.set(scale, scale, scale)
+		},
+		onUpdate: function(particle){
+			var xBase	= emitter.getParticleData(particle, 'xBase')
+			var xTquery	= emitter.getParticleData(particle, 'xTquery')
+			var tObject3d	= xTquery.object3d.get(0);
+			var scale	= tObject3d.scale.x;
+			scale		+= 0.005
+			tObject3d.scale.set(scale, scale, scale)
+		}
+	});
+	emitter.pushDieIfContained(Fireworks.createBox(0, -5, 0, 100, 10, 100));
+
 	emitter.start();
 	
 	world.loop().hook(function(deltaTime){

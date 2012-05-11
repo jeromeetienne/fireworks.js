@@ -1,35 +1,39 @@
-Fireworks.Emitter.prototype.addEffectTquery	= function(opts){
+/**
+ * Shortcut to create Fireworks.Effect.Init2Shapes
+*/
+Fireworks.Emitter.prototype.pushTquery	= function(opts){
 	var emitter	= this;
-	var effect	= new Fireworks.EffectTquery(emitter, opts);
-	this._effects.push( effect );
+	emitter.effects().push(new Fireworks.Effect.Tquery(emitter, opts));
 	return this;	// for chained API
-}
+};
 
 
-Fireworks.EffectTquery	= function(emitter, opts)
+Fireworks.Effect.Tquery	= function(emitter, opts)
 {
-	opts		= opts		|| {};
-	var world	= opts.world	|| tQuery.world;
+	opts		= opts			|| {};
+	opts.container	= opts.container	|| tQuery.world;
+	this.opts	= opts;
+	
 	this.onCreate	= function(particle){
 		particle.xTquery	= {
-			object3d	: tQuery.createSphere().geometry().scaleBy(1/10).back()
+			object3d	: tQuery.createCube().scaleBy(1/10)
 		};
 	}.bind(this);
 
 	this.onBirth	= function(particle){
 		var ctx	= particle.xTquery;
-		world.add( ctx.object3d );
+		opts.container.add( ctx.object3d );
 	}.bind(this);
 
 	this.onDeath	= function(particle){
 		var ctx	= particle.xTquery;
-		world.remove( ctx.object3d );
+		opts.container.remove( ctx.object3d );
 	}
 }
 
 // inherit from Fireworks.Effect
-Fireworks.EffectTquery.prototype = new Fireworks.Effect();
-Fireworks.EffectTquery.prototype.constructor = Fireworks.EffectTquery;
+Fireworks.Effect.Tquery.prototype = new Fireworks.Effect();
+Fireworks.Effect.Tquery.prototype.constructor = Fireworks.Effect.Tquery;
 
 //////////////////////////////////////////////////////////////////////////////////
 //										//

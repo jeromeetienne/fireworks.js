@@ -1,3 +1,13 @@
+/**
+ * Shortcut to create Fireworks.EffectAge
+*/
+Fireworks.Emitter.prototype.pushAge	= function(maxAge){
+	var emitter	= this;
+	emitter.effects().push(new Fireworks.EffectAge(emitter, maxAge));
+	return this;	// for chained API
+};
+
+
 Fireworks.EffectAge	= function(emitter, maxAge)
 {
 	maxAge	= maxAge !== undefined ? maxAge : 1;
