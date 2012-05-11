@@ -1,18 +1,19 @@
 Fireworks.EffectBase	= function(emitter, opts)
 {
 	this.onCreate	= function(particle){
-		particle.xBase	= {
+		emitter.setParticleData(particle, 'xBase', {
 			position	: new Fireworks.Vector(),
 			velocity	: new Fireworks.Vector(),
 			acceleration	: new Fireworks.Vector(),
-			damping		: 1.0
-		};
+			friction	: 1.0
+		});
 	}.bind(this);
 
 	this.onBirth	= function(particle){
-		var ctx	= particle.xBase;
+		var ctx	= emitter.getParticleData(particle, 'xBase')
 		ctx.position.set(0,0,0);
-		ctx.velocity.random().setLength( Math.random() * 3 );
+		//ctx.velocity.random().setLength( Math.random() * 3 );
+		ctx.velocity.set(1,0,0);
 		ctx.acceleration.set(0,0,0);
 		ctx.friction	= 0.99
 	}.bind(this);

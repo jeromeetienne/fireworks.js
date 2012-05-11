@@ -43,6 +43,16 @@ Fireworks.Emitter.prototype.setSpawner	= function(spawner){
 	return this;	// for chained API
 }
 
+
+Fireworks.Emitter.prototype.setParticleData	= function(particle, namespace, value){
+	particle[namespace]	= value;
+}
+
+Fireworks.Emitter.prototype.getParticleData	= function(particle, namespace){
+	console.assert( particle[namespace] !== undefined );
+	return particle[namespace];
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 //		Start function							//
 //////////////////////////////////////////////////////////////////////////////////
