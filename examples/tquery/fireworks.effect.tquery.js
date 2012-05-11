@@ -1,3 +1,11 @@
+Fireworks.Emitter.prototype.addEffectTquery	= function(opts){
+	var emitter	= this;
+	var effect	= new Fireworks.EffectTquery(emitter, opts);
+	this._effects.push( effect );
+	return this;	// for chained API
+}
+
+
 Fireworks.EffectTquery	= function(emitter, opts)
 {
 	opts		= opts		|| {};
@@ -27,10 +35,3 @@ Fireworks.EffectTquery.prototype.constructor = Fireworks.EffectTquery;
 //										//
 //////////////////////////////////////////////////////////////////////////////////
 
-console.assert(!Fireworks.Emitter.prototype.addEffectTquery, ".addEffectTquery() is already defined");
-Fireworks.Emitter.prototype.addEffectTquery	= function(opts){
-	var emitter	= this;
-	var effect	= new Fireworks.EffectTquery(emitter, opts);
-	this._effects.push( effect );
-	return this;	// for chained API
-}

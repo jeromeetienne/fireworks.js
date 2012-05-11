@@ -18,6 +18,8 @@ buildCore:
 	cat src/spawner.js	>> build/fireworks.js
 	cat src/particle.js	>> build/fireworks.js
 	cat src/effect.js	>> build/fireworks.js
+	cat src/shape.js	>> build/fireworks.js
+	cat src/vector.js	>> build/fireworks.js
 
 minifyCore:
 	curl --data-urlencode "js_code@build/fireworks.js" 	\

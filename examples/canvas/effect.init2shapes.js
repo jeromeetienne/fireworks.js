@@ -1,3 +1,11 @@
+/**
+ * Shortcut to create Fireworks.Effect.Init2Shapes
+*/
+Fireworks.Emitter.prototype.pushInit2Shapes	= function(opts){
+	var emitter	= this;
+	emitter.effects().push(new Fireworks.Effect.Init2Shapes(emitter, opts));
+};
+
 Fireworks.Effect.Init2Shapes	= function(emitter, opts)
 {
 	console.assert( opts.origin instanceof Fireworks.Shape );

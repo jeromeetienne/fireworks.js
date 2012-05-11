@@ -1,4 +1,13 @@
 /**
+ * Shortcut to create Fireworks.Shape.Box
+*/
+Fireworks.createSphere	= function(centerX, centerY, centerZ, radius){
+	var center	= new Fireworks.Vector(centerX, centerY, centerZ);
+	return new Fireworks.ShapeSphere(center, radius);
+};
+
+
+/**
  * Handle a Firework.Shape forming a sphere
  *
  * @param {Fireworks.Vector} center the center of the sphere
@@ -8,7 +17,6 @@ Fireworks.ShapeSphere	= function(center, radius)
 {
 	this.center	= center;
 	this.radius	= radius;
-console.log("sphere", this.center.toString(), this.radius)
 	this._vector	= new Fireworks.Vector();
 }
 
@@ -18,7 +26,7 @@ Fireworks.ShapeSphere.prototype.constructor = Fireworks.ShapeSphere;
 
 Fireworks.ShapeSphere.prototype.contains	= function(point){
 	// compute distance between the point and the center
-	var distance	= this._vector.sub(point, center).length();
+	var distance	= this._vector.sub(point, this.center).length();
 	// return true if this distance is <= than sphere radius
 	return distance <= this.radius;
 }

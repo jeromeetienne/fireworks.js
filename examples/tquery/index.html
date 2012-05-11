@@ -6,9 +6,17 @@
 <script src="../../src/particle.js"></script>
 <script src="../../src/effect.js"></script>
 <script src="../../src/spawner.js"></script>
+<script src="../../src/shape.js"></script>
+<script src="../../src/vector.js"></script>
 <script src="../../src/plugins/effect.base.js"></script>
 <script src="../../src/plugins/effect.age.js"></script>
 <script src="../../src/plugins/spawner.rate.js"></script>
+<script src="../../src/plugins/shape.sphere.js"></script>
+
+<script src="../canvas/effect.applyForce.js"></script>
+<script src="../canvas/effect.init2shapes.js"></script>
+<script src="../canvas/effect.shape.box.js"></script>
+<script src="../canvas/effect.dieifcontained.js"></script>
 
 <script src="./fireworks.effect.tquery.js"></script>
 
@@ -20,9 +28,15 @@
 	var emitter	= new Fireworks.Emitter({
 		nParticles	: 100
 	});
-	emitter.setSpawnerRate();
+	emitter.setSpawner(new Fireworks.SpawnerRate(50));
 	emitter.addEffectTquery();
-	emitter.addEffectBase().addEffectAge();
+	emitter.effects().push(new Fireworks.EffectBase(emitter));
+	emitter.effects().push(new Fireworks.EffectAge(emitter, 3));
+	emitter.pushInit2Shapes({
+		origin	: Fireworks.createBox(0, 0, 0, 10, 10, 10),
+		target	: Fireworks.createSphere(400, -400, 0, 200),
+		speed	: 0.01
+	});
 	emitter.start();
 	
 	world.loop().hook(function(deltaTime){
@@ -34,11 +48,10 @@
 		// set the fillStyle of the particles
 		emitter.liveParticles().forEach(function(particle){
 			var xBase	= particle.xBase;
-			var xTquery	= particle.xTquery;
+			var xTquery	= particle.xTquery; 
+			var position	= xBase.position;
 			var tObject3d	= xTquery.object3d.get(0);
-			tObject3d.position.x	= xBase.x;
-			tObject3d.position.y	= xBase.y;
-			tObject3d.position.z	= xBase.z;
+			tObject3d.position.set(position.x, position.y, position.z);
 		});
 	}
 

@@ -14,6 +14,7 @@
 
 <script src="effect.applyForce.js"></script>
 <script src="effect.init2shapes.js"></script>
+<script src="effect.shape.box.js"></script>
 <script src="effect.dieifcontained.js"></script>
 
 <body><script>
@@ -37,21 +38,20 @@
 	var emitter	= new Fireworks.Emitter({
 		nParticles	: 200
 	});
-	emitter.setSpawner(new Fireworks.SpawnerRate(10));
+	emitter.setSpawner(new Fireworks.SpawnerRate(50));
 	emitter.effects().push(new Fireworks.EffectBase(emitter));
 	emitter.effects().push(new Fireworks.EffectAge(emitter, 3));
 	
-	emitter.effects().push(new Fireworks.Effect.Init2Shapes(emitter, {
-		origin	: new Fireworks.ShapeSphere(new Fireworks.Vector(0, 0, 0), 5),
-		target	: new Fireworks.ShapeSphere(new Fireworks.Vector(400, -400, 0), 200),
+	emitter.pushInit2Shapes({
+		origin	: Fireworks.createBox(0, 0, 0, 10, 10, 10),
+		target	: Fireworks.createSphere(400, -400, 0, 200),
 		speed	: 2
-	}));
+	});
 
-	emitter.effects().push({ onUpdate: function(particle){
-		var ctx	= emitter.getParticleData(particle, 'xBase')
-		ctx.acceleration.y	+= 0.001;
-	}});
-
+	//emitter.effects().push({ onUpdate: function(particle){
+	//	var ctx	= emitter.getParticleData(particle, 'xBase')
+	//	ctx.acceleration.y	+= 0.001;
+	//}});
 		
 	//emitter.effects().push(new Fireworks.Effect.ApplyForce(emitter, {
 	//	vector	: new Fireworks.Vector(0, +3, 0)
