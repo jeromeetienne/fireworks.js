@@ -36,16 +36,16 @@
 	ctx.translate(window.innerWidth/2, window.innerHeight/2)
 
 	var emitter	= new Fireworks.Emitter({
-		nParticles	: 200
+		nParticles	: 300
 	});
-	emitter.setSpawner(new Fireworks.SpawnerRate(50));
+	emitter.setSpawner(new Fireworks.SpawnerRate(10));
 	emitter.effects().push(new Fireworks.EffectBase(emitter));
 	emitter.effects().push(new Fireworks.EffectAge(emitter, 3));
 	
 	emitter.pushInit2Shapes({
 		origin	: Fireworks.createBox(0, 0, 0, 10, 10, 10),
 		target	: Fireworks.createSphere(400, -400, 0, 200),
-		speed	: 2
+		speed	: 3
 	});
 
 	//emitter.effects().push({ onUpdate: function(particle){

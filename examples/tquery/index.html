@@ -24,17 +24,19 @@
 	var world	= tQuery.createWorld().boilerplate().start();
 	var object	= tQuery.createTorus().addTo(world);
 	object.rotateX(Math.PI/6)
-	
+
+	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
+
 	var emitter	= new Fireworks.Emitter({
 		nParticles	: 100
 	});
-	emitter.setSpawner(new Fireworks.SpawnerRate(40));
-	emitter.pushTquery().pushBase().pushAge(2);
+	emitter.setSpawner(new Fireworks.SpawnerRate(30));
+	emitter.pushTquery().pushBase().pushAge(0.8);
 	
 	emitter.pushInit2Shapes({
 		origin	: Fireworks.createSphere(0, 0, 0, 0.1),
 		target	: Fireworks.createSphere(0, 40, -60, 20),
-		speed	: 0.15
+		speed	: 0.15*2
 	});
 	emitter.effects().push({ onUpdate: function(particle){
 		var ctx	= emitter.getParticleData(particle, 'xBase')
@@ -52,7 +54,7 @@
 			var xTquery	= emitter.getParticleData(particle, 'xTquery')
 			var tObject3d	= xTquery.object3d.get(0);
 			var scale	= tObject3d.scale.x;
-			scale		+= 0.005
+			scale		+= 0.005/4;
 			tObject3d.scale.set(scale, scale, scale)
 		}
 	});

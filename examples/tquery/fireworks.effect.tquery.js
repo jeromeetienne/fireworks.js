@@ -14,9 +14,27 @@ Fireworks.Effect.Tquery	= function(emitter, opts)
 	opts.container	= opts.container	|| tQuery.world;
 	this.opts	= opts;
 	
+	//var flareA	= THREE.ImageUtils.loadTexture( "images/lensflare1.jpg" );
+	var flareA	= THREE.ImageUtils.loadTexture( "images/lensFlare/Flare1.png" );
+	var flareA	= THREE.ImageUtils.loadTexture( "images/lensFlare/Flare2.png" );
+	//var flareA	= THREE.ImageUtils.loadTexture( "images/ball.png" );
+	//var flareA	= THREE.ImageUtils.loadTexture( "images/shadow.png" );
+	//var flareA	= THREE.ImageUtils.loadTexture( "images/tremulous/flame/flame10.jpg" );
+	//var flareA	= THREE.ImageUtils.loadTexture( "images/tremulous/lasgun/purple_particle.jpg" );
+	var flareA	= THREE.ImageUtils.loadTexture( "images/tremulous/psaw/blue_particle.jpg" );
+	var param	= {
+		map			: flareA,
+		useScreenCoordinates	: false,
+		color			: 0xAA4488,
+		blending		: THREE.AdditiveBlending,
+		opacity		: 0.3
+	};
 	this.onCreate	= function(particle){
+		var sprite	= new THREE.Sprite( param );
+		var object3d	= tQuery(sprite);
+		//object3d	: tQuery.createCube().scaleBy(1/10)
 		particle.xTquery	= {
-			object3d	: tQuery.createCube().scaleBy(1/10)
+			object3d	: object3d
 		};
 	}.bind(this);
 
