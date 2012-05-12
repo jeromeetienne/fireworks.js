@@ -8,17 +8,17 @@
 <script src="../../src/spawner.js"></script>
 <script src="../../src/shape.js"></script>
 <script src="../../src/vector.js"></script>
-<script src="../../src/plugins/effect.base.js"></script>
-<script src="../../src/plugins/effect.age.js"></script>
-<script src="../../src/plugins/spawner.rate.js"></script>
-<script src="../../src/plugins/shape.sphere.js"></script>
 
-<script src="../canvas/effect.applyForce.js"></script>
-<script src="../canvas/effect.init2shapes.js"></script>
-<script src="../canvas/effect.shape.box.js"></script>
-<script src="../canvas/effect.dieifcontained.js"></script>
+<script src="../plugins/effect.base.js"></script>
+<script src="../plugins/effect.age.js"></script>
+<script src="../plugins/spawner.rate.js"></script>
+<script src="../plugins/shape.sphere.js"></script>
+<script src="../plugins/effect.applyForce.js"></script>
+<script src="../plugins/effect.init2shapes.js"></script>
+<script src="../plugins/effect.shape.box.js"></script>
+<script src="../plugins/effect.dieifcontained.js"></script>
 
-<script src="./fireworks.effect.tquery.js"></script>
+<script src="./fireworks.effect.tquerysprite.js"></script>
 
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
@@ -30,18 +30,18 @@
 	var emitter	= new Fireworks.Emitter({
 		nParticles	: 100
 	});
-	emitter.setSpawner(new Fireworks.SpawnerRate(10));
+	emitter.setSpawner(new Fireworks.SpawnerRate(15));
 	emitter.pushTquery().pushBase().pushAge(0.8);
 	
 	emitter.pushInit2Shapes({
 		origin	: Fireworks.createSphere(0, 0, 0, 0.1),
 		target	: Fireworks.createSphere(0, 40, -60, 4),
-		speed	: 0.15*1.5
+		speed	: 0.15*2
 	});
 
 	Fireworks.createEffect().onUpdate(function(particle){
 		var ctx	= emitter.getParticleData(particle, 'xBase')
-		ctx.acceleration.y	-= 0.0001;
+		ctx.acceleration.y	-= 0.0004;
 	}).pushTo(emitter);
 
 	Fireworks.createEffect({
@@ -55,18 +55,7 @@
 		xTquery.object3d.scaleBy(this.opts.mulScale);
 	}).pushTo(emitter);
 
-
-	
 	emitter.pushDieIfContained(Fireworks.createBox(0, -5, 0, 100, 10, 100));
-
-	//Fireworks.createEffect({
-	//	shape	: Fireworks.createBox(0, -5, 0, 100, 10, 100)
-	//}).onUpdate(function(particle){
-	//	var xBase	= emitter.getParticleData(particle, 'xBase');
-	//	var position	= xBase.position;
-	//	if( shape.contains(position) )	emitter.killParticle(particle);
-	//}).pushTo(emitter);
-
 	emitter.start();
 	
 	world.loop().hook(function(deltaTime){

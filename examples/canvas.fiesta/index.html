@@ -7,11 +7,11 @@
 <script src="../../src/spawner.js"></script>
 <script src="../../src/shape.js"></script>
 <script src="../../src/vector.js"></script>
-<script src="../../src/plugins/effect.base.js"></script>
-<script src="../../src/plugins/effect.age.js"></script>
-<script src="../../src/plugins/spawner.rate.js"></script>
-<script src="../../src/plugins/shape.sphere.js"></script>
 
+<script src="../plugins/effect.base.js"></script>
+<script src="../plugins/effect.age.js"></script>
+<script src="../plugins/spawner.rate.js"></script>
+<script src="../plugins/shape.sphere.js"></script>
 <script src="../plugins/effect.applyForce.js"></script>
 <script src="../plugins/effect.init2shapes.js"></script>
 <script src="../plugins/effect.shape.box.js"></script>
@@ -52,6 +52,18 @@
 		ctx.acceleration.y	+= 0.0005;
 	}).pushTo(emitter);
 
+	Fireworks.createEffect().onCreate(function(particle){
+		emitter.setParticleData(particle, 'xSize', {
+			size	: 1.0
+		});
+	}).onBirth(function(particle){
+		var ctx		= emitter.getParticleData(particle, 'xSize')
+		ctx.size	= 3.0;
+	}).onUpdate(function(particle){
+		var ctx		= emitter.getParticleData(particle, 'xSize')
+		ctx.size	+= 0.05;
+	}).pushTo(emitter);
+
 	Fireworks.createEffect({
 		shape	: Fireworks.createBox(0, 5000, 0, 10000, 10000, 10000)
 	}).onUpdate(function(particle){
@@ -83,8 +95,10 @@
 		ctx.fillStyle	= 'rgba(127,0,255, 0.2)';
 		emitter.liveParticles().forEach(function(particle){
 			var position	= particle.xBase.position;
+			var radius	= particle.xSize.size;
+console.log("raidus", radius)
 			ctx.beginPath();
-			ctx.arc(position.x, position.y, 5, 0, Math.PI*2, true); 
+			ctx.arc(position.x, position.y, radius, 0, Math.PI*2, true); 
 			ctx.fill();			
 		});
 	}

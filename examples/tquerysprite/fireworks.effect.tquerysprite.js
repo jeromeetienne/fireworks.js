@@ -16,9 +16,10 @@ Fireworks.Effect.Tquery	= function(emitter, opts)
 	
 	//var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/lensflare1.jpg" );
 	var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/lensFlare/Flare1.png" );
-	var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/lensFlare/Flare2.png" );
+	//var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/lensFlare/Flare2.png" );
 	//var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/ball.png" );
 	//var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/shadow.png" );
+	var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/sprite0.png" );
 	//var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/tremulous/flame/flame10.jpg" );
 	//var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/tremulous/lasgun/purple_particle.jpg" );
 	var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/tremulous/psaw/blue_particle.jpg" );
@@ -27,11 +28,11 @@ Fireworks.Effect.Tquery	= function(emitter, opts)
 		useScreenCoordinates	: false,
 		color			: 0xAA4488,
 		blending		: THREE.AdditiveBlending,
-		opacity		: 0.3
+		opacity			: 0.3
 	};
 	this.onCreate	= function(particle){
-		var sprite	= new THREE.Sprite( param );
-		var object3d	= tQuery(sprite);
+		var sprite		= new THREE.Sprite( param );
+		var object3d		= tQuery(sprite);
 		//object3d	: tQuery.createCube().scaleBy(1/10)
 		particle.xTquery	= {
 			object3d	: object3d

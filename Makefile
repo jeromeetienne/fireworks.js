@@ -29,9 +29,9 @@ minifyCore:
 	@echo size minified + gzip is `gzip -c build/fireworks.min.js | wc -c` byte
 
 buildBundle:
-	echo			 > build/fireworks-bundle.js
-	cat build/fireworks.js	>> build/fireworks-bundle.js
-	cat src/plugins/*.js	>> build/fireworks-bundle.js
+	echo				 > build/fireworks-bundle.js
+	cat build/fireworks.js		>> build/fireworks-bundle.js
+	cat examples/plugins/*.js	>> build/fireworks-bundle.js
 
 minifyBundle:
 	curl --data-urlencode "js_code@build/fireworks-bundle.js" 	\

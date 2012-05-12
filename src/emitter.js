@@ -6,6 +6,7 @@ Fireworks.Emitter	= function(opts){
 	this._particles	= [];
 	this._spawner	= null;
 	this._effects	= [];
+	this._started	= false;
 	this._onUpdated	= null;
 }
 
@@ -49,7 +50,7 @@ Fireworks.Emitter.prototype.setParticleData	= function(particle, namespace, valu
 }
 
 Fireworks.Emitter.prototype.getParticleData	= function(particle, namespace){
-	console.assert( particle[namespace] !== undefined );
+	console.assert( particle[namespace] !== undefined, "namespace undefined: "+namespace );
 	return particle[namespace];
 }
 
@@ -61,6 +62,7 @@ Fireworks.Emitter.prototype.start	= function()
 {
 	console.assert( this._spawner, "a spawner MUST be set" );
 	console.assert( this._effects.length > 0, "Some effects MUST be set")
+	console.assert( this._started === false );
 	
 	this._particles		= new Array(this._nParticles);
 	for(var i = 0; i < this._nParticles; i++){
