@@ -22,15 +22,15 @@
 
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
-	var object	= tQuery.createTorus().addTo(world);
-	object.rotateX(Math.PI/6)
+//	var object	= tQuery.createTorus().addTo(world);
+//	object.rotateX(Math.PI/6)
 
-	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
+//	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
 
 	var emitter	= new Fireworks.Emitter({
 		nParticles	: 500
 	});
-	emitter.setSpawner(new Fireworks.SpawnerRate(40));
+	emitter.setSpawner(new Fireworks.SpawnerRate(10));
 	
 	var eTquery	= new Fireworks.Effect.Tquery(emitter);
 	emitter.effects().push(eTquery)

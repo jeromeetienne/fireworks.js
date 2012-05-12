@@ -21,9 +21,24 @@ Fireworks.Effect.Tquery	= function(emitter, opts)
 		vertex.y	= Infinity;
 		vertex.z	= Infinity;
 		geometry.vertices.push( vertex );
+		geometry.colors.push( new THREE.Color( 0xFFFFFF*Math.random() ) );
 	}
 	
-	var material	= new THREE.ParticleBasicMaterial( { color: 0xFFFFFF, size: 2, sizeAttenuation: false } );
+	
+	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/sprites/ball.png" );
+	var material	= new THREE.ParticleBasicMaterial({
+		size		: 64,
+		map		: texture,
+		vertexColors	: THREE.VertexColors,
+		sizeAttenuation	: false
+	});
+
+	
+	//var material	= new THREE.ParticleBasicMaterial({
+	//	color		: 0xFFFFFF,
+	//	size		: 2,
+	//	sizeAttenuation	: false
+	//});
 	var mesh	= new THREE.ParticleSystem(geometry, material);
 	this.object3d	= mesh;
 	mesh.dynamic		= true;

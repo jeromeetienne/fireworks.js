@@ -25,9 +25,10 @@
 	//
 	//sprite.position.z	= -10;
 	//var object3d	= tQuery(sprite).addTo(world);
+	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/sprites/ball.png" );
 
 	var geometry	= new THREE.Geometry();
-	for( var i = 0; i < 20000; i ++ ){
+	for( var i = 0; i < 20; i ++ ){
 		var vertex	= new THREE.Vector3();
 		vertex.x	= Math.random() * 2 - 1;
 		vertex.y	= Math.random() * 2 - 1;
@@ -45,15 +46,24 @@
 		opacity		: 0.5,
 		sizeAttenuation	: false
 	});
+
 	var material	= new THREE.ParticleBasicMaterial({
 		size		: 1,
 		vertexColors	: THREE.VertexColors,
 		sizeAttenuation	: false
 	});
 	var material	= new THREE.ParticleBasicMaterial( { color: 0xFFFFFF, size: 2, sizeAttenuation: false } );
+
+	var material	= new THREE.ParticleBasicMaterial({
+		size		: 128,
+		map		: texture,
+		//vertexColors	: THREE.VertexColors,
+		sizeAttenuation	: false
+	});
+
 	var mesh	= new THREE.ParticleSystem(geometry, material);
 	mesh.dynamic		= true;
-//	mesh.sortParticles	= true;
+	mesh.sortParticles	= true;
 
 	scene.add( mesh );
 </script></body>
