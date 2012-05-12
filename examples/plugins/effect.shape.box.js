@@ -41,6 +41,8 @@ Fireworks.Shape.Box.prototype.randomPoint	= function(){
 	point.x	= Math.random() * this.size.x - this.size.x/2;
 	point.y	= Math.random() * this.size.y - this.size.y/2;
 	point.z	= Math.random() * this.size.z - this.size.z/2;
+	// add this.center
+	point.addSelf(this.center);
 	// return the point
 	return point;
 }

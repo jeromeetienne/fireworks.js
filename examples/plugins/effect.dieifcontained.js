@@ -20,4 +20,3 @@ Fireworks.Effect.DieIfContained	= function(emitter, shape)
 Fireworks.Effect.DieIfContained.prototype = new Fireworks.Effect();
 Fireworks.Effect.DieIfContained.prototype.constructor = Fireworks.Effect.DieIfContained;
 
-

@@ -134,6 +134,40 @@ Fireworks.Spawner	= function(){
 Fireworks.Particle	= function(){
 }
 /**
+ * Basic Fireworks.Effect builder
+*/
+Fireworks.createEffect	= function(opts){
+	var effect	= new Fireworks.Effect();
+	effect.opts	= opts;
+	var methods	= {
+		onCreate: function(val){
+			effect.onCreate	= val;
+			return methods;
+		},
+		onBirth: function(val){
+			effect.onBirth	= val;
+			return methods;
+		},
+		onUpdate: function(val){
+			effect.onUpdate	= val;
+			return methods;
+		},
+		onDeath: function(val){
+			effect.onDeath	= val;
+			return methods;
+		},
+		pushTo	: function(emitter){
+			emitter.effects().push(effect);
+			return methods;	
+		},
+		effect	: function(){
+			return effect;
+		}
+	}
+	return methods;
+}
+
+/**
  * An effect to apply on particles
 */
 Fireworks.Effect	= function(){
@@ -158,6 +192,7 @@ Fireworks.Effect	= function(){
 //
 //Fireworks.Effect.prototype.onUpdate	= function(){
 //}
+
 Fireworks.Shape	= function(){
 }
 

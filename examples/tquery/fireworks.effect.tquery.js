@@ -14,14 +14,14 @@ Fireworks.Effect.Tquery	= function(emitter, opts)
 	opts.container	= opts.container	|| tQuery.world;
 	this.opts	= opts;
 	
-	//var flareA	= THREE.ImageUtils.loadTexture( "images/lensflare1.jpg" );
-	var flareA	= THREE.ImageUtils.loadTexture( "images/lensFlare/Flare1.png" );
-	var flareA	= THREE.ImageUtils.loadTexture( "images/lensFlare/Flare2.png" );
-	//var flareA	= THREE.ImageUtils.loadTexture( "images/ball.png" );
-	//var flareA	= THREE.ImageUtils.loadTexture( "images/shadow.png" );
-	//var flareA	= THREE.ImageUtils.loadTexture( "images/tremulous/flame/flame10.jpg" );
-	//var flareA	= THREE.ImageUtils.loadTexture( "images/tremulous/lasgun/purple_particle.jpg" );
-	var flareA	= THREE.ImageUtils.loadTexture( "images/tremulous/psaw/blue_particle.jpg" );
+	//var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/lensflare1.jpg" );
+	var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/lensFlare/Flare1.png" );
+	var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/lensFlare/Flare2.png" );
+	//var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/ball.png" );
+	//var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/shadow.png" );
+	//var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/tremulous/flame/flame10.jpg" );
+	//var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/tremulous/lasgun/purple_particle.jpg" );
+	var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/tremulous/psaw/blue_particle.jpg" );
 	var param	= {
 		map			: flareA,
 		useScreenCoordinates	: false,

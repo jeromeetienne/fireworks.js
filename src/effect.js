@@ -1,8 +1,9 @@
 /**
  * Basic Fireworks.Effect builder
 */
-Fireworks.createEffect	= function(){
+Fireworks.createEffect	= function(opts){
 	var effect	= new Fireworks.Effect();
+	effect.opts	= opts;
 	var methods	= {
 		onCreate: function(val){
 			effect.onCreate	= val;
@@ -22,7 +23,10 @@ Fireworks.createEffect	= function(){
 		},
 		pushTo	: function(emitter){
 			emitter.effects().push(effect);
-			return methods;
+			return methods;	
+		},
+		effect	: function(){
+			return effect;
 		}
 	}
 	return methods;
