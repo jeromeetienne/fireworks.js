@@ -18,7 +18,7 @@
 <script src="../plugins/effect.shape.box.js"></script>
 <script src="../plugins/effect.dieifcontained.js"></script>
 
-<script src="./fireworks.effect.tqueryparticlesystem.js"></script>
+<script src="./fireworks.renderer.tqueryparticlesystem.js"></script>
 
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
@@ -40,7 +40,7 @@
 		vertexColors	: THREE.VertexColors,
 		sizeAttenuation	: false
 	});
-	emitter.pushParticleSystem({
+	emitter.pushRendererParticleSystem({
 		material	: material
 	});
 

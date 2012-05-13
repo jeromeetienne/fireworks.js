@@ -18,16 +18,13 @@
 <script src="../plugins/effect.shape.box.js"></script>
 <script src="../plugins/effect.dieifcontained.js"></script>
 
-<script src="./fireworks.effect.tquerysprite.js"></script>
+<script src="./fireworks.renderer.tquerysprite.js"></script>
 
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
 	var object	= tQuery.createTorus().addTo(world);
 	object.rotateX(Math.PI/6);
 	
-	
-	
-
 	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
 
 	var emitter	= new Fireworks.Emitter({
@@ -46,7 +43,7 @@
 	//var texture	= THREE.ImageUtils.loadTexture( "../assets/images/tremulous/lasgun/purple_particle.jpg" );
 	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/tremulous/psaw/blue_particle.jpg" );
 
-	emitter.pushTquery({
+	emitter.pushRendererTquery({
 		createObject3d	: function(){
 			var param	= {
 				map			: texture,

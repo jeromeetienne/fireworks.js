@@ -1,14 +1,14 @@
 /**
  * Shortcut to create Fireworks.Effect.Init2Shapes
 */
-Fireworks.Emitter.prototype.pushTquery	= function(opts){
+Fireworks.Emitter.prototype.pushRendererTquery	= function(opts){
 	var emitter	= this;
-	emitter.effects().push(new Fireworks.Effect.Tquery(emitter, opts));
+	emitter.effects().push(new Fireworks.Effect.RendererTquery(emitter, opts));
 	return this;	// for chained API
 };
 
 
-Fireworks.Effect.Tquery	= function(emitter, opts)
+Fireworks.Effect.RendererTquery	= function(emitter, opts)
 {
 	opts			= opts			|| {};
 	opts.container		= opts.container	|| tQuery.world;
@@ -41,5 +41,5 @@ Fireworks.Effect.Tquery	= function(emitter, opts)
 }
 
 // inherit from Fireworks.Effect
-Fireworks.Effect.Tquery.prototype = new Fireworks.Effect();
-Fireworks.Effect.Tquery.prototype.constructor = Fireworks.Effect.Tquery;
+Fireworks.Effect.RendererTquery.prototype = new Fireworks.Effect();
+Fireworks.Effect.RendererTquery.prototype.constructor = Fireworks.Effect.RendererTquery;

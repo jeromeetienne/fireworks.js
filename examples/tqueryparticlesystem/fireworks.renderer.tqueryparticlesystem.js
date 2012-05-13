@@ -1,14 +1,14 @@
 /**
  * Shortcut to create Fireworks.Effect.ParticleSystem
 */
-Fireworks.Emitter.prototype.pushParticleSystem	= function(opts){
+Fireworks.Emitter.prototype.pushRendererParticleSystem	= function(opts){
 	var emitter	= this;
-	emitter.effects().push(new Fireworks.Effect.ParticleSystem(emitter, opts));
+	emitter.effects().push(new Fireworks.Effect.RendererParticleSystem(emitter, opts));
 	return this;	// for chained API
 };
 
 
-Fireworks.Effect.ParticleSystem	= function(emitter, opts)
+Fireworks.Effect.RendererParticleSystem	= function(emitter, opts)
 {
 	opts		= opts			|| {};
 	opts.container	= opts.container	|| tQuery.world;
@@ -82,5 +82,5 @@ Fireworks.Effect.ParticleSystem	= function(emitter, opts)
 }
 
 // inherit from Fireworks.Effect
-Fireworks.Effect.ParticleSystem.prototype = new Fireworks.Effect();
-Fireworks.Effect.ParticleSystem.prototype.constructor = Fireworks.Effect.ParticleSystem;
+Fireworks.Effect.RendererParticleSystem.prototype = new Fireworks.Effect();
+Fireworks.Effect.RendererParticleSystem.prototype.constructor = Fireworks.Effect.RendererParticleSystem;

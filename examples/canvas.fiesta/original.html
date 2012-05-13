@@ -17,9 +17,24 @@
 <script src="../plugins/effect.shape.box.js"></script>
 <script src="../plugins/effect.dieifcontained.js"></script>
 
-<script src="../canvas/fireworks.renderer.canvas.js"></script>
-
 <body><script>
+	var canvas	= document.createElement('canvas');
+	document.body.appendChild(canvas);
+	canvas.width	= window.innerWidth;
+	canvas.height	= window.innerHeight;
+	// canvas.style
+	canvas.style.position	= "absolute";
+	canvas.style.left	= 0;
+	canvas.style.top	= 0;
+	// setup ctx
+	var ctx		= canvas.getContext('2d');
+	
+	
+	ctx.fillStyle	= 'rgba(0,0,0,1)';
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	
+	ctx.translate(window.innerWidth/2, window.innerHeight/2)
+
 	var emitter	= new Fireworks.Emitter({
 		nParticles	: 300
 	});
@@ -37,11 +52,15 @@
 		ctx.acceleration.y	+= 0.0005;
 	}).pushTo(emitter);
 
-	Fireworks.createEffect().onBirth(function(particle){
-		var ctx		= emitter.getParticleData(particle, 'xCanvas')
+	Fireworks.createEffect().onCreate(function(particle){
+		emitter.setParticleData(particle, 'xSize', {
+			size	: 1.0
+		});
+	}).onBirth(function(particle){
+		var ctx		= emitter.getParticleData(particle, 'xSize')
 		ctx.size	= 3.0;
 	}).onUpdate(function(particle){
-		var ctx		= emitter.getParticleData(particle, 'xCanvas')
+		var ctx		= emitter.getParticleData(particle, 'xSize')
 		ctx.size	+= 0.05;
 	}).pushTo(emitter);
 
@@ -57,11 +76,29 @@
 		}
 	}).pushTo(emitter);
 
-	emitter.pushRendererCanvas();
 	emitter.start();
 
 	setInterval(function(){
 		var deltaTime	= 1/60;
-		emitter.update(deltaTime).render();
+		emitter.update(deltaTime);
+		render(emitter);
 	}, 1000/60);
+
+	function render(emitter){
+		// clear the screen
+		ctx.save();
+		ctx.globalAlpha = 0.025;
+		ctx.fillStyle = "rgb(0,0,0)";
+		ctx.fillRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height);
+		ctx.restore();
+		// set the fillStyle of the particles
+		ctx.fillStyle	= 'rgba(127,0,255, 0.2)';
+		emitter.liveParticles().forEach(function(particle){
+			var position	= particle.xBase.position;
+			var radius	= particle.xSize.size;
+			ctx.beginPath();
+			ctx.arc(position.x, position.y, radius, 0, Math.PI*2, true); 
+			ctx.fill();			
+		});
+	}
 </script></body>

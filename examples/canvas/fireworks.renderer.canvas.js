@@ -27,6 +27,14 @@ Fireworks.Effect.RendererCanvas	= function(emitter, opts)
 	
 	ctx.translate(window.innerWidth/2, window.innerHeight/2)
 
+
+	this.onCreate	= function(particle, particleIdx){
+		emitter.setParticleData(particle, 'xCanvas', {
+			size	: 3
+			// TODO it may contains color too
+		});
+	}.bind(this);
+
 	this.onPreRender	= function(){
 		// clear the screen
 		ctx.save();
@@ -40,8 +48,9 @@ Fireworks.Effect.RendererCanvas	= function(emitter, opts)
 
 	this.onRender	= function(particle){
 		var position	= particle.xBase.position;
+		var size	= particle.xCanvas.size;
 		ctx.beginPath();
-		ctx.arc(position.x, position.y, 3, 0, Math.PI*2, true); 
+		ctx.arc(position.x, position.y, size, 0, Math.PI*2, true); 
 		ctx.fill();			
 	}
 }
