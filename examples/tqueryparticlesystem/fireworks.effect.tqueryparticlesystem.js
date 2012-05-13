@@ -1,5 +1,5 @@
 /**
- * Shortcut to create Fireworks.Effect.Init2Shapes
+ * Shortcut to create Fireworks.Effect.ParticleSystem
 */
 Fireworks.Emitter.prototype.pushParticleSystem	= function(opts){
 	var emitter	= this;
@@ -27,14 +27,12 @@ Fireworks.Effect.ParticleSystem	= function(emitter, opts)
 		}
 		return geometry;
 	})();
-	opts.material	= opts.material	|| (function(){
-		return new THREE.ParticleBasicMaterial({
-			color		: 0xFFFFFF,
-			vertexColors	: THREE.VertexColors,
-			size		: 3,
-			sizeAttenuation	: false
-		});
-	})();
+	opts.material	= opts.material	|| new THREE.ParticleBasicMaterial({
+		color		: 0xFFFFFF,
+		vertexColors	: THREE.VertexColors,
+		size		: 3,
+		sizeAttenuation	: false
+	});
 
 	var geometry	= opts.geometry;
 	var material	= opts.material;

@@ -21,6 +21,14 @@ Fireworks.createEffect	= function(opts){
 			effect.onDeath	= val;
 			return methods;
 		},
+		onPreRender: function(val){
+			effect.onPreRender	= val;
+			return methods;
+		},
+		onRender: function(val){
+			effect.onRender	= val;
+			return methods;
+		},
 		pushTo	: function(emitter){
 			emitter.effects().push(effect);
 			return methods;	

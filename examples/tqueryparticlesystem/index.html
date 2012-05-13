@@ -1,5 +1,5 @@
 <!doctype html><title>Minimal tQuery Page</title>
-<script src="./tquery-bundle.js"></script>
+<script src="../vendor/tquery-bundle.js"></script>
 
 <script src="../../src/core.js"></script>
 <script src="../../src/emitter.js"></script>
@@ -36,12 +36,12 @@
 	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/sprite1.png" );
 	var material	= new THREE.ParticleBasicMaterial({
 		size		: 64,
-		//map		: texture,
+		map		: texture,
 		vertexColors	: THREE.VertexColors,
 		sizeAttenuation	: false
 	});
 	emitter.pushParticleSystem({
-		//material	: material
+		material	: material
 	});
 
 	

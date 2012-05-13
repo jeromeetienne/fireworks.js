@@ -102,6 +102,10 @@ Fireworks.Emitter.prototype.update	= function(deltaTime){
 
 Fireworks.Emitter.prototype.render	= function(){
 	this._effects.forEach(function(effect){
+		if( !effect.onPreRender )	return;
+		effect.onPreRender();			
+	}.bind(this));
+	this._effects.forEach(function(effect){
 		if( !effect.onRender )	return;
 		this._liveParticles.forEach(function(particle){
 			effect.onRender(particle);			

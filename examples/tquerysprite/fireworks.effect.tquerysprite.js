@@ -43,8 +43,3 @@ Fireworks.Effect.Tquery	= function(emitter, opts)
 // inherit from Fireworks.Effect
 Fireworks.Effect.Tquery.prototype = new Fireworks.Effect();
 Fireworks.Effect.Tquery.prototype.constructor = Fireworks.Effect.Tquery;
-
-//////////////////////////////////////////////////////////////////////////////////
-//										//
-//////////////////////////////////////////////////////////////////////////////////
-
