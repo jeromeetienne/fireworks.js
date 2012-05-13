@@ -22,20 +22,27 @@
 
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
-//	var object	= tQuery.createTorus().addTo(world);
-//	object.rotateX(Math.PI/6)
-
-//	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
 
 	var emitter	= new Fireworks.Emitter({
 		nParticles	: 500
 	});
 	emitter.setSpawner(new Fireworks.SpawnerRate(10));
 	
-	var eTquery	= new Fireworks.Effect.Tquery(emitter);
-	emitter.effects().push(eTquery)
-	
 	emitter.pushBase().pushAge(3);;
+
+
+
+	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/sprites/ball.png" );
+	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/sprite1.png" );
+	var material	= new THREE.ParticleBasicMaterial({
+		size		: 64,
+		//map		: texture,
+		vertexColors	: THREE.VertexColors,
+		sizeAttenuation	: false
+	});
+	emitter.pushParticleSystem({
+		//material	: material
+	});
 
 	
 	emitter.pushInit2Shapes({
@@ -53,22 +60,6 @@
 	emitter.start();
 	
 	world.loop().hook(function(deltaTime){
-		emitter.update(deltaTime);
-		render(emitter);
+		emitter.update(deltaTime).render();
 	})
-	
-	function render(emitter){
-		var geometry	= eTquery.object3d.geometry;
-		// set the fillStyle of the particles
-		emitter.liveParticles().forEach(function(particle){
-			var xBase	= particle.xBase;
-			var xTquery	= particle.xTquery;
-			var position	= xBase.position;
-			var particleIdx	= xTquery.particleIdx; 
-			var vertex	= geometry.vertices[particleIdx];
-			vertex.set(position.x, position.y, position.z);
-		});
-	}
-
-
 </script></body>

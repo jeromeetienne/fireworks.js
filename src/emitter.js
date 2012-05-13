@@ -38,6 +38,9 @@ Fireworks.Emitter.prototype.liveParticles	= function(){
 Fireworks.Emitter.prototype.deadParticles	= function(){
 	return this._deadParticles;
 }
+Fireworks.Emitter.prototype.nParticles	= function(){
+	return this._nParticles;
+}
 
 Fireworks.Emitter.prototype.setSpawner	= function(spawner){
 	this._spawner	= spawner;
@@ -76,8 +79,8 @@ Fireworks.Emitter.prototype.start	= function()
 	// onCreate on all particles
 	this._effects.forEach(function(effect){
 		if( !effect.onCreate )	return;
-		this._particles.forEach(function(particle){
-			effect.onCreate(particle);			
+		this._particles.forEach(function(particle, particleIdx){
+			effect.onCreate(particle, particleIdx);			
 		})
 	}.bind(this));
 	
@@ -94,6 +97,17 @@ Fireworks.Emitter.prototype.update	= function(deltaTime){
 			effect.onUpdate(particle, deltaTime);			
 		})
 	}.bind(this));
+	return this;	// for chained API
+}
+
+Fireworks.Emitter.prototype.render	= function(){
+	this._effects.forEach(function(effect){
+		if( !effect.onRender )	return;
+		this._liveParticles.forEach(function(particle){
+			effect.onRender(particle);			
+		})
+	}.bind(this));
+	return this;	// for chained API
 }
 
 //////////////////////////////////////////////////////////////////////////////////

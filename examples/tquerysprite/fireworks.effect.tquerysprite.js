@@ -10,32 +10,14 @@ Fireworks.Emitter.prototype.pushTquery	= function(opts){
 
 Fireworks.Effect.Tquery	= function(emitter, opts)
 {
-	opts		= opts			|| {};
-	opts.container	= opts.container	|| tQuery.world;
-	this.opts	= opts;
+	opts			= opts			|| {};
+	opts.container		= opts.container	|| tQuery.world;
+	opts.createObject3d	= opts.createObject3d	|| console.assert(false);
+	this.opts		= opts;
 	
-	//var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/lensflare1.jpg" );
-	var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/lensFlare/Flare1.png" );
-	//var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/lensFlare/Flare2.png" );
-	//var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/ball.png" );
-	//var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/shadow.png" );
-	var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/sprite0.png" );
-	//var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/tremulous/flame/flame10.jpg" );
-	//var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/tremulous/lasgun/purple_particle.jpg" );
-	var flareA	= THREE.ImageUtils.loadTexture( "../assets/images/tremulous/psaw/blue_particle.jpg" );
-	var param	= {
-		map			: flareA,
-		useScreenCoordinates	: false,
-		color			: 0xAA4488,
-		blending		: THREE.AdditiveBlending,
-		opacity			: 0.3
-	};
-	this.onCreate	= function(particle){
-		var sprite		= new THREE.Sprite( param );
-		var object3d		= tQuery(sprite);
-		//object3d	: tQuery.createCube().scaleBy(1/10)
+	this.onCreate	= function(particle, particleIdx){
 		particle.xTquery	= {
-			object3d	: object3d
+			object3d	: opts.createObject3d()
 		};
 	}.bind(this);
 
@@ -47,6 +29,14 @@ Fireworks.Effect.Tquery	= function(emitter, opts)
 	this.onDeath	= function(particle){
 		var ctx	= particle.xTquery;
 		opts.container.remove( ctx.object3d );
+	}
+
+	this.onRender	= function(particle){
+		var xBase	= particle.xBase;
+		var xTquery	= particle.xTquery;
+		var position	= xBase.position;
+		var tObject3d	= xTquery.object3d.get(0);
+		tObject3d.position.set(position.x, position.y, position.z);
 	}
 }
 
