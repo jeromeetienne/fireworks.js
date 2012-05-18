@@ -1,19 +1,25 @@
 /**
  * Shortcut to create Fireworks.EffectAge
 */
-Fireworks.Emitter.prototype.pushAge	= function(maxAge){
+Fireworks.Emitter.prototype.pushAge	= function(minAge, maxAge){
 	var emitter	= this;
-	emitter.effects().push(new Fireworks.EffectAge(emitter, maxAge));
+	if( arguments.length === 1 ){
+		minAge	= minAge;
+		maxAge	= minAge;
+	}
+	emitter.effects().push(new Fireworks.EffectAge(emitter, minAge, maxAge));
 	return this;	// for chained API
 };
 
 
-Fireworks.EffectAge	= function(emitter, maxAge)
+Fireworks.EffectAge	= function(emitter, minAge, maxAge)
 {
-	maxAge	= maxAge !== undefined ? maxAge : 1;
+	console.assert( minAge !== undefined )
+	console.assert( maxAge !== undefined )
 	this.onCreate	= function(particle){
 		particle.xAge	= {
 			curAge	: 0,
+			minAge	: 0,
 			maxAge	: 0
 		};
 	}.bind(this);
@@ -21,7 +27,7 @@ Fireworks.EffectAge	= function(emitter, maxAge)
 	this.onBirth	= function(particle){
 		var ctx	= particle.xAge;
 		ctx.curAge	= 0;
-		ctx.maxAge	= maxAge;
+		ctx.maxAge	= minAge + Math.random()*(maxAge-minAge);
 	}.bind(this);
 	
 	this.onUpdate	= function(particle, deltaTime){

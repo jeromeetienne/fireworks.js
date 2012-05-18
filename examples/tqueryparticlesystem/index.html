@@ -34,6 +34,7 @@
 
 	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/sprites/ball.png" );
 	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/sprite1.png" );
+	//var texture	= THREE.ImageUtils.loadTexture( "../assets/images/cloud10.png" );
 	var material	= new THREE.ParticleBasicMaterial({
 		size		: 64,
 		map		: texture,
@@ -62,4 +63,6 @@
 	world.loop().hook(function(deltaTime){
 		emitter.update(deltaTime).render();
 	})
+	
+
 </script></body>
