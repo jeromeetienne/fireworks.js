@@ -22,41 +22,21 @@
 <script src="./fireworks.renderer.tquerysprite.js"></script>
 
 <body><script>
-
-	// reproduction of a demo of @mrdoob by http://mrdoob.com/lab/javascript/webgl/clouds/
-	// add a blue sky background
-	(function addBlueSkyBackground(){
-		var canvas	= document.createElement( 'canvas' );
-		canvas.width	= 32;
-		canvas.height	= window.innerHeight;
-		var context = canvas.getContext( '2d' );
-		
-		var gradient = context.createLinearGradient( 0, 0, 0, canvas.height );
-		gradient.addColorStop(0, "#1e4877");
-		gradient.addColorStop(0.5, "#4584b4");
-		
-		context.fillStyle = gradient;
-		context.fillRect(0, 0, canvas.width, canvas.height);
-		
-		document.body.style.background = 'url(' + canvas.toDataURL('image/png') + ')';		
-	})();
-
-
 	var world	= tQuery.createWorld().boilerplate().start();
-	var object	= tQuery.createTorus().addTo(world).translateY(0.5);
+	var object	= tQuery.createTorus().addTo(world).translateY(-0.5);
+
+
 	world.getCameraControls().rangeX	= 4;
 	world.getCameraControls().rangeY	= 4;
-	world.renderer().setClearColorHex( 0x000000, 0 );
+	world.renderer().setClearColorHex( 0xbbbbbb, 1 );
 
 	var emitter	= new Fireworks.Emitter({
-		nParticles	: 200
+		nParticles	: 100
 	});
-	emitter.setSpawner(new Fireworks.SpawnerOneShot( emitter.nParticles() ));
+	emitter.setSpawner(new Fireworks.SpawnerRate( 10 ));
 	
 	
 	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/cloud10.png" );
-	texture.magFilter	= THREE.LinearMipMapLinearFilter;
-	texture.minFilter	= THREE.LinearMipMapLinearFilter;
 
 	emitter.pushRendererTquery({
 		createObject3d	: function(){
@@ -64,26 +44,41 @@
 				map			: texture,
 				useScreenCoordinates	: false,
 				//color			: 0x010101*Math.floor(255*(Math.random()*0.2+0.8)),
-				color			: 0xFFFFFF
+				//color			: 0x010101*Math.floor(255*(Math.random()*0.2+0.2)),
+				//color			: 0xFFFFFF,
 			};
 			var sprite		= new THREE.Sprite( param );
-			sprite.rotation		= Math.random() * 2*Math.PI;
-			//sprite.opacity		= Math.random() * 0.4 + 0.8;
 			var object3d		= tQuery(sprite);
-			object3d.scaleBy(1/100 * (Math.random() * 0.4 + 0.8))
 			return object3d;			
 		}
 	})
 	emitter.pushBase();
+	emitter.pushAge(3);
 	
 	Fireworks.createEffect().onBirth(function(particle){
 		var xBase	= emitter.getParticleData(particle, 'xBase')
-		xBase.position.x	= (Math.random()*2 - 1)*4;
+		xBase.position.x	= (Math.random()*2 - 1)*0.1;
 		xBase.position.y	= (Math.random()*2 - 1)*0.1;
-		xBase.position.z	= (Math.random()*2 - 1)*4;
+		xBase.position.z	= (Math.random()*2 - 1)*0.1;		
+
+		xBase.velocity.x	= (Math.random()*2 - 1)*0.002;
+		xBase.velocity.y	= (Math.random()*1 - 0)*0.01;
+		xBase.velocity.z	= (Math.random()*2 - 1)*0.002;		
+		//xBase.velocity.set(0,0,0);
 		
-		xBase.velocity.set(0,0,0);
+		xBase.friction	= 1;
 	}).pushTo(emitter);
+	Fireworks.createEffect().onBirth(function(particle){
+		var object3d	= emitter.getParticleData(particle, 'xTquery').object3d;
+		object3d.scale(1/300 * (Math.random() * 0.4 + 0.8))
+		var sprite	= object3d.get(0);
+		sprite.color.setHex( 0x010101*Math.floor(255*(Math.random()*0.2+0.2)) );
+	}).onUpdate(function(particle){
+		var object3d	= emitter.getParticleData(particle, 'xTquery').object3d;
+		var sprite	= object3d.get(0);
+		object3d.scaleBy(1.003);
+	}).pushTo(emitter);
+
 	emitter.start();
 	
 	world.loop().hook(function(deltaTime){
