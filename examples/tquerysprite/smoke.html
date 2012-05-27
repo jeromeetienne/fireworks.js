@@ -38,16 +38,10 @@
 	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/cloud10.png" );
 	emitter.pushRendererTquery({
 		createObject3d	: function(){
-			var param	= {
+			return tQuery(new THREE.Sprite({
 				map			: texture,
 				useScreenCoordinates	: false,
-				//color			: 0x010101*Math.floor(255*(Math.random()*0.2+0.8)),
-				//color			: 0x010101*Math.floor(255*(Math.random()*0.2+0.2)),
-				//color			: 0xFFFFFF,
-			};
-			var sprite		= new THREE.Sprite( param );
-			var object3d		= tQuery(sprite);
-			return object3d;			
+			}));
 		}
 	})
 	emitter.pushBase();
@@ -79,13 +73,19 @@
 
 	Fireworks.createEffect().onUpdate(function(p){
 		var normalizedAge	= (p.xAge.curAge - p.xAge.minAge) / (p.xAge.maxAge - p.xAge.minAge);
+		if( normalizedAge > 0.5 )	p.xBase.friction	= 0.99;
+		else if( normalizedAge > 0.7 )	p.xBase.friction	= 0.96;
+	}).pushTo(emitter);
+
+	Fireworks.createEffect().onUpdate(function(p){
+		var normalizedAge	= (p.xAge.curAge - p.xAge.minAge) / (p.xAge.maxAge - p.xAge.minAge);
 		// between 0 and 0.2, do a linearDelta
 		// then 0.2 to 0.8 do a constant at 1
 		// then 0.8 to 1 do 1 - linearDelta
 		if( normalizedAge >= 0 && normalizedAge < 0.2 ){
 			p.xTquery.object3d.get(0).opacity	= (normalizedAge - 0.0)/0.2;
-		}else if( normalizedAge >= 0.95 ){
-			p.xTquery.object3d.get(0).opacity	= 1 - (normalizedAge - 0.95)/0.05;
+		}else if( normalizedAge >= 0.8 ){
+			p.xTquery.object3d.get(0).opacity	= 1 - (normalizedAge - 0.8)/0.2;
 		}else{
 			p.xTquery.object3d.get(0).opacity	= 1;
 		}	
