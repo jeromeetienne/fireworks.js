@@ -34,8 +34,10 @@
 	emitter.setSpawner(new Fireworks.SpawnerRate( 5 ));
 	//emitter.setSpawner(new Fireworks.SpawnerRate( 1/3 ));
 	
+	// a seb.ly example of smoke http://seb.ly/demos/JSParticles/Particles3_1.html
 	
 	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/cloud10.png" );
+	//var texture	= THREE.ImageUtils.loadTexture( "../assets/images/ParticleSmoke2.png" );
 	emitter.pushRendererTquery({
 		createObject3d	: function(){
 			return tQuery(new THREE.Sprite({
