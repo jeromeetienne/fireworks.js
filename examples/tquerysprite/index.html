@@ -20,6 +20,9 @@
 
 <script src="./fireworks.renderer.tquerysprite.js"></script>
 
+<script src="../vendor/dat.gui.js"></script>
+<script src="../plugins/fireworks.datgui4emitter.js"></script>
+
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
 	var object	= tQuery.createTorus().addTo(world);
@@ -42,7 +45,7 @@
 	//var texture	= THREE.ImageUtils.loadTexture( "../assets/images/tremulous/flame/flame10.jpg" );
 	//var texture	= THREE.ImageUtils.loadTexture( "../assets/images/tremulous/lasgun/purple_particle.jpg" );
 	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/tremulous/psaw/blue_particle.jpg" );
-	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/cloud10.png" );
+	//var texture	= THREE.ImageUtils.loadTexture( "../assets/images/cloud10.png" );
 
 	emitter.pushRendererTquery({
 		createObject3d	: function(){
@@ -66,14 +69,17 @@
 		speed	: 0.15*2
 	});
 
-	Fireworks.createEffect().onUpdate(function(particle){
-		var ctx	= emitter.getParticleData(particle, 'xBase')
-		ctx.acceleration.y	-= 0.0004;
+	Fireworks.createEffect('gravity', {
+		gravityY	: 0.0004
+	}).onUpdate(function(particle){
+		var ctx	= emitter.getParticleData(particle, 'xBase');
+		ctx.acceleration.y	+= this.opts.gravityY;
 	}).pushTo(emitter);
 
-	Fireworks.createEffect({
+
+	Fireworks.createEffect('scaleChange', {
 		birthScale	: 1/10,
-		mulScale	: 1.02//+0.005/6,
+		mulScale	: 1.02		//+0.005/6,
 	}).onBirth(function(particle){
 		var xTquery	= emitter.getParticleData(particle, 'xTquery')
 		xTquery.object3d.scale(this.opts.birthScale);
@@ -88,4 +94,7 @@
 	world.loop().hook(function(deltaTime){
 		emitter.update(deltaTime).render();
 	})
+	
+	// enable a datgui for this emitter
+	var datgui	= new Fireworks.DatGui4Emitter(emitter);
 </script></body>

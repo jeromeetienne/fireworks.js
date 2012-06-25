@@ -8,33 +8,40 @@
 <script src="../../src/shape.js"></script>
 <script src="../../src/vector.js"></script>
 
-<script src="../plugins/effect.base.js"></script>
-<script src="../plugins/effect.age.js"></script>
-<script src="../plugins/spawner.rate.js"></script>
-<script src="../plugins/shape.sphere.js"></script>
-<script src="../plugins/effect.applyForce.js"></script>
-<script src="../plugins/effect.init2shapes.js"></script>
-<script src="../plugins/effect.shape.box.js"></script>
-<script src="../plugins/effect.dieifcontained.js"></script>
+<script src="../plugins/effect.base.js">		</script>
+<script src="../plugins/effect.age.js">			</script>
+<script src="../plugins/spawner.rate.js">		</script>
+<script src="../plugins/shape.sphere.js">		</script>
+<script src="../plugins/effect.applyForce.js">		</script>
+<script src="../plugins/effect.init2shapes.js">		</script>
+<script src="../plugins/effect.shape.box.js">		</script>
+<script src="../plugins/effect.dieifcontained.js">	</script>
 
 <script src="../canvas/fireworks.renderer.canvas.js"></script>
+
+<script src="../vendor/dat.gui.js"></script>
+<script src="../plugins/fireworks.datgui4emitter.js"></script>
 
 <body><script>
 	var emitter	= new Fireworks.Emitter({
 		nParticles	: 300
 	});
+
 	emitter.setSpawner(new Fireworks.SpawnerRate(1));
+
 	emitter.pushBase().pushAge(2);
-	
+
 	emitter.pushInit2Shapes({
 		origin	: Fireworks.createBox(0, 0, 0, 10, 10, 0),
 		target	: Fireworks.createBox(0, -600, 0, 600, 400, 400),
 		speed	: 5
 	});
 
-	Fireworks.createEffect().onUpdate(function(particle){
-		var ctx	= emitter.getParticleData(particle, 'xBase')
-		ctx.acceleration.y	+= 0.0005;
+	Fireworks.createEffect('gravity', {
+		gravityY	: 0.0005
+	}).onUpdate(function(particle){
+		var ctx	= emitter.getParticleData(particle, 'xBase');
+		ctx.acceleration.y	+= this.opts.gravityY;
 	}).pushTo(emitter);
 
 	Fireworks.createEffect().onBirth(function(particle){
@@ -64,4 +71,7 @@
 		var deltaTime	= 1/60;
 		emitter.update(deltaTime).render();
 	}, 1000/60);
+
+	// enable a datgui for this emitter
+	var datgui	= new Fireworks.DatGui4Emitter(emitter);
 </script></body>

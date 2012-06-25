@@ -13,6 +13,7 @@ Fireworks.Effect.Init2Shapes	= function(emitter, opts)
 	console.assert( opts.target instanceof Fireworks.Shape );
 	opts.speed	= opts.speed !== undefined ? opts.speed : 1;
 	this.opts	= opts;
+	this.name	= "Init2Shapes"
 	this.onBirth	= function(particle){
 		var ctx	= emitter.getParticleData(particle, 'xBase')
 

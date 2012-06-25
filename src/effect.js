@@ -1,9 +1,17 @@
 /**
  * Basic Fireworks.Effect builder
 */
-Fireworks.createEffect	= function(opts){
+Fireworks.createEffect	= function(name, opts){
+	// handle polymophism
+	if( typeof(name) === 'object' ){
+		opts	= name;
+		name	= undefined;
+	}
+	console.log("createEffect", name, opts)
+	
 	var effect	= new Fireworks.Effect();
 	effect.opts	= opts;
+	effect.name	= name;
 	var methods	= {
 		onCreate: function(val){
 			effect.onCreate	= val;
