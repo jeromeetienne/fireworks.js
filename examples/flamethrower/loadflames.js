@@ -48,8 +48,8 @@ function loadFlames(urls, callback){
 				
 				luminance	= luminance/255;
 				//luminance	= luminance * luminance * luminance* luminance;
-				//luminance	= luminance * luminance * luminance;
-				p[i+3]		= Math.floor(luminance * 32 * 255);
+				//luminance	= luminance * luminance;
+				p[i+3]		= Math.floor(luminance * 16 * 255);
 				//p[i+3]		= luminance * 4;
 			}
 		}
