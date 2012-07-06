@@ -128,7 +128,7 @@ Fireworks.Emitter.prototype.killParticle	= function(particle)
 	this._liveParticles.splice(idx, 1)
 	this._deadParticles.push(particle);
 	// do the death on all effects
-	emitter.effects().forEach(function(effect){
+	this.effects().forEach(function(effect){
 		effect.onDeath && effect.onDeath(particle);			
 	}.bind(this));
 }
@@ -138,10 +138,10 @@ Fireworks.Emitter.prototype.killParticle	= function(particle)
 */
 Fireworks.Emitter.prototype.spawnParticle	= function(){
 	// change the particles 
-	var particle	= emitter.deadParticles().pop();
-	emitter.liveParticles().push(particle);
+	var particle	= this.deadParticles().pop();
+	this.liveParticles().push(particle);
 	// do the birth on all effects
-	emitter.effects().forEach(function(effect){
+	this.effects().forEach(function(effect){
 		effect.onBirth && effect.onBirth(particle);			
 	}.bind(this));
 }

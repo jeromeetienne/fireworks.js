@@ -10,10 +10,11 @@ Fireworks.Emitter.prototype.pushRendererCanvas	= function(opts){
 
 Fireworks.Effect.RendererCanvas	= function(emitter, opts)
 {
+	// build canvas element
 	var canvas	= document.createElement('canvas');
-	document.body.appendChild(canvas);
 	canvas.width	= window.innerWidth;
 	canvas.height	= window.innerHeight;
+	document.body.appendChild(canvas);
 	// canvas.style
 	canvas.style.position	= "absolute";
 	canvas.style.left	= 0;
