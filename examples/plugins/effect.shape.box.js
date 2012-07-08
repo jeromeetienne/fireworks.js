@@ -35,8 +35,8 @@ Fireworks.Shape.Box.prototype.contains	= function(point){
 	return true;
 }
 
-Fireworks.Shape.Box.prototype.randomPoint	= function(){
-	var point	= this._vector;
+Fireworks.Shape.Box.prototype.randomPoint	= function(vector){
+	var point	= vector	|| this._vector;
 	// get a random point
 	point.x	= Math.random() * this.size.x - this.size.x/2;
 	point.y	= Math.random() * this.size.y - this.size.y/2;

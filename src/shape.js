@@ -12,5 +12,5 @@ Fireworks.Shape	= function(){
 // * generate a random point contained in this shape
 // * @returns {Fireworks.Vector} the just generated random point
 //*/
-//Firefly.Shape.prototype.randomPoint	= function(){
+//Firefly.Shape.prototype.randomPoint	= function(vector){
 //}

@@ -31,8 +31,8 @@ Fireworks.ShapeSphere.prototype.contains	= function(point){
 	return distance <= this.radius;
 }
 
-Fireworks.ShapeSphere.prototype.randomPoint	= function(){
-	var point	= this._vector;
+Fireworks.ShapeSphere.prototype.randomPoint	= function(vector){
+	var point	= vector	|| this._vector;
 	// get a random point
 	point.x	= Math.random()-0.5;
 	point.y	= Math.random()-0.5;
