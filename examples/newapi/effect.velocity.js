@@ -16,7 +16,7 @@ Fireworks.EffectsStackBuilder.prototype.velocity	= function(x, y, z)
 		var position	= particle.get('position').vector;
 		var velocity	= particle.get('velocity').vector;
 		position.addSelf(velocity)
-	}).pushTo(this);
+	}).pushTo(emitter);
 
 	return this;	// for chained API
 };

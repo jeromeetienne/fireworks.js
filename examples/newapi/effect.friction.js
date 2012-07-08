@@ -8,7 +8,7 @@ Fireworks.EffectsStackBuilder.prototype.friction	= function(value)
 	Fireworks.createEffect('friction').onUpdate(function(particle){
 		var velocity	= particle.get('velocity').vector;
 		velocity.multiplyScalar(value)
-	}).pushTo(this);
+	}).pushTo(emitter);
 
 	return this;	// for chained API
 };

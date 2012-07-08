@@ -8,25 +8,32 @@
 <script src="../../src/shape.js"></script>
 <script src="../../src/vector.js"></script>
 
-<script src="../plugins/effect.randomdriftvelocity.js"></script>
-<script src="../plugins/effect.base.js"></script>
-<script src="../plugins/effect.age.js"></script>
+
 <script src="../plugins/spawner.rate.js"></script>
-<script src="../plugins/shape.sphere.js"></script>
-<script src="../plugins/effect.applyForce.js"></script>
-<script src="../plugins/effect.init2shapes.js"></script>
 <script src="../plugins/effect.shape.box.js"></script>
-<script src="../plugins/effect.dieifcontained.js"></script>
 
-<script src="../canvas/fireworks.renderer.canvas.js"></script>
-
+<script src="./effect.friction.js"></script>
+<script src="./effect.lifetime.js"></script>
+<script src="./effect.position.js"></script>
+<script src="./effect.randomvelocitydrift.js"></script>
 <script src="./effect.rendertocanvas.js"></script>
+<script src="./effect.velocity.js"></script>
 
 <body><script>
 	var emitter	= Fireworks.createEmitter({nParticles : 400})
-		.useSpawnerSteadyRate(40);
+		.useSpawnerSteadyRate(4)
 		.effectsStackBuilder()
-			.position(new Fireworks.Vector(20,00,0))
+			.position(Fireworks.createBox(0, 0, 0, 1, 1, 1))
+			.velocity(2, 0, 0)
+			.createEffect('gravity', {
+					gravity	: new Fireworks.Vector(0, -1, 0)
+				}).onUpdate(function(particle, deltaTime){
+					var velocity	= particle.get('velocity').vector;
+					var gravity	= this.opts.gravity;
+					velocity.addSelf( gravity )
+				}).back()
+			.friction(0.99)
+			.lifeTime(3, 3)
 			.renderToCanvas()
 			.back()
 		.start();
@@ -35,33 +42,6 @@
 		var deltaTime	= 1/60;
 		emitter.update(deltaTime).render();
 	}, 1000/60);
-	
-	
-	/////////////////////////
-	// RANDOM NOTES
-
-	function emulationOfEffect(){
-		var emitter	= Fireworks.createEmitter({nParticles : 400})
-			.useSpawnerSteadyRate(300)
-			.effectsStackBuilder()
-				.position(0,0,0)
-				.lifetime(3, 3)
-				.accelerate(0, 3, 0)
-				.velocity(0, 250, 0)
-				.randomDriftVelocity(20,00,0)
-	}
-	
-	function emulationOfSparksEditorFlame(){
-
-		emitter.effectChain()
-			.position(0,0,0)
-			.lifetime(0, 0.8)
-			.velocity(0, 250, 0)
-			.randomDriftVelocity(1000, 0, 1000)
-			.accelerate(0, -200, 0);
-
-	}
-
 </script></body>
 
 

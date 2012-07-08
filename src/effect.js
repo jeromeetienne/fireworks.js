@@ -10,6 +10,10 @@ Fireworks.EffectsStackBuilder.prototype.back	= function(){
 	return this._emitter;
 }
 
+Fireworks.EffectsStackBuilder.prototype.createEffect	= function(name, opts){
+	return Fireworks.createEffect(name, opts).pushTo(this._emitter).back(this);
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 //										//
 //////////////////////////////////////////////////////////////////////////////////
@@ -28,6 +32,7 @@ Fireworks.createEffect	= function(name, opts){
 	var effect	= new Fireworks.Effect();
 	effect.opts	= opts;
 	effect.name	= name;
+	effect.back	= null;
 	var methods	= {
 		onCreate: function(val){
 			effect.onCreate	= val;
@@ -55,6 +60,11 @@ Fireworks.createEffect	= function(name, opts){
 		},
 		pushTo	: function(emitter){
 			emitter.effects().push(effect);
+			return methods;	
+		},
+		back	: function(value){
+			if( value === undefined )	return effect.back;	
+			effect.back	= value;
 			return methods;	
 		},
 		effect	: function(){

@@ -15,7 +15,7 @@ Fireworks.EffectsStackBuilder.prototype.position	= function(shape)
 	}).onBirth(function(particle){
 		var position	= particle.get('position').vector;
 		this.opts.shape.randomPoint(position)
-	}).pushTo(this);
+	}).pushTo(emitter);
 
 	return this;	// for chained API
 };

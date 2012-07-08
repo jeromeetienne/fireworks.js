@@ -1,8 +1,8 @@
 /**
  * render to canvas
 */
-Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function(opts)
-{	
+Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function()
+{
 	var emitter	= this._emitter;
 
 	// build canvas element
@@ -39,7 +39,7 @@ Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function(opts)
 		// set the fillStyle of the particles
 		ctx.fillStyle	= 'rgba(127,0,255, 0.2)';
 	}).onRender(function(particle){
-		var position	= particle.xBase.position;
+		var position	= particle.get('position').vector;
 		var size	= particle.get('xCanvas').size;
 
 		ctx.beginPath();
