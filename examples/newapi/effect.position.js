@@ -3,9 +3,7 @@
 */
 Fireworks.EffectsStackBuilder.prototype.position	= function(shape)
 {
-	var emitter	= this._emitter;
 	console.assert( shape instanceof Fireworks.Shape );
-	
 	Fireworks.createEffect('Position', {
 		shape	: shape
 	}).onCreate(function(particle){
@@ -15,7 +13,6 @@ Fireworks.EffectsStackBuilder.prototype.position	= function(shape)
 	}).onBirth(function(particle){
 		var position	= particle.get('position').vector;
 		this.opts.shape.randomPoint(position)
-	}).pushTo(emitter);
-
+	}).pushTo(this._emitter);
 	return this;	// for chained API
 };

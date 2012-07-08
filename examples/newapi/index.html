@@ -26,14 +26,15 @@
 			.position(Fireworks.createBox(0, 0, 0, 1, 1, 1))
 			.velocity(2, 0, 0)
 			.createEffect('gravity', {
-					gravity	: new Fireworks.Vector(0, -1, 0)
+					gravity	: new Fireworks.Vector(0, 0.02, 0)
 				}).onUpdate(function(particle, deltaTime){
 					var velocity	= particle.get('velocity').vector;
 					var gravity	= this.opts.gravity;
 					velocity.addSelf( gravity )
 				}).back()
-			.friction(0.99)
-			.lifeTime(3, 3)
+			.friction(0.985)
+			.lifeTime(2, 3)
+			.randomDriftVelocity(Fireworks.createVector(0, 10, 0))
 			.renderToCanvas()
 			.back()
 		.start();

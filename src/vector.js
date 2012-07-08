@@ -1,3 +1,7 @@
+Fireworks.createVector = function(x, y, z){
+	return new Fireworks.Vector(x,y,z);
+};
+
 /**
  * jme- copy of THREE.Vector3 https://github.com/mrdoob/three.js/blob/master/src/core/Vector3.js
  *
