@@ -1,13 +1,25 @@
-Fireworks.SpawnerRate	= function(rate){
+/**
+ * Make the emitter use a SpawnerSteadyRate
+*/
+Fireworks.Emitter.prototype.useSpawnerSteadyRate	= function(rate){
+	var spawner	= new Fireworks.SpawnerSteadyRate(rate);
+	return this.setSpawner(spawner);
+}
+
+/**
+ * Spawner deliverying paricles at a steady rate
+*/
+Fireworks.SpawnerRate	= // for backward compatibility only
+Fireworks.SpawnerSteadyRate	= function(rate){
 	this._rate	= rate	|| 10;
 	this._nToCreate	= 1;
 }
 
 // inherit from Fireworks.Spawner
-Fireworks.SpawnerRate.prototype = new Fireworks.Spawner();
-Fireworks.SpawnerRate.prototype.constructor = Fireworks.SpawnerRate;
+Fireworks.SpawnerSteadyRate.prototype = new Fireworks.Spawner();
+Fireworks.SpawnerSteadyRate.prototype.constructor = Fireworks.SpawnerSteadyRate;
 
-Fireworks.SpawnerRate.prototype.update	= function(emitter, deltaTime){
+Fireworks.SpawnerSteadyRate.prototype.update	= function(emitter, deltaTime){
 	this._nToCreate	+= this._rate * deltaTime;
 	// nParticles is the interger part of this._nToCreate as you spawn them one by one
 	var nParticles	= Math.floor(this._nToCreate);

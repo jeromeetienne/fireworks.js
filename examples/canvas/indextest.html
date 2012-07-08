@@ -24,7 +24,7 @@
 	var emitter	= new Fireworks.Emitter({
 		nParticles	: 300
 	});
-	emitter.setSpawner(new Fireworks.SpawnerRate(10));
+	emitter.setSpawner(new Fireworks.SpawnerRate(40));
 	
 	emitter.pushBase()
 	
@@ -32,11 +32,15 @@
 	
 	emitter.pushInit2Shapes({
 		origin	: Fireworks.createBox(0, 0, 0, 1, 1, 1),
-		target	: Fireworks.createSphere(400, -400, 0, 100),
+		target	: Fireworks.createSphere(00, 400, 0, 100),
 		speed	: 3
 	});
 	
 
+	emitter.pushRandomDriftVelocity(new Fireworks.Vector(20,00,0))
+
+
+	
 	emitter.pushRendererCanvas();
 
 	emitter.start();
@@ -45,4 +49,39 @@
 		var deltaTime	= 1/60;
 		emitter.update(deltaTime).render();
 	}, 1000/60);
+
+
+	function emulationOfEffect(){
+		Fireworks.createEmitter({nParticles : 400})
+			.useSpawnerSteadyRate(300)
+			.effectChain()
+				.position(0,0,0)
+				.lifetime(3, 3)
+				.accelerate(0, 3, 0)
+				.velocity(0, 250, 0)
+				.randomDriftVelocity(20,00,0)
+	}
+	
+	function emulationOfSparksEditorFlame(){
+
+		emitter.effectChain()
+			.position(0,0,0)
+			.lifetime(0, 0.8)
+			.velocity(0, 250, 0)
+			.randomDriftVelocity(1000, 0, 1000)
+			.accelerate(0, -200, 0);
+
+	}
+
 </script></body>
+
+
+
+
+
+
+
+
+
+
+

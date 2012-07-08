@@ -11,7 +11,10 @@ Fireworks.Emitter.prototype.pushAge	= function(minAge, maxAge){
 	return this;	// for chained API
 };
 
-
+/**
+ * handle the age of a particle 
+ *
+*/
 Fireworks.EffectAge	= function(emitter, minAge, maxAge)
 {
 	console.assert( minAge !== undefined )
