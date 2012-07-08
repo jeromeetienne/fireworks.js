@@ -1,3 +1,7 @@
+Fireworks.createEmitter	= function(opts){
+	return new Fireworks.Emitter(opts);
+}
+
 /**
  * The emitter of particles
 */

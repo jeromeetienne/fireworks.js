@@ -21,10 +21,9 @@
 <script src="fireworks.renderer.canvas.js"></script>
 
 <body><script>
-	var emitter	= new Fireworks.Emitter({
-		nParticles	: 300
-	});
-	emitter.setSpawner(new Fireworks.SpawnerRate(40));
+	var emitter	= Fireworks.createEmitter({nParticles : 400});
+
+	emitter.useSpawnerSteadyRate(40);
 	
 	emitter.pushBase()
 	
@@ -52,7 +51,7 @@
 
 
 	function emulationOfEffect(){
-		Fireworks.createEmitter({nParticles : 400})
+		var emitter	= Fireworks.createEmitter({nParticles : 400})
 			.useSpawnerSteadyRate(300)
 			.effectChain()
 				.position(0,0,0)
