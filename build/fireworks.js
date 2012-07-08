@@ -1,5 +1,9 @@
 
-var Fireworks	= {};/**
+var Fireworks	= {};Fireworks.createEmitter	= function(opts){
+	return new Fireworks.Emitter(opts);
+}
+
+/**
  * The emitter of particles
 */
 Fireworks.Emitter	= function(opts){
@@ -9,6 +13,8 @@ Fireworks.Emitter	= function(opts){
 	this._effects	= [];
 	this._started	= false;
 	this._onUpdated	= null;
+
+	this._effectsStackBuilder	= new Fireworks.EffectsStackBuilder(this)
 }
 
 Fireworks.Emitter.prototype.destroy	= function()
@@ -42,20 +48,28 @@ Fireworks.Emitter.prototype.deadParticles	= function(){
 Fireworks.Emitter.prototype.nParticles	= function(){
 	return this._nParticles;
 }
+Fireworks.Emitter.prototype.effectsStackBuilder	= function(){
+	return this._effectsStackBuilder;
+}
 
 Fireworks.Emitter.prototype.setSpawner	= function(spawner){
 	this._spawner	= spawner;
 	return this;	// for chained API
 }
 
+//////////////////////////////////////////////////////////////////////////////////
+//		backward compatibility						//
+//////////////////////////////////////////////////////////////////////////////////
 
 Fireworks.Emitter.prototype.setParticleData	= function(particle, namespace, value){
-	particle[namespace]	= value;
+	particle.set(namespace, value);
+//	particle[namespace]	= value;
 }
 
 Fireworks.Emitter.prototype.getParticleData	= function(particle, namespace){
-	console.assert( particle[namespace] !== undefined, "namespace undefined: "+namespace );
-	return particle[namespace];
+	return particle.get(namespace);
+//	console.assert( particle[namespace] !== undefined, "namespace undefined: "+namespace );
+//	return particle[namespace];
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -153,6 +167,37 @@ Fireworks.Spawner	= function(){
 */
 Fireworks.Particle	= function(){
 }
+
+Fireworks.Particle.prototype.set	= function(key, value){
+	console.assert( this[key] === undefined, "key already defined: "+key );
+	this[key]	= value;
+	return this;
+}
+
+Fireworks.Particle.prototype.get	= function(key){
+	console.assert( this[key] !== undefined, "key undefined: "+key );
+	return this[key];
+}
+//////////////////////////////////////////////////////////////////////////////////
+//										//
+//////////////////////////////////////////////////////////////////////////////////
+
+Fireworks.EffectsStackBuilder	= function(emitter){
+	this._emitter	= emitter;
+};
+
+Fireworks.EffectsStackBuilder.prototype.back	= function(){
+	return this._emitter;
+}
+
+Fireworks.EffectsStackBuilder.prototype.createEffect	= function(name, opts){
+	return Fireworks.createEffect(name, opts).pushTo(this._emitter).back(this);
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+//										//
+//////////////////////////////////////////////////////////////////////////////////
+
 /**
  * Basic Fireworks.Effect builder
 */
@@ -167,6 +212,7 @@ Fireworks.createEffect	= function(name, opts){
 	var effect	= new Fireworks.Effect();
 	effect.opts	= opts;
 	effect.name	= name;
+	effect.back	= null;
 	var methods	= {
 		onCreate: function(val){
 			effect.onCreate	= val;
@@ -194,6 +240,11 @@ Fireworks.createEffect	= function(name, opts){
 		},
 		pushTo	: function(emitter){
 			emitter.effects().push(effect);
+			return methods;	
+		},
+		back	: function(value){
+			if( value === undefined )	return effect.back;	
+			effect.back	= value;
 			return methods;	
 		},
 		effect	: function(){
@@ -243,8 +294,12 @@ Fireworks.Shape	= function(){
 // * generate a random point contained in this shape
 // * @returns {Fireworks.Vector} the just generated random point
 //*/
-//Firefly.Shape.prototype.randomPoint	= function(){
+//Firefly.Shape.prototype.randomPoint	= function(vector){
 //}
+Fireworks.createVector = function(x, y, z){
+	return new Fireworks.Vector(x,y,z);
+};
+
 /**
  * jme- copy of THREE.Vector3 https://github.com/mrdoob/three.js/blob/master/src/core/Vector3.js
  *

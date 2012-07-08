@@ -24,7 +24,7 @@
 		.useSpawnerSteadyRate(4)
 		.effectsStackBuilder()
 			.position(Fireworks.createBox(0, 0, 0, 1, 1, 1))
-			.velocity(2, 0, 0)
+			.velocity(Fireworks.createBox(2, 0, 0, 1, 1, 1))
 			.createEffect('gravity', {
 					gravity	: new Fireworks.Vector(0, 0.02, 0)
 				}).onUpdate(function(particle, deltaTime){

@@ -1,22 +1,22 @@
 /**
  * Shortcut to create Fireworks.EffectRandomDriftVelocity
 */
-Fireworks.EffectsStackBuilder.prototype.velocity	= function(x, y, z)
+Fireworks.EffectsStackBuilder.prototype.velocity	= function(shape)
 {
-	var emitter	= this._emitter;
-	
-	Fireworks.createEffect('Velocity').onCreate(function(particle){
+	Fireworks.createEffect('Velocity', {
+		shape	: shape
+	}).onCreate(function(particle){
 		particle.set('velocity', {
 			vector	: new Fireworks.Vector()
 		});
 	}).onBirth(function(particle){
 		var velocity	= particle.get('velocity').vector;
-		velocity.set(x, y, z)
+		this.opts.shape.randomPoint(velocity)
 	}).onUpdate(function(particle){
 		var position	= particle.get('position').vector;
 		var velocity	= particle.get('velocity').vector;
 		position.addSelf(velocity)
-	}).pushTo(emitter);
+	}).pushTo(this._emitter);
 
 	return this;	// for chained API
 };

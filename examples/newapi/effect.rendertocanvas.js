@@ -3,8 +3,6 @@
 */
 Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function()
 {
-	var emitter	= this._emitter;
-
 	// build canvas element
 	var canvas	= document.createElement('canvas');
 	canvas.width	= window.innerWidth;
@@ -45,7 +43,7 @@ Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function()
 		ctx.beginPath();
 		ctx.arc(position.x, position.y, size, 0, Math.PI*2, true); 
 		ctx.fill();					
-	}).pushTo(emitter);
+	}).pushTo(this._emitter);
 
 	return this;	// for chained API
 };
