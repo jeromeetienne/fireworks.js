@@ -32,8 +32,8 @@
 	emitter.pushBase().pushAge(2);
 
 	emitter.pushInit2Shapes({
-		origin	: Fireworks.createBox(0, 0, 0, 10, 10, 0),
-		target	: Fireworks.createBox(0, -600, 0, 600, 400, 400),
+		origin	: Fireworks.createShapeBox(0, 0, 0, 10, 10, 0),
+		target	: Fireworks.createShapeBox(0, -600, 0, 600, 400, 400),
 		speed	: 5
 	});
 
@@ -53,7 +53,7 @@
 	}).pushTo(emitter);
 
 	Fireworks.createEffect({
-		shape	: Fireworks.createBox(0, 5000, 0, 10000, 10000, 10000)
+		shape	: Fireworks.createShapeBox(0, 5000, 0, 10000, 10000, 10000)
 	}).onUpdate(function(particle){
 		var xBase	= emitter.getParticleData(particle, 'xBase');
 		var position	= xBase.position;

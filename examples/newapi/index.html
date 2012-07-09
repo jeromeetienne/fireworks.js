@@ -11,6 +11,7 @@
 
 <script src="../plugins/spawner.rate.js"></script>
 <script src="../plugins/shape.box.js"></script>
+<script src="../plugins/shape.point.js"></script>
 
 <script src="./effect.friction.js"></script>
 <script src="./effect.lifetime.js"></script>
@@ -23,8 +24,8 @@
 	var emitter	= Fireworks.createEmitter({nParticles : 400})
 		.useSpawnerSteadyRate(4)
 		.effectsStackBuilder()
-			.position(Fireworks.createBox(0, 0, 0, 1, 1, 1))
-			.velocity(Fireworks.createBox(2, 0, 0, 1, 1, 1))
+			.position(Fireworks.createShapePoint(0, 0, 0))
+			.velocity(Fireworks.createShapePoint(2, 0, 0))
 			.createEffect('gravity', {
 					gravity	: new Fireworks.Vector(0, 0.02, 0)
 				}).onUpdate(function(particle, deltaTime){

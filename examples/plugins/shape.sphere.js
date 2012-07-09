@@ -1,7 +1,7 @@
 /**
  * Shortcut to create Fireworks.Shape.Box
 */
-Fireworks.createSphere	= function(centerX, centerY, centerZ, radius){
+Fireworks.createShapeSphere	= function(centerX, centerY, centerZ, radius){
 	var center	= new Fireworks.Vector(centerX, centerY, centerZ);
 	return new Fireworks.ShapeSphere(center, radius);
 };

@@ -64,8 +64,8 @@
 	emitter.pushBase().pushAge(0.8);
 	
 	emitter.pushInit2Shapes({
-		origin	: Fireworks.createSphere(0, 0, 0, 0.1),
-		target	: Fireworks.createSphere(0, 40, -60, 4),
+		origin	: Fireworks.createShapeSphere(0, 0, 0, 0.1),
+		target	: Fireworks.createShapeSphere(0, 40, -60, 4),
 		speed	: 0.15*2
 	});
 
@@ -88,7 +88,7 @@
 		xTquery.object3d.scaleBy(this.opts.mulScale);
 	}).pushTo(emitter);
 
-	emitter.pushDieIfContained(Fireworks.createBox(0, -5, 0, 100, 10, 100));
+	emitter.pushDieIfContained(Fireworks.createShapeBox(0, -5, 0, 100, 10, 100));
 	emitter.start();
 	
 	world.loop().hook(function(deltaTime){
