@@ -18,12 +18,12 @@ Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function()
 	// clear canvas and center it
 	ctx.fillStyle	= 'rgba(0,0,0,1)';
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
-	ctx.translate(window.innerWidth/2, window.innerHeight/2)
+	ctx.translate(canvas.width/2, canvas.height/2)
 
 	// create the effect itself
 	Fireworks.createEffect('renderToCanvas')
 	.onCreate(function(particle, particleIdx){
-		particle.set('xCanvas', {
+		particle.set('renderToCanvas', {
 			size	: 3
 			// TODO it may contains color too
 		});
@@ -38,7 +38,7 @@ Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function()
 		ctx.fillStyle	= 'rgba(127,0,255, 0.2)';
 	}).onRender(function(particle){
 		var position	= particle.get('position').vector;
-		var size	= particle.get('xCanvas').size;
+		var size	= particle.get('renderToCanvas').size;
 
 		ctx.beginPath();
 		ctx.arc(position.x, position.y, size, 0, Math.PI*2, true); 

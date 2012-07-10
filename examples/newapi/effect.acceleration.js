@@ -3,9 +3,9 @@
 */
 Fireworks.EffectsStackBuilder.prototype.acceleration	= function(shape)
 {
-	var emitter	= this._emitter;
-	
-	Fireworks.createEffect('Acceleration', {
+	var effectId	= opts.effectId	|| 'acceleration';
+	// create the effect itself
+	Fireworks.createEffect(effectId, {
 		shape	: shape
 	}).onCreate(function(particle){
 		particle.set('acceleration', {
@@ -18,7 +18,7 @@ Fireworks.EffectsStackBuilder.prototype.acceleration	= function(shape)
 		var velocity	= particle.get('velocity').vector;
 		var acceleration= particle.get('acceleration').vector;
 		velocity.addSelf(acceleration)
-	}).pushTo(emitter);
+	}).pushTo(this._emitter);
 
 	return this;	// for chained API
 };

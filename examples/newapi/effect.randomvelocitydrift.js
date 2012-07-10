@@ -1,9 +1,9 @@
 /**
  * Shortcut to create Fireworks.EffectRandomDriftVelocity
 */
-Fireworks.EffectsStackBuilder.prototype.randomDriftVelocity	= function(drift)
+Fireworks.EffectsStackBuilder.prototype.randomVelocityDrift	= function(drift)
 {
-	Fireworks.createEffect('RandomDriftVelocity', {
+	Fireworks.createEffect('randomVelocityDrift', {
 		drift	: drift
 	}).onUpdate(function(particle, deltaTime){
 		var velocity	= particle.get('velocity').vector;

@@ -3,10 +3,10 @@
 */
 Fireworks.EffectsStackBuilder.prototype.lifeTime	= function(minAge, maxAge)
 {	
-	var emitter	= this._emitter;
+	// sanity check
 	console.assert( minAge !== undefined )
 	console.assert( maxAge !== undefined )
-
+	// create the effect itself
 	Fireworks.createEffect('lifeTime', {
 		minAge	: minAge,
 		maxAge	: maxAge
@@ -24,7 +24,7 @@ Fireworks.EffectsStackBuilder.prototype.lifeTime	= function(minAge, maxAge)
 		var lifeTime	= particle.get('lifeTime');
 		lifeTime.curAge	+= deltaTime;
 		if( lifeTime.curAge > lifeTime.maxAge )	emitter.killParticle(particle);
-	}).pushTo(emitter);
-
-	return this;	// for chained API
+	}).pushTo(this._emitter);
+	// return this for chained API
+	return this;
 };
