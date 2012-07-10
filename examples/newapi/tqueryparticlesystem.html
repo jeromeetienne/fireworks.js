@@ -26,43 +26,47 @@
 
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
-	var object	= tQuery.createTorus().addTo(world);
+	//world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
 
-	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
-
-	var nParticles	= 400;
-
-	var geometry	= new THREE.Geometry();
-	for( var i = 0; i < nParticles; i++ ){
-		var vertex	= new THREE.Vector3();
-		// make vertex invisible
-		vertex.x	= vertex.y = vertex.z = Infinity;
-		geometry.vertices.push( vertex );
-		// set the THREE.VertexColors,
-		var color	= new THREE.Color( 0xFFFFFF*Math.random() );
-		geometry.colors.push( color );
-	}
-	var material	= new THREE.ParticleBasicMaterial({
-		color		: 0xFFFFFF,
-		vertexColors	: THREE.VertexColors,
-		size		: 3,
-		sizeAttenuation	: false
-	});
-	var particleSystem		= new THREE.ParticleSystem(geometry, material);
-	particleSystem.dynamic		= true;
-	particleSystem.sortParticles	= true;
-	world.add(particleSystem);
-
-
-	var emitter	= Fireworks.createEmitter({nParticles : nParticles})
-		.useSpawnerSteadyRate(20)
+	// create the emitter
+	var emitter	= Fireworks.createEmitter({nParticles : 400})
+		.useSpawnerSteadyRate(10)
 		.effectsStackBuilder()
-			.position(Fireworks.createShapeSphere(0, 0, 0, 0.5))
-			.velocity(Fireworks.createShapeSphere(0, 0, 0, 3))
-			.friction(0.85)
-			.lifeTime(0.5, 1.5)
+			.position(Fireworks.createShapeSphere(0, 0, 0, 0.1))
+			.velocity(Fireworks.createShapePoint(0, 0, 0))
+			.createEffect('radialVelocity', {
+					minSpeed	: 2,
+					maxSpeed	: 4	
+				}).onBirth(function(particle, deltaTime){
+					var position	= particle.get('position').vector;
+					var velocity	= particle.get('velocity').vector;
+					var length	= this.opts.minSpeed + (this.opts.maxSpeed - this.opts.minSpeed)*Math.random();
+					velocity.copy(position).setLength(length);
+				}).back()
+			.friction(0.999)
+			.lifeTime(2, 2)
 			.renderToThreejsParticleSystem({
-				particleSystem	: particleSystem
+				create	: function(emitter){
+					var geometry	= new THREE.Geometry();
+					for( var i = 0; i < emitter.nParticles(); i++ ){
+						var vertex	= new THREE.Vector3();
+						geometry.vertices.push( vertex );
+					}
+					var url		= "../assets/images/tremulous/psaw/blue_particle.jpg";
+					var texture	= THREE.ImageUtils.loadTexture( url );
+					var material	= new THREE.ParticleBasicMaterial({
+						blending	: THREE.AdditiveBlending,
+						transparent	: true,
+						size		: 1,
+						map		: texture,
+						sizeAttenuation	: true
+					});
+					var particleSystem		= new THREE.ParticleSystem(geometry, material);
+					particleSystem.dynamic		= true;
+					particleSystem.sortParticles	= true;
+					world.add(particleSystem);
+					return particleSystem;
+				}
 			}).back()
 		.start();
 

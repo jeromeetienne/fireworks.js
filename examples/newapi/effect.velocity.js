@@ -12,10 +12,12 @@ Fireworks.EffectsStackBuilder.prototype.velocity	= function(shape)
 	}).onBirth(function(particle){
 		var velocity	= particle.get('velocity').vector;
 		this.opts.shape.randomPoint(velocity)
-	}).onUpdate(function(particle){
+	}).onUpdate(function(particle, deltaTime){
 		var position	= particle.get('position').vector;
 		var velocity	= particle.get('velocity').vector;
-		position.addSelf(velocity)
+		position.x	+= velocity.x * deltaTime;
+		position.y	+= velocity.y * deltaTime;
+		position.z	+= velocity.z * deltaTime;
 	}).pushTo(this._emitter);
 
 	return this;	// for chained API
