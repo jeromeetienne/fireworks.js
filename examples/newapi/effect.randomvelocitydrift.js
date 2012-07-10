@@ -3,6 +3,7 @@
 */
 Fireworks.EffectsStackBuilder.prototype.randomVelocityDrift	= function(drift)
 {
+	// create the effect itself
 	Fireworks.createEffect('randomVelocityDrift', {
 		drift	: drift
 	}).onUpdate(function(particle, deltaTime){
@@ -11,6 +12,6 @@ Fireworks.EffectsStackBuilder.prototype.randomVelocityDrift	= function(drift)
 		velocity.y	+= (Math.random()*2 - 1) * this.opts.drift.y * deltaTime;
 		velocity.z	+= (Math.random()*2 - 1) * this.opts.drift.z * deltaTime;
 	}).pushTo(this._emitter);
-
+	// return for chained API
 	return this;	// for chained API
 };

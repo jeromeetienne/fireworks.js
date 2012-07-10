@@ -25,9 +25,9 @@
 		.useSpawnerSteadyRate(4)
 		.effectsStackBuilder()
 			.position(Fireworks.createShapePoint(0, 0, 0))
-			.velocity(Fireworks.createShapePoint(2, 0, 0))
+			.velocity(Fireworks.createShapePoint(200, 0, 0))
 			.createEffect('gravity', {
-					gravity	: new Fireworks.Vector(0, 0.02, 0)
+					gravity	: new Fireworks.Vector(0, 2, 0)
 				}).onUpdate(function(particle, deltaTime){
 					var velocity	= particle.get('velocity').vector;
 					var gravity	= this.opts.gravity;
@@ -35,7 +35,7 @@
 				}).back()
 			.friction(0.985)
 			.lifeTime(2, 3)
-			.randomVelocityDrift(Fireworks.createVector(0, 10, 0))
+			.randomVelocityDrift(Fireworks.createVector(300, 300, 0))
 			.renderToCanvas()
 			.back()
 		.start();

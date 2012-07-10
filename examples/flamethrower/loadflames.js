@@ -4,7 +4,7 @@ function loadFlames(urls, callback){
 	// load all the images and convert them
 	var flow	= Flow();
 	urls.forEach(function(url){
-		flow.seq(function(next){
+		flow.par(function(next){
 			var image	= new Image;
 			image.onload	= function(){
 				convertTremulousImage(image, function(resultImage, originalImage){
