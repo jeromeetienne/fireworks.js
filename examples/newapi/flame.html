@@ -1,0 +1,115 @@
+<!doctype html><title>Example of firework.js</title>
+<script src="../vendor/tquery-bundle.js"></script>
+
+<script src="../../src/core.js"></script>
+<script src="../../src/emitter.js"></script>
+<script src="../../src/particle.js"></script>
+<script src="../../src/effect.js"></script>
+<script src="../../src/spawner.js"></script>
+<script src="../../src/shape.js"></script>
+<script src="../../src/vector.js"></script>
+
+
+<script src="../plugins/spawner.rate.js"></script>
+<script src="../plugins/shape.box.js"></script>
+<script src="../plugins/shape.sphere.js"></script>
+<script src="../plugins/shape.point.js"></script>
+
+<script src="./effect.friction.js"></script>
+<script src="./effect.lifetime.js"></script>
+<script src="./effect.position.js"></script>
+<script src="./effect.randomvelocitydrift.js"></script>
+<script src="./effect.rendertocanvas.js"></script>
+<script src="./effect.rendertothreejsobject3d.js"></script>
+<script src="./effect.rendertothreejsparticlesystem.js"></script>
+<script src="./effect.velocity.js"></script>
+
+<body><script>
+	var world	= tQuery.createWorld().boilerplate().start();
+	
+	world.removeCameraControls();
+	
+	var object	= tQuery.createTorus().translateY(-1).addTo(world)
+	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
+
+
+
+
+	// create the emitter
+	var emitter	= Fireworks.createEmitter({nParticles : 400})
+		.useSpawnerSteadyRate(100)
+		.effectsStackBuilder()
+			.position(Fireworks.createShapePoint(0, 0, 0))
+			.velocity(Fireworks.createShapePoint(0, 5, 0))
+			.lifeTime(0, 0.8)
+			.randomVelocityDrift(Fireworks.createVector(30, 30, 0))
+			.renderToThreejsParticleSystem({
+				create	: function(emitter){
+					var geometry	= new THREE.Geometry();
+					for( var i = 0; i < emitter.nParticles(); i++ ){
+						var vertex	= new THREE.Vector3();
+						geometry.vertices.push( vertex );
+					}
+					//var url		= "../assets/images/tremulous/psaw/blue_particle.jpg";
+					//var texture	= THREE.ImageUtils.loadTexture( url );
+					var texture	= buildTexture();
+					var material	= new THREE.ParticleBasicMaterial({
+						color		: new THREE.Color().setHSV(0.3, 0.9, 0.4).getHex(),
+						blending	: THREE.AdditiveBlending,
+						transparent	: true,
+						size		: 5,
+						map		: texture,
+						sizeAttenuation	: true
+					});
+					var particleSystem		= new THREE.ParticleSystem(geometry, material);
+					particleSystem.dynamic		= true;
+					particleSystem.sortParticles	= true;
+					
+					particleSystem.position.y	= -0.5;
+					world.add(particleSystem);
+					return particleSystem;
+				}
+			}).back()
+		.start();
+
+	world.loop().hook(function(delta, now){
+		emitter.update(delta).render();
+	})
+	
+	function buildTexture(size){
+		size		= size || 128;
+		var canvas	= document.createElement( 'canvas' );
+		var context	= canvas.getContext( '2d' );
+		canvas.width	= canvas.height	= size;
+
+		var gradient	= context.createRadialGradient( canvas.width/2, canvas.height /2, 0, canvas.width /2, canvas.height /2, canvas.width /2 );		
+		gradient.addColorStop( 0  , 'rgba(255,255,255,1)' );
+		gradient.addColorStop( 0.5, 'rgba(255,255,255,1)' );
+		gradient.addColorStop( 0.7,  'rgba(128,128,128,1)' );
+		gradient.addColorStop( 1  , 'rgba(0,0,0,1)' );
+
+		context.beginPath();
+		context.arc(size/2, size/2, size/2, 0, Math.PI*2, false);
+		context.closePath();
+
+		context.fillStyle	= gradient;
+		//context.fillStyle	= 'rgba(128,128,128,1)';
+		context.fill();
+
+		var texture	= new THREE.Texture( canvas );
+		texture.needsUpdate = true;
+
+		return texture;
+	}
+</script></body>
+
+
+
+
+
+
+
+
+
+
+

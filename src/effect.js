@@ -27,7 +27,6 @@ Fireworks.createEffect	= function(name, opts){
 		opts	= name;
 		name	= undefined;
 	}
-	console.log("createEffect", name, opts)
 	
 	var effect	= new Fireworks.Effect();
 	effect.opts	= opts;
