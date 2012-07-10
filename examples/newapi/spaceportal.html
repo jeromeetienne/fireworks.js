@@ -38,7 +38,7 @@
 			.velocity(Fireworks.createShapePoint(0, 0, 0))
 			.createEffect('scale', {
 					birthScale	: 1/15,
-					mulScale	: 0.98
+					mulScale	: 0.97
 				}).onBirth(function(particle, deltaTime){
 					var object3d	= particle.get('threejsObject3D').object3d;
 					object3d.scale.set(this.opts.birthScale, this.opts.birthScale, this.opts.birthScale);
@@ -47,8 +47,8 @@
 					object3d.scale.multiplyScalar( this.opts.mulScale )
 				}).back()
 			.friction(0.85)
-			.lifeTime(0.5, 1)
-			.randomVelocityDrift(Fireworks.createVector(1.5, 1.5, 1.5))
+			.lifeTime(0.5, 1.5)
+			.randomVelocityDrift(Fireworks.createVector(2, 0.5, 2))
 			.renderToThreejsObject3D({
 				create	: function(){
 					var object3d	= new THREE.Sprite({
