@@ -28,8 +28,9 @@
 	var world	= tQuery.createWorld().boilerplate().start();
 	
 	world.removeCameraControls();
+	world.camera().position.z	= 10;
 	
-	var object	= tQuery.createTorus().translateY(-1).addTo(world)
+	//var object	= tQuery.createTorus().translateY(-1).addTo(world)
 	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
 
 
@@ -40,9 +41,9 @@
 		.useSpawnerSteadyRate(100)
 		.effectsStackBuilder()
 			.position(Fireworks.createShapePoint(0, 0, 0))
-			.velocity(Fireworks.createShapePoint(0, 5, 0))
+			.velocity(Fireworks.createShapePoint(0, 7, 0))
 			.lifeTime(0, 0.8)
-			.randomVelocityDrift(Fireworks.createVector(30, 30, 0))
+			.randomVelocityDrift(Fireworks.createVector(30, 0, 0))
 			.renderToThreejsParticleSystem({
 				create	: function(emitter){
 					var geometry	= new THREE.Geometry();
@@ -65,7 +66,7 @@
 					particleSystem.dynamic		= true;
 					particleSystem.sortParticles	= true;
 					
-					particleSystem.position.y	= -0.5;
+					particleSystem.position.y	= -2;
 					world.add(particleSystem);
 					return particleSystem;
 				}
@@ -77,7 +78,7 @@
 	})
 	
 	function buildTexture(size){
-		size		= size || 128;
+		size		= size || 150;
 		var canvas	= document.createElement( 'canvas' );
 		var context	= canvas.getContext( '2d' );
 		canvas.width	= canvas.height	= size;
@@ -85,7 +86,7 @@
 		var gradient	= context.createRadialGradient( canvas.width/2, canvas.height /2, 0, canvas.width /2, canvas.height /2, canvas.width /2 );		
 		gradient.addColorStop( 0  , 'rgba(255,255,255,1)' );
 		gradient.addColorStop( 0.5, 'rgba(255,255,255,1)' );
-		gradient.addColorStop( 0.7,  'rgba(128,128,128,1)' );
+		gradient.addColorStop( 0.7, 'rgba(128,128,128,1)' );
 		gradient.addColorStop( 1  , 'rgba(0,0,0,1)' );
 
 		context.beginPath();
