@@ -3,12 +3,13 @@
 */
 Fireworks.EffectsStackBuilder.prototype.renderToThreejsParticleSystem	= function(opts)
 {
-	var effectId	= opts.effectId	|| 'renderToThreejsParticleSystem';
-	var mesh	= opts.mesh;
+	opts			= opts		|| {};
+	var effectId		= opts.effectId	|| 'renderToThreejsParticleSystem';
+	var particleSystem	= opts.particleSystem;
 	// create a mesh if needed
-	if( !mesh ){
+	if( !particleSystem ){
 		var geometry	= new THREE.Geometry();
-		for( var i = 0; i < emitter.nParticles(); i ++ ){
+		for( var i = 0; i < this._emitter.nParticles(); i ++ ){
 			var vertex	= new THREE.Vector3();
 			// make vertex invisible
 			vertex.x	= vertex.y = vertex.z = Infinity;
@@ -23,30 +24,31 @@ Fireworks.EffectsStackBuilder.prototype.renderToThreejsParticleSystem	= function
 			size		: 3,
 			sizeAttenuation	: false
 		});
-		var mesh	= new THREE.mesh(geometry, material);
-		mesh.dynamic		= true;
-		mesh.sortParticles	= true;
+		var particleSystem		= new THREE.ParticleSystem(geometry, material);
+		particleSystem.dynamic		= true;
+		particleSystem.sortParticles	= true;
 	}
 
 	// sanity check
-	console.assert(mesh instanceof THREE.mesh, "mesh MUST be THREE.ParticleSystem");
+	console.assert(particleSystem instanceof THREE.ParticleSystem, "mesh MUST be THREE.ParticleSystem");
 	// some aliases
-	var geometry	= mesh.geometry;
-	var material	= mesh.material;
+	var geometry	= particleSystem.geometry;
+	var material	= particleSystem.material;
 	// create the effect itself
 	Fireworks.createEffect(effectId, {
-		mesh	: mesh
+		particleSystem	: particleSystem
 	}).onCreate(function(particle, particleIdx){
 		particle.set('threejsParticle', {
 			particleIdx	: particleIdx
 		});
-	}).onDeath(function(){
+	}).onDeath(function(particle){
 		var particleIdx	= particle.get('threejsParticle').particleIdx;
 		var vertex	= geometry.vertices[particleIdx];
 		vertex.set(Infinity, Infinity, Infinity);
 	}).onRender(function(particle){
 		var particleIdx	= particle.get('threejsParticle').particleIdx;
 		var vertex	= geometry.vertices[particleIdx];
+		var position	= particle.get('position').vector;
 		vertex.set(position.x, position.y, position.z);
 	}).pushTo(this._emitter);
 	return this;	// for chained API

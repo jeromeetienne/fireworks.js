@@ -32,13 +32,13 @@
 	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/tremulous/psaw/blue_particle.jpg" );
 
 	var emitter	= Fireworks.createEmitter({nParticles : 400})
-		.useSpawnerSteadyRate(10)
+		.useSpawnerSteadyRate(20)
 		.effectsStackBuilder()
 			.position(Fireworks.createShapeSphere(0, 0, 0, 0.5))
 			.velocity(Fireworks.createShapePoint(0, 0, 0))
 			.createEffect('scale', {
-					birthScale	: 1/10,
-					mulScale	: 0.95
+					birthScale	: 1/15,
+					mulScale	: 0.97
 				}).onBirth(function(particle, deltaTime){
 					var object3d	= particle.get('threejsObject3D').object3d;
 					object3d.scale.set(this.opts.birthScale, this.opts.birthScale, this.opts.birthScale);
@@ -56,6 +56,8 @@
 						useScreenCoordinates	: false,
 						color			: 0xAA4488,
 						blending		: THREE.AdditiveBlending,
+						depthWrite	: false,
+						transparent	: true
 					});
 					world.add(object3d)
 					return object3d;		
