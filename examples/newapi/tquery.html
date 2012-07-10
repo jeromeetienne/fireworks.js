@@ -1,0 +1,87 @@
+<!doctype html><title>Example of firework.js</title>
+<script src="../vendor/tquery-bundle.js"></script>
+
+<script src="../../src/core.js"></script>
+<script src="../../src/emitter.js"></script>
+<script src="../../src/particle.js"></script>
+<script src="../../src/effect.js"></script>
+<script src="../../src/spawner.js"></script>
+<script src="../../src/shape.js"></script>
+<script src="../../src/vector.js"></script>
+
+
+<script src="../plugins/spawner.rate.js"></script>
+<script src="../plugins/shape.box.js"></script>
+<script src="../plugins/shape.point.js"></script>
+
+<script src="./effect.friction.js"></script>
+<script src="./effect.lifetime.js"></script>
+<script src="./effect.position.js"></script>
+<script src="./effect.randomvelocitydrift.js"></script>
+<script src="./effect.rendertocanvas.js"></script>
+<script src="./effect.rendertothreejsobject3d.js"></script>
+<script src="./effect.velocity.js"></script>
+
+<body><script>
+	var world	= tQuery.createWorld().boilerplate().start();
+	var object	= tQuery.createTorus().addTo(world);
+
+	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
+
+	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/tremulous/psaw/blue_particle.jpg" );
+
+	var emitter	= Fireworks.createEmitter({nParticles : 400})
+		.useSpawnerSteadyRate(15)
+		.effectsStackBuilder()
+			.position(Fireworks.createShapePoint(0, 0, 0))
+			.velocity(Fireworks.createShapePoint(0, 0, -0.1))
+			.createEffect('gravity', {
+					gravity	: new Fireworks.Vector(0, 0.001, 0)
+				}).onUpdate(function(particle, deltaTime){
+					var velocity	= particle.get('velocity').vector;
+					var gravity	= this.opts.gravity;
+					velocity.addSelf( gravity )
+				}).back()
+			.createEffect('scale', {
+					birthScale	: 1/40,
+					mulScale	: 1.015		//+0.005/6,
+				}).onBirth(function(particle, deltaTime){
+					var object3d	= particle.get('threejsObject3D').object3d;
+					object3d.scale.set(this.opts.birthScale, this.opts.birthScale, this.opts.birthScale);
+				}).onUpdate(function(particle, deltaTime){
+					var object3d	= particle.get('threejsObject3D').object3d;
+					object3d.scale.multiplyScalar( this.opts.mulScale )
+				}).back()
+			.friction(0.99)
+			.lifeTime(3, 3)
+			.randomVelocityDrift(Fireworks.createVector(0, 1, 0))
+			.renderToThreejsObject3D({
+				create	: function(){
+					var object3d	= new THREE.Sprite({
+						map			: texture,
+						useScreenCoordinates	: false,
+						blending		: THREE.AdditiveBlending,
+					});
+					world.add(object3d)
+					return object3d;		
+				}	
+			})
+			.back()
+		.start();
+
+	setInterval(function(){
+		var deltaTime	= 1/60;
+		emitter.update(deltaTime).render();
+	}, 1000/60);
+</script></body>
+
+
+
+
+
+
+
+
+
+
+

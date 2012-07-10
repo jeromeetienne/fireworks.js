@@ -1,9 +1,9 @@
 /**
  * render to three.js to THREE.ParticleSystem
 */
-Fireworks.EffectsStackBuilder.prototype.renderToThreeParticleSystem	= function(opts)
+Fireworks.EffectsStackBuilder.prototype.renderToThreejsParticleSystem	= function(opts)
 {
-	var effectId	= opts.effectId	|| 'renderToThreeParticleSystem';
+	var effectId	= opts.effectId	|| 'renderToThreejsParticleSystem';
 	var mesh	= opts.mesh;
 	// create a mesh if needed
 	if( !mesh ){
