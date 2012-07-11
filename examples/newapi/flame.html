@@ -26,14 +26,11 @@
 
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
+	var tScene	= world.scene();
 	
-	world.removeCameraControls();
 	world.camera().position.z	= 10;
 	
-	//var object	= tQuery.createTorus().translateY(-1).addTo(world)
 	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
-
-
 
 
 	// create the emitter
@@ -43,7 +40,7 @@
 			.position(Fireworks.createShapePoint(0, 0, 0))
 			.velocity(Fireworks.createShapePoint(0, 7, 0))
 			.lifeTime(0, 0.8)
-			.randomVelocityDrift(Fireworks.createVector(30, 0, 0))
+			.randomVelocityDrift(Fireworks.createVector(10, 0, 0))
 			.renderToThreejsParticleSystem({
 				create	: function(emitter){
 					var geometry	= new THREE.Geometry();
@@ -56,18 +53,19 @@
 					var texture	= buildTexture();
 					var material	= new THREE.ParticleBasicMaterial({
 						color		: new THREE.Color().setHSV(0.3, 0.9, 0.4).getHex(),
-						blending	: THREE.AdditiveBlending,
-						transparent	: true,
 						size		: 5,
 						map		: texture,
-						sizeAttenuation	: true
+						sizeAttenuation	: true,
+						blending	: THREE.AdditiveBlending,
+						depthWrite	: false,
+						transparent	: true
 					});
 					var particleSystem		= new THREE.ParticleSystem(geometry, material);
 					particleSystem.dynamic		= true;
 					particleSystem.sortParticles	= true;
 					
-					particleSystem.position.y	= -2;
-					world.add(particleSystem);
+					particleSystem.position.y	= -2.5;
+					tScene.add(particleSystem);
 					return particleSystem;
 				}
 			}).back()

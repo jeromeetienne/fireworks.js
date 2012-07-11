@@ -35,6 +35,14 @@ Fireworks.Emitter.prototype.destroy	= function()
 Fireworks.Emitter.prototype.effects	= function(){
 	return this._effects;
 }
+Fireworks.Emitter.prototype.effectByName= function(name){
+	for(var i = 0; i < this._effects.length; i++){
+		var effect	= this._effects[i];
+		if( effect.name === name )	return effect;
+	}
+	return null;
+}
+
 Fireworks.Emitter.prototype.particles	= function(){
 	return this._particles;
 }
@@ -62,13 +70,10 @@ Fireworks.Emitter.prototype.setSpawner	= function(spawner){
 
 Fireworks.Emitter.prototype.setParticleData	= function(particle, namespace, value){
 	particle.set(namespace, value);
-//	particle[namespace]	= value;
 }
 
 Fireworks.Emitter.prototype.getParticleData	= function(particle, namespace){
 	return particle.get(namespace);
-//	console.assert( particle[namespace] !== undefined, "namespace undefined: "+namespace );
-//	return particle[namespace];
 }
 
 //////////////////////////////////////////////////////////////////////////////////
