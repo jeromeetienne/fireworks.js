@@ -25,8 +25,7 @@
 
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
-	//var object	= tQuery.createCube().scaleBy(2, 0.5, 2).addTo(world).translateY(-0.5/2);
-//	var object	= tQuery.createTorus().addTo(world).rotateX(Math.PI/2).scale(1.25);
+	var object	= tQuery.createTorus().addTo(world).rotateX(Math.PI/2).scale(1.25);
 
 	var emitter	= new Fireworks.Emitter({
 		nParticles	: 100

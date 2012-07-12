@@ -33,16 +33,17 @@
 	var texture	= THREE.ImageUtils.loadTexture( url );
 
 	var emitter	= Fireworks.createEmitter({nParticles : 40})
-		.useSpawnerSteadyRate(10)
+		.useSpawnerSteadyRate(25)
 		.effectsStackBuilder()
-			.position(Fireworks.createShapeSphere(0, 0, 0, 0.5))
+			.position(Fireworks.createShapeSphere(0, 0, 0, 0.6))
 			.velocity(Fireworks.createShapePoint(0, 0, 0))
 			.createEffect('scale', {
-					birthScale	: 1/10,
-					mulScale	: 0.95
+					birthScale	: 1/12,
+					mulScale	: 0.85
 				}).onBirth(function(particle, deltaTime){
 					var object3d	= particle.get('threejsObject3D').object3d;
-					object3d.scale.set(this.opts.birthScale, this.opts.birthScale, this.opts.birthScale);
+					var birthScale	= this.opts.birthScale;
+					object3d.scale.set(birthScale, birthScale, birthScale);
 				}).onUpdate(function(particle, deltaTime){
 					var object3d	= particle.get('threejsObject3D').object3d;
 					object3d.scale.multiplyScalar( this.opts.mulScale )
@@ -51,16 +52,15 @@
 			.lifeTime(0.5, 1.5)
 			.randomVelocityDrift(Fireworks.createVector(0.5, 0.5, 0.5))
 			.renderToThreejsObject3D({
-				create	: function(){
-					var object3d	= new THREE.Sprite({
+				container	: world,
+				create		: function(){
+					return new THREE.Sprite({
 						color			: 0xAA4488,
 						useScreenCoordinates	: false,
 						map			: texture,
 						blending		: THREE.AdditiveBlending,
 						transparent		: true
 					});
-					world.add(object3d)
-					return object3d;		
 				}	
 			})
 			.back()

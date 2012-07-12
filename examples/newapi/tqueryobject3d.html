@@ -31,7 +31,7 @@
 
 	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/tremulous/psaw/blue_particle.jpg" );
 
-	var emitter	= Fireworks.createEmitter({nParticles : 400})
+	var emitter	= Fireworks.createEmitter({nParticles : 20})
 		.useSpawnerSteadyRate(20)
 		.effectsStackBuilder()
 			.position(Fireworks.createShapeSphere(0, 0, 0, 0.5))
@@ -50,15 +50,14 @@
 			.lifeTime(0.5, 1.5)
 			.randomVelocityDrift(Fireworks.createVector(0.5, 0.5, 0.5))
 			.renderToThreejsObject3D({
-				create	: function(){
-					var object3d	= new THREE.Sprite({
+				container	: world,			
+				create		: function(){
+					return new THREE.Sprite({
 						map			: texture,
 						useScreenCoordinates	: false,
 						color			: 0xAA4488,
 						blending		: THREE.AdditiveBlending,
 					});
-					world.add(object3d)
-					return object3d;		
 				}	
 			})
 			.back()
