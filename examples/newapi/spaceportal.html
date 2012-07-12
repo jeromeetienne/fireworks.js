@@ -36,7 +36,6 @@
 		.useSpawnerSteadyRate(25)
 		.effectsStackBuilder()
 			.position(Fireworks.createShapeSphere(0, 0, 0, 0.6))
-			.velocity(Fireworks.createShapePoint(0, 0, 0))
 			.createEffect('scale', {
 					birthScale	: 1/12,
 					mulScale	: 0.85
@@ -48,9 +47,7 @@
 					var object3d	= particle.get('threejsObject3D').object3d;
 					object3d.scale.multiplyScalar( this.opts.mulScale )
 				}).back()
-			.friction(0.85)
-			.lifeTime(0.5, 1.5)
-			.randomVelocityDrift(Fireworks.createVector(0.5, 0.5, 0.5))
+			.lifeTime(0.8)
 			.renderToThreejsObject3D({
 				container	: world,
 				create		: function(){
