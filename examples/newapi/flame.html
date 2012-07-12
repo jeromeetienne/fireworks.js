@@ -42,20 +42,17 @@
 			.lifeTime(0, 0.8)
 			.randomVelocityDrift(Fireworks.createVector(10, 0, 0))
 			.renderToThreejsParticleSystem({
-				create	: function(emitter){
+				particleSystem	: function(emitter){
 					var geometry	= new THREE.Geometry();
 					for( var i = 0; i < emitter.nParticles(); i++ ){
-						var vertex	= new THREE.Vector3();
-						geometry.vertices.push( vertex );
+						geometry.vertices.push( new THREE.Vector3() );
 					}
-					//var url		= "../assets/images/tremulous/psaw/blue_particle.jpg";
-					//var texture	= THREE.ImageUtils.loadTexture( url );
 					var texture	= buildTexture();
 					var material	= new THREE.ParticleBasicMaterial({
 						color		: new THREE.Color().setHSV(0.3, 0.9, 0.4).getHex(),
 						size		: 5,
-						map		: texture,
 						sizeAttenuation	: true,
+						map		: texture,
 						blending	: THREE.AdditiveBlending,
 						depthWrite	: false,
 						transparent	: true

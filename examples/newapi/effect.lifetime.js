@@ -5,16 +5,21 @@ Fireworks.EffectsStackBuilder.prototype.lifeTime	= function(minAge, maxAge)
 {	
 	// sanity check
 	console.assert( minAge !== undefined )
+	// if maxAge isnt 
+	if( maxAge === undefined )	maxAge	= minAge;
 	console.assert( maxAge !== undefined )
 	// create the effect itself
 	Fireworks.createEffect('lifeTime', {
 		minAge	: minAge,
-		maxAge	: maxAge
+		maxAge	: maxAge, 
 	}).onCreate(function(particle){
-		particle.set('lifeTime', {
+		var data	= particle.set('lifeTime', {
 			curAge	: 0,
 			minAge	: 0,
-			maxAge	: 0
+			maxAge	: 0,
+			normalizedAge	: function(){
+				return (data.curAge - data.minAge) / (data.maxAge - data.minAge);
+			}
 		});
 	}).onBirth(function(particle){
 		var lifeTime	= particle.get('lifeTime');

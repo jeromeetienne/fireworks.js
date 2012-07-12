@@ -1,0 +1,97 @@
+<!doctype html><title>Example of firework.js</title>
+<script src="../vendor/tquery-bundle.js"></script>
+
+<script src="../../src/core.js"></script>
+<script src="../../src/emitter.js"></script>
+<script src="../../src/particle.js"></script>
+<script src="../../src/effect.js"></script>
+<script src="../../src/spawner.js"></script>
+<script src="../../src/shape.js"></script>
+<script src="../../src/vector.js"></script>
+
+<script src="../vendor/dat.gui.js"></script>
+<script src="../plugins/fireworks.datgui4emitter.js"></script>
+
+<script src="../plugins/spawner.rate.js"></script>
+<script src="../plugins/spawner.oneshot.js"></script>
+<script src="../plugins/shape.box.js"></script>
+<script src="../plugins/shape.sphere.js"></script>
+<script src="../plugins/shape.point.js"></script>
+
+<script src="./effect.friction.js"></script>
+<script src="./effect.lifetime.js"></script>
+<script src="./effect.position.js"></script>
+<script src="./effect.randomvelocitydrift.js"></script>
+<script src="./effect.rendertocanvas.js"></script>
+<script src="./effect.rendertothreejsobject3d.js"></script>
+<script src="./effect.rendertothreejsparticlesystem.js"></script>
+<script src="./effect.velocity.js"></script>
+
+<body><script>
+	// reproduction of a demo of @mrdoob by http://mrdoob.com/lab/javascript/webgl/clouds/
+	// add a blue sky background
+	(function addBlueSkyBackground(){
+		var canvas	= document.createElement( 'canvas' );
+		canvas.width	= 32;
+		canvas.height	= window.innerHeight;
+		var context = canvas.getContext( '2d' );
+		
+		var gradient = context.createLinearGradient( 0, 0, 0, canvas.height );
+		gradient.addColorStop(0, "#1e4877");
+		gradient.addColorStop(0.5, "#4584b4");
+		
+		context.fillStyle = gradient;
+		context.fillRect(0, 0, canvas.width, canvas.height);
+		
+		document.body.style.background = 'url(' + canvas.toDataURL('image/png') + ')';		
+	})();
+
+
+	var world	= tQuery.createWorld().boilerplate().start();
+
+	world.renderer().setClearColorHex( 0x000000, 0 );
+	world.getCameraControls().rangeX*= 0.05;
+	world.getCameraControls().rangeY*= 0.1;
+	world.camera().position.z	= 6;
+
+	var object	= tQuery.createTorus().addTo(world).scaleBy(2);
+
+	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/cloud10.png" );
+	texture.magFilter	= THREE.LinearFilter;
+	texture.minFilter	= THREE.LinearMipMapLinearFilter;
+
+	// create the emitter
+	var emitter	= Fireworks.createEmitter({nParticles : 150})
+		.useSpawnerOneShot(150)
+		.effectsStackBuilder()
+			.position(Fireworks.createShapeBox(0, -1.5, 0, 16, 0.1, 16))
+			.renderToThreejsObject3D({
+				create	: function(){
+					var object3d	= new THREE.Sprite({
+						map			: texture,
+						useScreenCoordinates	: false
+					});
+					object3d.rotation	= Math.random() * 2*Math.PI;
+					object3d.scale.multiplyScalar(1/50 * (Math.random() * 0.4 + 0.8))
+					world.add(object3d)
+					return object3d;		
+				}	
+			})
+			.back()
+		.start();
+
+	world.loop().hook(function(delta, now){
+		emitter.update(delta).render();
+	})
+</script></body>
+
+
+
+
+
+
+
+
+
+
+

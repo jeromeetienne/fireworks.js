@@ -29,9 +29,10 @@
 
 	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
 
-	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/tremulous/psaw/blue_particle.jpg" );
+	var url		= "../assets/images/tremulous/psaw/blue_particle.jpg";
+	var texture	= THREE.ImageUtils.loadTexture( url );
 
-	var emitter	= Fireworks.createEmitter({nParticles : 400})
+	var emitter	= Fireworks.createEmitter({nParticles : 40})
 		.useSpawnerSteadyRate(10)
 		.effectsStackBuilder()
 			.position(Fireworks.createShapeSphere(0, 0, 0, 0.5))
@@ -52,10 +53,11 @@
 			.renderToThreejsObject3D({
 				create	: function(){
 					var object3d	= new THREE.Sprite({
-						map			: texture,
-						useScreenCoordinates	: false,
 						color			: 0xAA4488,
+						useScreenCoordinates	: false,
+						map			: texture,
 						blending		: THREE.AdditiveBlending,
+						transparent		: true
 					});
 					world.add(object3d)
 					return object3d;		
