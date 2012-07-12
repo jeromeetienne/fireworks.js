@@ -50,45 +50,32 @@
 	var world	= tQuery.createWorld().boilerplate().start();
 
 	world.renderer().setClearColorHex( 0x000000, 0 );
-	// world.getCameraControls().rangeX*= 0.05;
-	// world.getCameraControls().rangeY*= 0.1;
-	world.camera().position.z	= 8;
+	world.getCameraControls().rangeX*= 0.05;
+	world.getCameraControls().rangeY*= 0.1;
+	world.camera().position.z	= 6;
 
-	var object	= tQuery.createTorus().addTo(world).scaleBy(4);
+	var object	= tQuery.createTorus().addTo(world).scaleBy(2);
 
-	// var texture	= THREE.ImageUtils.loadTexture( "../assets/images/css3dclouds/cloud.png" );
-	// var texture	= THREE.ImageUtils.loadTexture( "../assets/images/css3dclouds/explosion.png" );
-	// var texture	= THREE.ImageUtils.loadTexture( "../assets/images/css3dclouds/smoke.png" );
 	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/cloud10.png" );
-
 	texture.magFilter	= THREE.LinearFilter;
 	texture.minFilter	= THREE.LinearMipMapLinearFilter;
 
 	// create the emitter
-	var emitter	= Fireworks.createEmitter({nParticles : 30})
+	var emitter	= Fireworks.createEmitter({nParticles : 150})
 		.useSpawnerOneShot()
 		.effectsStackBuilder()
-			.position(Fireworks.createShapeBox(0, -3, 0, 32, 0.1, 32))
+			.position(Fireworks.createShapeBox(0, -1.5, 0, 16, 0.1, 16))
 			.renderToThreejsObject3D({
 				container	: world,
 				create		: function(){
-					var container	= new THREE.Object3D();
-					var nCloud	= 2+Math.floor(3*Math.random());
-					for(var i = 0; i < nCloud; i++){
-						var object3d	= new THREE.Sprite({
-							map			: texture,
-							useScreenCoordinates	: false
-						});
-						
-						object3d.position.x	= (Math.random()-0.5) * 5.0;
-						object3d.position.y	= (Math.random()-0.5) * 0.2;
-						object3d.position.z	= (Math.random()-0.5) * 5.0;
-						object3d.rotation	= Math.random() * 2*Math.PI;
-						object3d.scale.multiplyScalar(1/30 * (Math.random() * 0.4 + 0.8))
-						// object3d.color.setHex( 0xC0C0C0 + 0x010101*Math.floor(255*(Math.random()*0.1)) );
-						container.add(object3d);
-					}
-					return container;		
+					var object3d	= new THREE.Sprite({
+						map			: texture,
+						useScreenCoordinates	: false
+					});
+					object3d.rotation	= Math.random() * 2*Math.PI;
+					object3d.scale.multiplyScalar(1/50 * (Math.random() * 0.4 + 0.8))
+					object3d.color.setHex( 0xC0C0C0 + 0x010101*Math.floor(255*(Math.random()*0.2)) );
+					return object3d;		
 				}	
 			})
 			.back()

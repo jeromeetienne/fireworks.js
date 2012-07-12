@@ -28,14 +28,15 @@
 <script src="./effect.rendertothreejsparticlesystem.js"></script>
 <script src="./effect.velocity.js"></script>
 
-
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
-		
+
 	var object	= tQuery.createTorus().addTo(world).rotateX(Math.PI/2).scale(1.25);
 					
 	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/cloud10.png");
-	
+
+	// a seb.ly example of smoke http://seb.ly/demos/JSParticles/Particles3_1.html
+	// http://www.clicktorelease.com/code/css3dclouds/
 
 	// create the emitter
 	var emitter	= Fireworks.createEmitter({nParticles : 50})

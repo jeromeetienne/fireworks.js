@@ -2,6 +2,7 @@
  * Make the emitter use a SpawnerSteadyRate
 */
 Fireworks.Emitter.prototype.useSpawnerOneShot	= function(nParticles){
+	nParticles	= nParticles !== undefined ? nParticles : this.nParticles();
 	var spawner	= new Fireworks.SpawnerOneShot(nParticles);
 	return this.setSpawner(spawner);
 }
