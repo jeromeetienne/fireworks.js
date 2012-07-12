@@ -31,7 +31,7 @@
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
 
-	var object	= tQuery.createTorus().addTo(world).rotateX(Math.PI/2).scale(1.25);
+	var object	= tQuery.createTorus().addTo(world).rotateX(Math.PI/2).scale(1.25).translateY(-0.8);
 					
 	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/cloud10.png");
 
@@ -42,28 +42,28 @@
 	var emitter	= Fireworks.createEmitter({nParticles : 50})
 		.useSpawnerSteadyRate(5)
 		.effectsStackBuilder()
-			.position(Fireworks.createShapeBox(0, 0.0, 0, 0.2, 0.0001, 0.2))
-			.velocity(Fireworks.createShapeBox(0, 1.0, 0, 0.4, 0.0001, 0.4))
+			.position(Fireworks.createShapeBox(0,-0.8, 0, 0.20, 0.0001, 0.20))
+			.velocity(Fireworks.createShapeBox(0, 0.5, 0, 0.20, 0.0001, 0.20))
 			.friction()
-			.lifeTime(4)
+			.lifeTime(6)
 			.createEffect()
 				.onBirth(function(particle){
 					var object3d	= particle.get('threejsObject3D').object3d;
 				 	var scale	= 1/300 * (Math.random() * 0.2 + 0.9);
 				 	object3d.scale.set(scale, scale, scale);
-					object3d.color.setHex( 0x010101*Math.floor(255*(Math.random()*0.1+0.3)) );
+					object3d.color.setHex( 0x010101*Math.floor(255*(Math.random()*0.15+0.3)) );
 					object3d.rotation	= Math.random() * Math.PI*2;
 				}).back()
 			.createEffect('scaleMul', {
-					factor	: 1.004
+					factor	: 1.003
 				}).onUpdate(function(particle){
-					var object3d		= particle.get('threejsObject3D').object3d;
+					var object3d	= particle.get('threejsObject3D').object3d;
 					object3d.scale.multiplyScalar(this.opts.factor);
 				}).back()
 			.createEffect('frictionSlowDown', {
 					gradient	: Fireworks.createLinearGradient()
 								.push(0.00, 1.00)
-								.push(0.70, 0.99)
+								.push(0.80, 1.00)
 								.push(0.90, 0.96)
 								.push(1.00, 0.96)
 				}).onUpdate(function(particle){
@@ -76,7 +76,7 @@
 								.push(0.00, 0.00)
 								.push(0.10, 1.00)
 								.push(0.90, 1.00)
-								.push(0.95, 0.75)
+								.push(0.95, 0.50)
 								.push(1.00, 0.00)			
 				}).onUpdate(function(particle){
 					var object3d		= particle.get('threejsObject3D').object3d;
