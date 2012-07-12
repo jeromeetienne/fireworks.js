@@ -16,6 +16,10 @@ Fireworks.EffectsStackBuilder.prototype.friction	= function(value)
 			value	: value,
 		});
 	})
+	.onBirth(function(particle){
+		var data	= particle.get('friction');
+		data.value	= value
+	})
 	.onUpdate(function(particle){
 		var friction	= particle.get('friction').value;
 		var velocity	= particle.get('velocity').vector;
