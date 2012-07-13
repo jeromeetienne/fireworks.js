@@ -1,15 +1,15 @@
-function loadFlames(urls, callback){
-	var images	= [];
+function loadTremulousParticles(urls, callback){
+	var images	= new Array(urls.length);
 
 	// load all the images and convert them
 	var flow	= Flow();
-	urls.forEach(function(url){
+	urls.forEach(function(url, idx){
 		flow.par(function(next){
 			var image	= new Image;
 			image.onload	= function(){
 				convertTremulousImage(image, function(resultImage, originalImage){
 					//console.log("image converted", resultImage);
-					images.push(resultImage);
+					images[idx]	= resultImage;
 					next();
 				});
 			};
@@ -28,7 +28,7 @@ function loadFlames(urls, callback){
 	 * Convert images from tremulous. 
 	 * They are originally in .tga without alpha channel.
 	 * The alpha channel is created based on the luminance of each pixel.
-	 * alpha === luminance*4
+	 * alpha === luminance*16
 	*/
 	function convertTremulousImage(image, callback){
 		// create a canvas
@@ -50,7 +50,7 @@ function loadFlames(urls, callback){
 				//luminance	= luminance * luminance * luminance* luminance;
 				//luminance	= luminance * luminance;
 				p[i+3]		= Math.floor(luminance * 16 * 255);
-				//p[i+3]		= luminance * 4;
+				//p[i+3]	= luminance * 4;
 			}
 		}
 		// put the generated image in the canvas
@@ -64,4 +64,30 @@ function loadFlames(urls, callback){
 		newImage.src	= ctx.canvas.toDataURL();
 	}
 
+	return;
+
+	// from gowiththeflow.js - https://github.com/jeromeetienne/gowiththeflow.js
+	function Flow(){
+		var self, stack = [], timerId = setTimeout(function(){ timerId = null; self._next(); }, 0);
+		return self = {
+			destroy : function(){ timerId && clearTimeout(timerId); },
+			par	: function(callback, isSeq){
+				if(isSeq || !(stack[stack.length-1] instanceof Array)) stack.push([]);
+				stack[stack.length-1].push(callback);
+				return self;
+			},seq	: function(callback){ return self.par(callback, true);	},
+			_next	: function(err, result){
+				var errors = [], results = [], callbacks = stack.shift() || [], nbReturn = callbacks.length, isSeq = nbReturn == 1;
+				for(var i = 0; i < callbacks.length; i++){
+					(function(fct, index){
+						fct(function(error, result){
+							errors[index]	= error;
+							results[index]	= result;		
+							if(--nbReturn == 0)	self._next(isSeq?errors[0]:errors, isSeq?results[0]:results)
+						}, err, result)
+					})(callbacks[i], i);
+				}
+			}
+		}
+	};
 }

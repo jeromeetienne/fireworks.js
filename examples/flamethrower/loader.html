@@ -19,8 +19,7 @@
 <script src="../canvas/fireworks.renderer.canvas.js"></script>
 
 
-<script src="loadflames.js"></script>
-<script src="gowiththeflow.js"></script>
+<script src="../vendor/loadtremulousparticles.js"></script>
 
 <body><script>
 	var urls	= [
@@ -52,7 +51,7 @@
 	];
 	var images	= null;
 
-	loadFlames(urls, function(images){
+	loadTremulousParticles(urls, function(images){
 		console.log("images", images)
 		// create a canvas
 		var canvas	= document.createElement('canvas');

@@ -9,6 +9,7 @@ Fireworks.EffectsStackBuilder.prototype.lifeTime	= function(minAge, maxAge)
 	if( maxAge === undefined )	maxAge	= minAge;
 	console.assert( maxAge !== undefined )
 	// create the effect itself
+	var emitter	= this._emitter;
 	Fireworks.createEffect('lifeTime', {
 		minAge	: minAge,
 		maxAge	: maxAge, 

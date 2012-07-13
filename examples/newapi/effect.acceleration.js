@@ -8,7 +8,7 @@ Fireworks.EffectsStackBuilder.prototype.acceleration	= function(opts)
 	console.assert( opts.shape instanceof Fireworks.Shape );
 	// create the effect itself
 	Fireworks.createEffect(effectId, {
-		shape	: this.opts.shape
+		shape	: opts.shape
 	}).onCreate(function(particle){
 		particle.set('acceleration', {
 			vector	: new Fireworks.Vector()
