@@ -2,9 +2,15 @@
 	position	: absolute;
 	top		: 0px;
 	right		: 20px;
-	background-color: green;
+	background-color: #888888;
 	padding		: 10px; 
+	font-family	: arial;
+	border-bottom-right-radius	: 10px 10px;
+	border-bottom-left-radius	: 10px 10px;
 }
+
 .ezgui thead {
-	background-color: red;
+	background-color: #aaaaaa;
+	font-size	: 130%;
+	font-weight	: 400; 
 }

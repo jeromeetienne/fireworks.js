@@ -22,7 +22,7 @@ Ezgui.prototype.container	= function(){
 }
 
 //////////////////////////////////////////////////////////////////////////////////
-//										//
+//		Ezgui.Folder							//
 //////////////////////////////////////////////////////////////////////////////////
 
 Ezgui.Folder	= function(label){
@@ -82,25 +82,60 @@ Ezgui.Folder.prototype.add	= function(obj, property, opts){
 	// create <tr>
 	var trEl	= document.createElement('tr');
 	this._tbodyEl.appendChild(trEl);
-	// create <td>
+
+	// create <td> for label
 	var tdEl	= document.createElement('td');
 	trEl.appendChild(tdEl);
 	tdEl.innerText	= opts.label	|| property;
-	// create <td>
+
+	// create <td> for input
 	var tdEl	= document.createElement('td');
 	trEl.appendChild(tdEl);
-	// create <input>
-	var inputEl	= document.createElement('input');
-	tdEl.appendChild(inputEl);
-
-	// configure <input>
-	if( typeof(obj[property]) === 'number' ){
-		inputEl.type	= 'range';	
-	}else{
-		
-	}
 	
-	inputEl.value	= obj[property];
+	for(var i = 0; i < Ezgui.Handlers.length; i++){
+		var handler	= Ezgui.Handlers[i];
+		if( !handler.canBuild(obj, property) )	continue;
+		var inputEl	= handler.doBuild(tdEl, obj, property, opts)
+		break;
+	}
+	console.assert( i !== Ezgui.Handlers.length );
 	
 	return inputEl;
 }
+
+
+//////////////////////////////////////////////////////////////////////////////////
+//		Ezgui.Handlers							//
+//////////////////////////////////////////////////////////////////////////////////
+
+Ezgui.Handlers	= [];
+
+
+Ezgui.Handlers.push({
+	name	: "handlerNumber",
+	canBuild: function(obj, property, opts){
+		return typeof(obj[property]) === 'number' ? true : false;
+	},
+	doBuild	: function(tdEl, obj, property, opts){
+		var inputEl	= document.createElement('input');
+		tdEl.appendChild(inputEl);
+		inputEl.type	= 'range';	
+		inputEl.value	= obj[property];
+		return inputEl;
+	}
+});
+
+Ezgui.Handlers.push({
+	name	: "handlerString",
+	canBuild: function(obj, property, opts){
+		return typeof(obj[property]) === 'string' ? true : false;
+	},
+	doBuild	: function(tdEl, obj, property, opts){
+		var inputEl	= document.createElement('input');
+		tdEl.appendChild(inputEl);
+		inputEl.type	= 'text';	
+		inputEl.value	= obj[property];
+		return inputEl;
+	}
+});
+
