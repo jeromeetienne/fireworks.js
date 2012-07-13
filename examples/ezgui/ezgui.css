@@ -1,0 +1,10 @@
+.ezgui {
+	position	: absolute;
+	top		: 0px;
+	right		: 20px;
+	background-color: green;
+	padding		: 10px; 
+}
+.ezgui thead {
+	background-color: red;
+}

@@ -1,0 +1,61 @@
+<!doctype html>
+<link rel='stylesheet' href='ezgui.css'></link>
+<body>
+	<script src='ezgui.js'></script>
+<!--
+	<div class='ezgui'>
+		<table>
+			<thead>
+				<tr>
+					<td colspan="2">	
+						Super Title
+					</td>
+				</tr>
+			</thead>
+			<tr>
+				<td><label>extext</label></td>
+				<td><input type='text'></td>
+			</tr>
+			<tr>
+				<td>exnumber</td>
+				<td><input type='number'></td>
+			</tr>
+			<tr>
+				<td>exrange</td>
+				<td><input type='range'></td>
+			</tr>
+			<tr>
+				<td>excolor</td>
+				<td>
+					<input type='color'>
+					<input type='color'>
+				</td>
+			</tr>
+		</table>
+	</div>
+-->
+
+	<script>
+	
+		var opts	= {
+			myNum	: 0.1,
+			myStr	: 'superstr'
+		};
+	
+		var ezgui	= new Ezgui();
+		var folder	= ezgui.addFolder('super folder')
+		var element	= folder.add(opts, 'myNum', {
+			label	: 'wow'
+			// min	: 
+			// max	:
+			// step	:
+		});
+
+		var folder	= ezgui.addFolder('crappy folder')
+		var element	= folder.add(opts, 'myStr');
+
+		ezgui._domElement.addEventListener('change', function(){
+			console.log('channnn')
+		});
+	</script>
+</body>
