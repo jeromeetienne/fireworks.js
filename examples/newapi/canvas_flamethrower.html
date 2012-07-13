@@ -98,10 +98,9 @@
 
 						var width	= image.width	* 2;
 						var height	= image.height	* 2;
-						ctx.drawImage(image
-							, position.x - width /2 - 450
-							, position.y - height/2
-							, width, height)
+						var positionX	= position.x - width /2 - 450;
+						var positionY	= position.y - height/2;
+						ctx.drawImage(image, positionX, positionY, width, height);
 					}).back()
 				.back()
 			.start();
