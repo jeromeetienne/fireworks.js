@@ -32,9 +32,17 @@
 	var world	= tQuery.createWorld().boilerplate().start();
 	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
 
+	world.camera().position.z	= 6;
+	
+	world.getCameraControls().rangeX	/= -4;
+	world.getCameraControls().rangeY	/= -4;
+
+	world.getCameraControls().speedX	*= 4;
+	world.getCameraControls().speedY	*= 4;
+
 	var urls	= [
 		// "../assets/images/flame/flame00.png",
-		"../assets/images/flame/flame01.png",
+		//"../assets/images/flame/flame01.png",
 		"../assets/images/flame/flame02.png",
 		"../assets/images/flame/flame03.png",
 		"../assets/images/flame/flame04.png",
@@ -57,7 +65,7 @@
 		"../assets/images/flame/flame21.png",
 		"../assets/images/flame/flame22.png",
 		"../assets/images/flame/flame23.png",
-//		"../assets/images/flame/flame24.png"
+		"../assets/images/flame/flame24.png"
 	];
 
 
@@ -69,23 +77,23 @@
 		texture.needsUpdate = true;
 	
 		var emitter	= Fireworks.createEmitter({nParticles : 200})
-			.useSpawnerSteadyRate(15)
+			.useSpawnerSteadyRate(10)
 			.bindTriggerDomEvents()
 			.effectsStackBuilder()
 				.position(Fireworks.createShapeSphere(0, 0, 0, 0.1))
-				.velocity(Fireworks.createShapeSphere(60, 0, 5, 5))
+				.velocity(Fireworks.createShapeSphere(0, 0, -20, 2))
 				.lifeTime(1.5)
-				.friction(0.98)
+				// .friction(0.98)
 				.acceleration({
 					effectId	: 'gravity',
-					shape		: Fireworks.createShapePoint(0, 20, 0)
+					shape		: Fireworks.createShapePoint(0, 8, 0)
 				})
-				//.randomVelocityDrift(Fireworks.createVector(0, 30, 30))
+				.randomVelocityDrift(Fireworks.createVector(5, 5, 0))
 				.createEffect('scale', {
-						factor	: 1.01
+						factor	: 1.005
 					}).onBirth(function(particle){
 						var object3d	= particle.get('threejsObject3D').object3d;
-						var scale	= 1/12;
+						var scale	= 1/20;
 						object3d.scale.set(scale, scale, scale)
 					}).onUpdate(function(particle, deltaTime){
 						var object3d	= particle.get('threejsObject3D').object3d;
@@ -95,7 +103,7 @@
 					container	: world,
 					create		: function(){
 						var object3d	= new THREE.Sprite({
-							color			: 0xAA4488,
+							//color			: 0xAA4488,
 							useScreenCoordinates	: false,
 							map			: texture,
 							blending		: THREE.AdditiveBlending,
