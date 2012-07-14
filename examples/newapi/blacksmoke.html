@@ -46,7 +46,7 @@
 		.effectsStackBuilder()
 			.position(Fireworks.createShapeBox(0,-0.8, 0, 0.20, 0.0001, 0.20))
 			.velocity(Fireworks.createShapeBox(0, 0.5, 0, 0.20, 0.0001, 0.20))
-			.friction()
+			.friction(1)
 			.lifeTime(6)
 			.createEffect()
 				.onBirth(function(particle){
