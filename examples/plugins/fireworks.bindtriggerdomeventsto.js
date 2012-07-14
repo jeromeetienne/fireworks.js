@@ -3,7 +3,6 @@ Fireworks.Emitter.prototype.bindTriggerDomEvents	= function(domElement){
 	return this;	// for chained API
 }
 
-
 Fireworks.BindTriggerDomEvents	= function(emitter, domElement){
 	this._domElement= domElement	|| document.body;
 
