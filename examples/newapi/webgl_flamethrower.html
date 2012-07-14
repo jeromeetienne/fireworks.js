@@ -1,0 +1,115 @@
+<!doctype html><title>Example of firework.js</title>
+<script src="../vendor/tquery-bundle.js"></script>
+
+<script src="../../src/core.js"></script>
+<script src="../../src/emitter.js"></script>
+<script src="../../src/particle.js"></script>
+<script src="../../src/effect.js"></script>
+<script src="../../src/spawner.js"></script>
+<script src="../../src/shape.js"></script>
+<script src="../../src/vector.js"></script>
+
+<script src="../plugins/fireworks.bindtriggerdomeventsto.js"></script>
+
+<script src="../plugins/spawner.rate.js"></script>
+<script src="../plugins/shape.box.js"></script>
+<script src="../plugins/shape.sphere.js"></script>
+<script src="../plugins/shape.point.js"></script>
+
+<script src="./effect.friction.js"></script>
+<script src="./effect.lifetime.js"></script>
+<script src="./effect.position.js"></script>
+<script src="./effect.velocity.js"></script>
+<script src="./effect.acceleration.js"></script>
+<script src="./effect.radialvelocity.js"></script>
+<script src="./effect.randomvelocitydrift.js"></script>
+<script src="./effect.rendertocanvas.js"></script>
+<script src="./effect.rendertothreejsobject3d.js"></script>
+
+<script src="../vendor/loadtremulousparticles.js"></script>
+
+<body><script>
+	var world	= tQuery.createWorld().boilerplate().start();
+	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
+
+	var urls	= [
+		"../assets/images/flame/flame00.png",
+		"../assets/images/flame/flame01.png",
+		"../assets/images/flame/flame02.png",
+		"../assets/images/flame/flame03.png",
+		"../assets/images/flame/flame04.png",
+		"../assets/images/flame/flame05.png",
+		"../assets/images/flame/flame06.png",
+		"../assets/images/flame/flame07.png",
+		"../assets/images/flame/flame08.png",
+		"../assets/images/flame/flame09.png",
+		"../assets/images/flame/flame10.png",
+		"../assets/images/flame/flame11.png",
+		"../assets/images/flame/flame12.png",
+		"../assets/images/flame/flame13.png",
+		"../assets/images/flame/flame14.png",
+		"../assets/images/flame/flame15.png",
+		"../assets/images/flame/flame16.png",
+		"../assets/images/flame/flame17.png",
+		"../assets/images/flame/flame18.png",
+		"../assets/images/flame/flame19.png",
+		"../assets/images/flame/flame20.png",
+		"../assets/images/flame/flame21.png",
+		"../assets/images/flame/flame22.png",
+		"../assets/images/flame/flame23.png",
+		"../assets/images/flame/flame24.png"
+	];
+
+
+	loadTremulousParticles(urls, function(images){
+		//console.log("images", images)
+		console.log("all images loaded");
+		var url		= "../assets/images/tremulous/psaw/blue_particle.jpg";
+		var url		= "../assets/images/flame/flame17.png";
+		var texture	= THREE.ImageUtils.loadTexture( url );
+		var emitter	= Fireworks.createEmitter({nParticles : 200})
+			.useSpawnerSteadyRate(15)
+			.bindTriggerDomEvents()
+			.effectsStackBuilder()
+				.position(Fireworks.createShapeSphere(0, 0, 0, 0.1))
+				.velocity(Fireworks.createShapeSphere(8, 0, 0, 1.0))
+				.lifeTime(1.5)
+				.renderToThreejsObject3D({
+					container	: world,
+					create		: function(){
+						var object3d	= new THREE.Sprite({
+							//color			: 0xAA4488,
+							useScreenCoordinates	: false,
+							map			: texture,
+							blending		: THREE.AdditiveBlending,
+							transparent		: true
+						});
+						object3d.opacity= 0.8;
+						var scale	= 1/12;
+						object3d.scale.set(scale, scale, scale)
+						
+						//object3d.uvOffset.set(0.5, 0.5)
+						//object3d.uvScale.set(0.5, 0.5)
+						
+						return object3d;
+					}	
+				})
+				.back()
+			.start();
+
+		world.loop().hook(function(delta, now){
+			emitter.update(delta).render();
+		})
+	});
+</script></body>
+
+
+
+
+
+
+
+
+
+
+
