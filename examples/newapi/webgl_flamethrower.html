@@ -32,7 +32,7 @@
 	var world	= tQuery.createWorld().boilerplate().start();
 	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
 
-	world.camera().position.z	= 6;
+	world.camera().position.z	= 10;
 	
 	world.getCameraControls().rangeX	/= -4;
 	world.getCameraControls().rangeY	/= -4;
@@ -77,23 +77,23 @@
 		texture.needsUpdate = true;
 	
 		var emitter	= Fireworks.createEmitter({nParticles : 200})
-			.useSpawnerSteadyRate(10)
+			.useSpawnerSteadyRate(30)
 			.bindTriggerDomEvents()
 			.effectsStackBuilder()
-				.position(Fireworks.createShapeSphere(0, 0, 0, 0.1))
-				.velocity(Fireworks.createShapeSphere(0, 0, -20, 2))
+				.position(Fireworks.createShapeSphere(0, 0, 0, 0.01))
+				.velocity(Fireworks.createShapeSphere(0, 0, -30, 0.1))
 				.lifeTime(1.5)
-				// .friction(0.98)
+				.friction(0.99)
 				.acceleration({
 					effectId	: 'gravity',
-					shape		: Fireworks.createShapePoint(0, 8, 0)
+					shape		: Fireworks.createShapePoint(0, 5, 0)
 				})
-				.randomVelocityDrift(Fireworks.createVector(5, 5, 0))
+				//.randomVelocityDrift(Fireworks.createVector(2, 2, 0))
 				.createEffect('scale', {
-						factor	: 1.005
+						factor	: 1.01
 					}).onBirth(function(particle){
 						var object3d	= particle.get('threejsObject3D').object3d;
-						var scale	= 1/20;
+						var scale	= 1/30;
 						object3d.scale.set(scale, scale, scale)
 					}).onUpdate(function(particle, deltaTime){
 						var object3d	= particle.get('threejsObject3D').object3d;
@@ -110,7 +110,7 @@
 							transparent		: true
 						});
 	
-						object3d.opacity= 1;
+						object3d.opacity= 0.9; 
 						
 						object3d.rotation	= Math.floor(Math.random()*Math.PI*2);
 						
