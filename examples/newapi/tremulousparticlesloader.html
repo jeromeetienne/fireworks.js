@@ -51,9 +51,8 @@
 	];
 	var images	= null;
 
-	new TremulousParticuleLoader(urls, function(spriteSheet, images){
-		console.log("images", images)
-		//return;
+	new TremulousParticuleLoader(urls, function(spriteSheet){
+		console.log("spriteSheet", spriteSheet)
 		// create a canvas
 		var canvas	= document.createElement('canvas');
 		canvas.width	= 128;
@@ -65,10 +64,9 @@
 		setInterval(function(){
 			var now		= Date.now()/1000;
 			var idx		= Math.floor( (now*30) % 25 );
-			var image	= images[idx];
 			ctx.fillStyle	= "rgba(1,1,1,1)";
 			ctx.fillRect(0, 0, canvas.width, canvas.height);
-			ctx.drawImage(image, 0, 0);
+			ctx.drawImage(spriteSheet, 0, idx*128, 128, 128, 0, 0, 128, 128)
 		}, 1/60)
 	});
 

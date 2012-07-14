@@ -1,7 +1,5 @@
 function TremulousParticuleLoader(urls, callback){
 	var spriteSheet	= null;
-	
-	var canvases	= new Array(urls.length)
 
 	// load all the images and convert them
 	var flow	= Flow();
@@ -25,9 +23,6 @@ function TremulousParticuleLoader(urls, callback){
 				// draw it on the spritesheet
 				var ctx		= spriteSheet.getContext('2d');
 				ctx.drawImage(result, 0, image.height * idx);
-
-
-				canvases[idx]	= result;
 				// goto the next step								
 				next();
 			};
@@ -39,7 +34,7 @@ function TremulousParticuleLoader(urls, callback){
 	flow.seq(function(){
 		//console.log("all flow completed")
 		// notify the caller
-		callback(spriteSheet, canvases, urls);
+		callback(spriteSheet, urls);
 	})
 
 	/**
