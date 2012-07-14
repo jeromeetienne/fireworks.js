@@ -8,6 +8,8 @@
 <script src="../../src/shape.js"></script>
 <script src="../../src/vector.js"></script>
 
+<script src="../plugins/fireworks.bindtriggerdomeventsto.js"></script>
+
 
 <script src="../plugins/spawner.rate.js"></script>
 <script src="../plugins/shape.box.js"></script>
@@ -43,6 +45,7 @@
 
 	var emitter	= Fireworks.createEmitter({nParticles : 400})
 		.useSpawnerSteadyRate(40)
+		.bindTriggerDomEvents()
 		.effectsStackBuilder()
 			.position(Fireworks.createShapeSphere(0, 0, 0, 10))
 			.radialVelocity(100, 200)
@@ -61,7 +64,8 @@
 				type	: 'arc'
 			})
 			.back()
-		.start();
+		.start()
+
 
 	setInterval(function(){
 		// clear the screen

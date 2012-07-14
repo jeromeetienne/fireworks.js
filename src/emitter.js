@@ -59,10 +59,20 @@ Fireworks.Emitter.prototype.effectsStackBuilder	= function(){
 	return this._effectsStackBuilder;
 }
 
-Fireworks.Emitter.prototype.setSpawner	= function(spawner){
+/**
+ * Getter/setter for spawner
+*/
+Fireworks.Emitter.prototype.spawner	= function(spawner){
+	if( spawner === undefined )	return this._spawner;
 	this._spawner	= spawner;
 	return this;	// for chained API
 }
+
+/**
+ * for backward compatibility only
+*/
+Fireworks.Emitter.prototype.setSpawner	= Fireworks.Emitter.prototype.spawner;
+
 
 //////////////////////////////////////////////////////////////////////////////////
 //		backward compatibility						//

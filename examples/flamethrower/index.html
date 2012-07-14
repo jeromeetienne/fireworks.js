@@ -87,7 +87,7 @@
 		emitter.pushInit2Shapes({
 			origin	: Fireworks.createShapeBox(0, 0, 0, 1, 1, 1),
 			target	: Fireworks.createShapeSphere(+800, 0, 0, 150),
-			speed	: 15
+			speed	: 20
 		});
 
 		Fireworks.createEffect('gravity', {
@@ -114,7 +114,7 @@
 			var width	= image.width	* 2;
 			var height	= image.height	* 2;
 			ctx.drawImage(image, 
-				position.x - width /2 - 250,
+				position.x - width /2 - 650,
 				position.y - height/2,
 				width, height)
 		}).pushTo(emitter);

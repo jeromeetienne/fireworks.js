@@ -8,6 +8,8 @@
 <script src="../../src/shape.js"></script>
 <script src="../../src/vector.js"></script>
 
+<script src="../plugins/fireworks.bindtriggerdomeventsto.js"></script>
+
 
 <script src="../plugins/spawner.rate.js"></script>
 <script src="../plugins/shape.box.js"></script>
@@ -43,7 +45,7 @@
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 	ctx.translate(canvas.width/2, canvas.height/2)
 
-	ctx.globalAlpha			= 0.2;
+	ctx.globalAlpha			= 0.5;
 	ctx.globalCompositeOperation	= 'lighter';
 
 	var urls	= [
@@ -80,26 +82,27 @@
 		console.log("all images loaded")
 		var emitter	= Fireworks.createEmitter({nParticles : 400})
 			.useSpawnerSteadyRate(60)
+			.bindTriggerDomEvents()
 			.effectsStackBuilder()
 				.position(Fireworks.createShapeSphere(0, 0, 0, 10))
-				.velocity(Fireworks.createShapeSphere(750, 0, 0, 150))
+				.velocity(Fireworks.createShapeSphere(800, 0, 0, 150))
 				.acceleration({
 					effectId	: 'gravity',
 					shape		: Fireworks.createShapePoint(0, -180, 0)
 				})
 				.lifeTime(1.5)
-				.randomVelocityDrift(Fireworks.createVector(0, 1000, 0))
+				.randomVelocityDrift(Fireworks.createVector(0, 500, 0))
 				.createEffect("renderer")
 					.onRender(function(particle){
 						var position	= particle.get('position').vector;
 						var canonAge	= particle.get('lifeTime').normalizedAge();
-						var imageIdx	= Math.floor(canonAge * (images.length-3));
-						var image	= images[imageIdx+3];
+						var imageIdx	= Math.floor(canonAge * (images.length-4));
+						var image	= images[imageIdx+4];
 
 						var width	= image.width	* 2;
 						var height	= image.height	* 2;
 						var positionX	= position.x - width /2 - 450;
-						var positionY	= position.y - height/2;
+						var positionY	= position.y - height/2; 
 						ctx.drawImage(image, positionX, positionY, width, height);
 					}).back()
 				.back()
