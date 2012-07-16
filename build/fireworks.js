@@ -36,6 +36,14 @@ Fireworks.Emitter.prototype.destroy	= function()
 Fireworks.Emitter.prototype.effects	= function(){
 	return this._effects;
 }
+Fireworks.Emitter.prototype.effectByName= function(name){
+	for(var i = 0; i < this._effects.length; i++){
+		var effect	= this._effects[i];
+		if( effect.name === name )	return effect;
+	}
+	return null;
+}
+
 Fireworks.Emitter.prototype.particles	= function(){
 	return this._particles;
 }
@@ -52,10 +60,20 @@ Fireworks.Emitter.prototype.effectsStackBuilder	= function(){
 	return this._effectsStackBuilder;
 }
 
-Fireworks.Emitter.prototype.setSpawner	= function(spawner){
+/**
+ * Getter/setter for spawner
+*/
+Fireworks.Emitter.prototype.spawner	= function(spawner){
+	if( spawner === undefined )	return this._spawner;
 	this._spawner	= spawner;
 	return this;	// for chained API
 }
+
+/**
+ * for backward compatibility only
+*/
+Fireworks.Emitter.prototype.setSpawner	= Fireworks.Emitter.prototype.spawner;
+
 
 //////////////////////////////////////////////////////////////////////////////////
 //		backward compatibility						//
@@ -63,13 +81,10 @@ Fireworks.Emitter.prototype.setSpawner	= function(spawner){
 
 Fireworks.Emitter.prototype.setParticleData	= function(particle, namespace, value){
 	particle.set(namespace, value);
-//	particle[namespace]	= value;
 }
 
 Fireworks.Emitter.prototype.getParticleData	= function(particle, namespace){
 	return particle.get(namespace);
-//	console.assert( particle[namespace] !== undefined, "namespace undefined: "+namespace );
-//	return particle[namespace];
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -161,6 +176,19 @@ Fireworks.Emitter.prototype.spawnParticle	= function(){
 	}.bind(this));
 }
 Fireworks.Spawner	= function(){
+	this._isRunning	= false;
+}
+
+Fireworks.Spawner.prototype.start	= function(){
+	this._isRunning	= true;
+}
+
+Fireworks.Spawner.prototype.stop	= function(){
+	this._isRunning	= false;
+}
+
+Fireworks.Spawner.prototype.isRunning	= function(){
+	return this._isRunning;
 }
 /**
  * The emitter of particles
@@ -171,12 +199,16 @@ Fireworks.Particle	= function(){
 Fireworks.Particle.prototype.set	= function(key, value){
 	console.assert( this[key] === undefined, "key already defined: "+key );
 	this[key]	= value;
-	return this;
+	return this[key];
 }
 
 Fireworks.Particle.prototype.get	= function(key){
 	console.assert( this[key] !== undefined, "key undefined: "+key );
 	return this[key];
+}
+
+Fireworks.Particle.prototype.has	= function(key){
+	return this[key] !== undefined	? true : false;
 }
 //////////////////////////////////////////////////////////////////////////////////
 //										//
@@ -207,7 +239,6 @@ Fireworks.createEffect	= function(name, opts){
 		opts	= name;
 		name	= undefined;
 	}
-	console.log("createEffect", name, opts)
 	
 	var effect	= new Fireworks.Effect();
 	effect.opts	= opts;
