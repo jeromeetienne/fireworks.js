@@ -1,0 +1,115 @@
+<!doctype html><title>Example of firework.js</title>
+<script src="../vendor/tquery-bundle.js"></script>
+
+<script src="../../src/core.js"></script>
+<script src="../../src/emitter.js"></script>
+<script src="../../src/particle.js"></script>
+<script src="../../src/effect.js"></script>
+<script src="../../src/spawner.js"></script>
+<script src="../../src/shape.js"></script>
+<script src="../../src/vector.js"></script>
+<script src="../../src/lineargradient.js"></script>
+
+<script src="../plugins/fireworks.bindtriggerdomeventsto.js"></script>
+
+<script src="../vendor/dat.gui.js"></script>
+<script src="../plugins/fireworks.datgui4emitter.js"></script>
+
+<script src="../plugins/spawner.rate.js"></script>
+<script src="../plugins/shape.box.js"></script>
+<script src="../plugins/shape.sphere.js"></script>
+<script src="../plugins/shape.point.js"></script>
+
+<script src="../plugins/effect.friction.js"></script>
+<script src="../plugins/effect.lifetime.js"></script>
+<script src="../plugins/effect.position.js"></script>
+<script src="../plugins/effect.randomvelocitydrift.js"></script>
+<script src="../plugins/effect.rendertocanvas.js"></script>
+<script src="../plugins/effect.rendertothreejsobject3d.js"></script>
+<script src="../plugins/effect.rendertothreejsparticlesystem.js"></script>
+<script src="../plugins/effect.velocity.js"></script>
+
+<body><script>
+	var world	= tQuery.createWorld().boilerplate().start();
+
+	var object	= tQuery.createTorus().addTo(world).rotateX(Math.PI/2).scale(1.25).translateY(-0.8);
+					
+	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/cloud10.png");
+
+	// a seb.ly example of smoke http://seb.ly/demos/JSParticles/Particles3_1.html
+	// http://www.clicktorelease.com/code/css3dclouds/
+
+	// create the emitter
+	var emitter	= Fireworks.createEmitter({nParticles : 50})
+		.useSpawnerSteadyRate(5)
+		.bindTriggerDomEvents()
+		.effectsStackBuilder()
+			.position(Fireworks.createShapeBox(0,-0.8, 0, 0.20, 0.0001, 0.20))
+			.velocity(Fireworks.createShapeBox(0, 0.5, 0, 0.20, 0.0001, 0.20))
+			.friction(1)
+			.lifeTime(6)
+			.createEffect()
+				.onBirth(function(particle){
+					var object3d	= particle.get('threejsObject3D').object3d;
+				 	var scale	= 1/300 * (Math.random() * 0.2 + 0.9);
+				 	object3d.scale.set(scale, scale, scale);
+					object3d.color.setHex( 0x010101*Math.floor(255*(Math.random()*0.1+0.3)) );
+					object3d.rotation	= Math.random() * Math.PI*2;
+				}).back()
+			.createEffect('scaleMul', {
+					factor	: 1.003
+				}).onUpdate(function(particle){
+					var object3d	= particle.get('threejsObject3D').object3d;
+					object3d.scale.multiplyScalar(this.opts.factor);
+				}).back()
+			.createEffect('frictionSlowDown', {
+					gradient	: Fireworks.createLinearGradient()
+								.push(0.00, 1.00)
+								.push(0.80, 1.00)
+								.push(0.90, 0.96)
+								.push(1.00, 0.96)
+				}).onUpdate(function(particle){
+					var normalizedAge	= particle.get('lifeTime').normalizedAge();
+					var pFriction		= particle.get('friction');
+					pFriction.value		= this.opts.gradient.get(normalizedAge);	
+				}).back()
+			.createEffect('opacity', {
+					gradient	: Fireworks.createLinearGradient()
+								.push(0.00, 0.00)
+								.push(0.05, 1.00)
+								.push(0.90, 1.00)
+								.push(1.00, 0.00)			
+				}).onUpdate(function(particle){
+					var object3d		= particle.get('threejsObject3D').object3d;
+					var normalizedAge	= particle.get('lifeTime').normalizedAge();
+					object3d.opacity	= this.opts.gradient.get(normalizedAge);	
+				}).back()
+			.renderToThreejsObject3D({
+				container	: world,
+				create		: function(){
+					return new THREE.Sprite({
+						map			: texture,
+						useScreenCoordinates	: false,
+					});
+				}	
+			}).back()
+		.start();
+
+
+	new Fireworks.DatGui4Emitter(emitter);
+
+	world.loop().hook(function(delta, now){
+		emitter.update(delta).render();
+	})
+</script></body>
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,80 @@
+<!doctype html><title>Example of firework.js</title>
+<script src="../vendor/tquery-bundle.js"></script>
+
+<script src="../../src/core.js"></script>
+<script src="../../src/emitter.js"></script>
+<script src="../../src/particle.js"></script>
+<script src="../../src/effect.js"></script>
+<script src="../../src/spawner.js"></script>
+<script src="../../src/shape.js"></script>
+<script src="../../src/vector.js"></script>
+
+
+<script src="../plugins/spawner.rate.js"></script>
+<script src="../plugins/shape.box.js"></script>
+<script src="../plugins/shape.sphere.js"></script>
+<script src="../plugins/shape.point.js"></script>
+
+<script src="../plugins/effect.friction.js"></script>
+<script src="../plugins/effect.lifetime.js"></script>
+<script src="../plugins/effect.position.js"></script>
+<script src="../plugins/effect.randomvelocitydrift.js"></script>
+<script src="../plugins/effect.rendertocanvas.js"></script>
+<script src="../plugins/effect.rendertothreejsobject3d.js"></script>
+<script src="../plugins/effect.velocity.js"></script>
+
+<body><script>
+	var world	= tQuery.createWorld().boilerplate().start();
+	var object	= tQuery.createTorus(0.8, 0.2, 32, 32).addTo(world).rotateZ(1*Math.PI/8);
+
+	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
+
+	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/tremulous/psaw/blue_particle.jpg" );
+
+	var emitter	= Fireworks.createEmitter({nParticles : 20})
+		.useSpawnerSteadyRate(20)
+		.effectsStackBuilder()
+			.position(Fireworks.createShapeSphere(0, 0, 0, 0.5))
+			.velocity(Fireworks.createShapePoint(0, 0, 0))
+			.createEffect('scale', {
+					birthScale	: 1/15,
+					mulScale	: 0.97
+				}).onBirth(function(particle, deltaTime){
+					var object3d	= particle.get('threejsObject3D').object3d;
+					object3d.scale.set(this.opts.birthScale, this.opts.birthScale, this.opts.birthScale);
+				}).onUpdate(function(particle, deltaTime){
+					var object3d	= particle.get('threejsObject3D').object3d;
+					object3d.scale.multiplyScalar( this.opts.mulScale )
+				}).back()
+			.friction(0.85)
+			.lifeTime(0.5, 1.5)
+			.randomVelocityDrift(Fireworks.createVector(0.5, 0.5, 0.5))
+			.renderToThreejsObject3D({
+				container	: world,			
+				create		: function(){
+					return new THREE.Sprite({
+						map			: texture,
+						useScreenCoordinates	: false,
+						color			: 0xAA4488,
+						blending		: THREE.AdditiveBlending,
+					});
+				}	
+			})
+			.back()
+		.start();
+
+	world.loop().hook(function(delta, now){
+		emitter.update(delta).render();
+	})
+</script></body>
+
+
+
+
+
+
+
+
+
+
+

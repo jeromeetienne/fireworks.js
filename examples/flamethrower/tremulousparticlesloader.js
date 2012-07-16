@@ -1,5 +1,5 @@
-function loadTremulousParticles(urls, callback){
-	var images	= new Array(urls.length);
+function TremulousParticuleLoader(urls, callback){
+	var spriteSheet	= null;
 
 	// load all the images and convert them
 	var flow	= Flow();
@@ -7,11 +7,24 @@ function loadTremulousParticles(urls, callback){
 		flow.par(function(next){
 			var image	= new Image;
 			image.onload	= function(){
-				convertTremulousImage(image, function(resultImage, originalImage){
-					//console.log("image converted", resultImage);
-					images[idx]	= resultImage;
-					next();
-				});
+				// init spriteSheet if needed
+				if( !spriteSheet ){
+					spriteSheet	= document.createElement('canvas');
+					spriteSheet.width	= image.width;
+					spriteSheet.height	= image.height * urls.length;	
+					//document.body.appendChild(spriteSheet)
+				}
+				console.assert(spriteSheet.width === image.width, 'All images must have the same size')
+				console.assert(spriteSheet.height === image.height * urls.length, 'All images must have the same size')
+				
+				
+				// convert the image
+				var result	= convertTremulousImage(image);
+				// draw it on the spritesheet
+				var ctx		= spriteSheet.getContext('2d');
+				ctx.drawImage(result, 0, image.height * idx);
+				// goto the next step								
+				next();
 			};
 			image.src	= url;
 		});
@@ -21,7 +34,7 @@ function loadTremulousParticles(urls, callback){
 	flow.seq(function(){
 		//console.log("all flow completed")
 		// notify the caller
-		callback(images, urls);
+		callback(spriteSheet, urls);
 	})
 
 	/**
@@ -55,13 +68,8 @@ function loadTremulousParticles(urls, callback){
 		}
 		// put the generated image in the canvas
 		ctx.putImageData(imgData, 0, 0);
-		// produce a Image object based on canvas.toDataURL
-		var newImage	= new Image;
-		newImage.onload	= function(){
-			// notify the caller
-			callback(newImage, image);
-		};
-		newImage.src	= ctx.canvas.toDataURL();
+		// return the resulting canvas
+		return ctx.canvas;
 	}
 
 	return;
