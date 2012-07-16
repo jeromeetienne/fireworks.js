@@ -12,7 +12,7 @@ function TremulousParticuleLoader(urls, callback){
 					spriteSheet	= document.createElement('canvas');
 					spriteSheet.width	= image.width;
 					spriteSheet.height	= image.height * urls.length;	
-					document.body.appendChild(spriteSheet)
+					//document.body.appendChild(spriteSheet)
 				}
 				console.assert(spriteSheet.width === image.width, 'All images must have the same size')
 				console.assert(spriteSheet.height === image.height * urls.length, 'All images must have the same size')
