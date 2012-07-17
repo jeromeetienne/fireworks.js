@@ -11,21 +11,9 @@ Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function(opts)
 	}).pushTo(this._emitter);
 	
 	
-	if( opts.type === 'arc' ){
-		effect.onCreate(function(particle, particleIdx){
-			particle.set('renderToCanvas', {
-				size	: 3
-				// TODO it may contains color too
-			});
-		}).onRender(function(particle){
-			var position	= particle.get('position').vector;
-			var size	= particle.get('renderToCanvas').size;
-
-			ctx.beginPath();
-			ctx.arc(position.x, position.y, size, 0, Math.PI*2, true); 
-			ctx.fill();					
-		})
-	}else{
+	if( opts.type === 'arc' )		ctorTypeArc(effect);
+	else if( opts.type === 'drawImage' )	ctorTypeDrawImage(effect);
+	else{
 		console.assert(false, 'renderToCanvas opts.type is invalid: ');
 	}
 
@@ -47,4 +35,45 @@ Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function(opts)
 		// return ctx
 		return ctx;
 	}
+
+	function ctorTypeArc(){
+		return effect.onCreate(function(particle, particleIdx){
+			particle.set('renderToCanvas', {
+				size	: 3
+				// TODO it may contains color too
+			});
+		}).onRender(function(particle){
+			var position	= particle.get('position').vector;
+			var size	= particle.get('renderToCanvas').size;
+
+			ctx.beginPath();
+			ctx.arc(position.x, position.y, size, 0, Math.PI*2, true); 
+			ctx.fill();					
+		});
+	};
+	function ctorTypeDrawImage(){
+		// handle parameter polymorphism
+		if( typeof(opts.image) === 'string' ){
+			var image	= new Image;
+			image.src	= opts.image;
+		}else if( opts.image instanceof Image ){
+			var image	= opts.image;
+		}else	console.assert('invalid .renderToCanvas() options')
+
+		return effect.onCreate(function(particle, particleIdx){
+			particle.set('renderToCanvas', {
+				size	: 3
+				// TODO it may contains color too
+			});
+		}).onRender(function(particle){
+			var position	= particle.get('position').vector;
+			var size	= particle.get('renderToCanvas').size;
+			
+			var width	= image.width	* size;
+			var height	= image.height	* size;
+			var positionX	= position.x - width /2;
+			var positionY	= position.y - height/2; 
+			ctx.drawImage(image, positionX, positionY, width, height);
+		});
+	};
 };

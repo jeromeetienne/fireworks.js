@@ -33,13 +33,8 @@
 	var container	= world.scene();
 	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
 
-	world.camera().position.z	= 50;
-	
 	world.removeCameraControls()
-	// world.getCameraControls().rangeX	/= -2;
-	// world.getCameraControls().rangeY	/= -4;
-	// world.getCameraControls().speedX	*= 4;
-	// world.getCameraControls().speedY	*= 4;
+	world.camera().position.z	= 50;
 
 	var urls	= [
 		// "../assets/images/flame/flame00.png",
@@ -134,12 +129,13 @@
 				.back()
 			.start();
 
+		// update the emitter in rendering loop
 		world.loop().hook(function(delta, now){
 			emitter.update(delta).render();
 		})
 		
 		document.body.addEventListener('mousemove', function(event){
-			// get mouse coordinate
+			// get mouse coordinate in [-1, +1]
 			var mouseX	= (event.clientX / window.innerWidth )*2 - 1;
 			var mouseY	= (event.clientY / window.innerHeight)*2 - 1;
 			
@@ -151,13 +147,11 @@
 			var matrix	= new THREE.Matrix4().makeRotationY(angleY).rotateX(angleX)
 			matrix.multiplyVector3(center);
 
-			// set gravity 
+			// set gravity in local space
 			var effect	= emitter.effectByName('gravity');
 			var matrix	= container.matrixWorld.clone().transpose();
 			var position	= effect.opts.shape.position.set(0, 20, 0);
 			matrix.multiplyVector3(position);
-
-			console.log(effect)
 		});
 	});
 </script></body>

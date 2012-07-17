@@ -58,9 +58,14 @@
 			.friction(0.985)
 			.lifeTime(2, 3)
 			.randomVelocityDrift(Fireworks.createVector(600, 600, 0))
+			// .renderToCanvas({
+			// 	ctx	: ctx,
+			// 	type	: 'arc'
+			// })
 			.renderToCanvas({
 				ctx	: ctx,
-				type	: 'arc'
+				type	: 'drawImage',
+				image	: "../assets/images/ParticleSmoke2.png"
 			})
 			.back()
 		.start()
