@@ -84,7 +84,7 @@
 				.position(Fireworks.createShapeSphere(0, 0,   0, 0.01))
 				.velocity(Fireworks.createShapeSphere(0, 0, -30, 0.1))
 				.lifeTime(1.5)
-				.friction(0.99)
+				.friction(0.98)
 				.acceleration({
 					effectId	: 'gravity',
 					shape		: Fireworks.createShapePoint(0, 5, 0)
@@ -92,8 +92,8 @@
 				//.randomVelocityDrift(Fireworks.createVector(1,1,0))
 				.randomVelocityDrift(Fireworks.createVector(0,0,9))
 				.createEffect('scale', {
-						origin	: 1/20,
-						factor	: 1.01
+						origin	: 1/8,
+						factor	: 1.005
 					}).onBirth(function(particle){
 						var object3d	= particle.get('threejsObject3D').object3d;
 						var scale	= this.opts.origin;
@@ -139,30 +139,25 @@
 		})
 		
 		document.body.addEventListener('mousemove', function(event){
+			// get mouse coordinate
 			var mouseX	= (event.clientX / window.innerWidth )*2 - 1;
 			var mouseY	= (event.clientY / window.innerHeight)*2 - 1;
+			
+			// set velocity direction
 			var angleY	= Math.PI - mouseX * Math.PI;
-			var angleX	= mouseY * Math.PI/2 * 1/2;
-			
-			var speed	= 20;
-
+			var angleX	=           mouseY * Math.PI;
 			var effect	= emitter.effectByName('velocity');
-			var center	= effect.opts.shape.center;
-			
-			center.set(0, 0, speed);
+			var center	= effect.opts.shape.center.set(0, 0, 40);
 			var matrix	= new THREE.Matrix4().makeRotationY(angleY).rotateX(angleX)
 			matrix.multiplyVector3(center);
 
-
+			// set gravity 
 			var effect	= emitter.effectByName('gravity');
-			console.log(effect)
-			
 			var matrix	= container.matrixWorld.clone().transpose();
-			var vector	= new THREE.Vector3(0, 20, 0);
-			matrix.multiplyVector3(vector);
+			var position	= effect.opts.shape.position.set(0, 20, 0);
+			matrix.multiplyVector3(position);
 
-			var position	= effect.opts.shape.position
-			position.copy(vector)
+			console.log(effect)
 		});
 	});
 </script></body>
