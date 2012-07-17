@@ -12,7 +12,7 @@ Fireworks.EffectsStackBuilder.prototype.lifeTime	= function(minAge, maxAge)
 	var emitter	= this._emitter;
 	Fireworks.createEffect('lifeTime', {
 		minAge	: minAge,
-		maxAge	: maxAge, 
+		maxAge	: maxAge
 	}).onCreate(function(particle){
 		var data	= particle.set('lifeTime', {
 			curAge	: 0,

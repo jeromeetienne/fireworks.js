@@ -13,7 +13,7 @@ Fireworks.EffectsStackBuilder.prototype.friction	= function(value)
 	Fireworks.createEffect('friction')
 	.onCreate(function(particle, particleIdx){
 		particle.set('friction', {
-			value	: value,
+			value	: value
 		});
 	})
 	.onBirth(function(particle){
