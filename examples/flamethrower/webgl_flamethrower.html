@@ -1,0 +1,179 @@
+<!doctype html><title>Example of firework.js</title>
+<script src="../vendor/tquery-bundle.js"></script>
+
+<script src="../../src/core.js"></script>
+<script src="../../src/emitter.js"></script>
+<script src="../../src/particle.js"></script>
+<script src="../../src/effect.js"></script>
+<script src="../../src/spawner.js"></script>
+<script src="../../src/shape.js"></script>
+<script src="../../src/vector.js"></script>
+
+<script src="../plugins/fireworks.bindtriggerdomeventsto.js"></script>
+
+<script src="../plugins/spawner.rate.js"></script>
+<script src="../plugins/shape.box.js"></script>
+<script src="../plugins/shape.sphere.js"></script>
+<script src="../plugins/shape.point.js"></script>
+
+<script src="../plugins/effect.friction.js"></script>
+<script src="../plugins/effect.lifetime.js"></script>
+<script src="../plugins/effect.position.js"></script>
+<script src="../plugins/effect.velocity.js"></script>
+<script src="../plugins/effect.acceleration.js"></script>
+<script src="../plugins/effect.radialvelocity.js"></script>
+<script src="../plugins/effect.randomvelocitydrift.js"></script>
+<script src="../plugins/effect.rendertocanvas.js"></script>
+<script src="../plugins/effect.rendertothreejsobject3d.js"></script>
+
+<script src="./tremulousparticlesloader.js"></script>
+
+<body><script>
+	var world	= tQuery.createWorld().boilerplate().start();
+	var container	= world.scene();
+	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
+
+	world.camera().position.z	= 50;
+	
+	world.removeCameraControls()
+	// world.getCameraControls().rangeX	/= -2;
+	// world.getCameraControls().rangeY	/= -4;
+	// world.getCameraControls().speedX	*= 4;
+	// world.getCameraControls().speedY	*= 4;
+
+	var urls	= [
+		// "../assets/images/flame/flame00.png",
+		//"../assets/images/flame/flame01.png",
+		"../assets/images/flame/flame02.png",
+		"../assets/images/flame/flame03.png",
+		"../assets/images/flame/flame04.png",
+		"../assets/images/flame/flame05.png",
+		"../assets/images/flame/flame06.png",
+		"../assets/images/flame/flame07.png",
+		"../assets/images/flame/flame08.png",
+		"../assets/images/flame/flame09.png",
+		"../assets/images/flame/flame10.png",
+		"../assets/images/flame/flame11.png",
+		"../assets/images/flame/flame12.png",
+		"../assets/images/flame/flame13.png",
+		"../assets/images/flame/flame14.png",
+		"../assets/images/flame/flame15.png",
+		"../assets/images/flame/flame16.png",
+		"../assets/images/flame/flame17.png",
+		"../assets/images/flame/flame18.png",
+		"../assets/images/flame/flame19.png",
+		"../assets/images/flame/flame20.png",
+		"../assets/images/flame/flame21.png",
+		"../assets/images/flame/flame22.png",
+		"../assets/images/flame/flame23.png",
+		"../assets/images/flame/flame24.png"
+	];
+
+
+	new TremulousParticuleLoader(urls, function(spriteSheet){
+		//console.log("images", images)
+		console.log("all images loaded");
+
+		var texture	= new THREE.Texture( spriteSheet );
+		texture.needsUpdate = true;
+	
+		var emitter	= Fireworks.createEmitter({nParticles : 200})
+			.useSpawnerSteadyRate(20)
+			.bindTriggerDomEvents()
+			.effectsStackBuilder()
+				.position(Fireworks.createShapeSphere(0, 0,   0, 0.01))
+				.velocity(Fireworks.createShapeSphere(0, 0, -30, 0.1))
+				.lifeTime(1.5)
+				.friction(0.99)
+				.acceleration({
+					effectId	: 'gravity',
+					shape		: Fireworks.createShapePoint(0, 5, 0)
+				})
+				//.randomVelocityDrift(Fireworks.createVector(1,1,0))
+				.randomVelocityDrift(Fireworks.createVector(0,0,9))
+				.createEffect('scale', {
+						origin	: 1/20,
+						factor	: 1.01
+					}).onBirth(function(particle){
+						var object3d	= particle.get('threejsObject3D').object3d;
+						var scale	= this.opts.origin;
+						object3d.scale.set(scale, scale, scale)
+					}).onUpdate(function(particle, deltaTime){
+						var object3d	= particle.get('threejsObject3D').object3d;
+						object3d.scale.multiplyScalar(this.opts.factor);
+					}).back()
+				.renderToThreejsObject3D({
+					container	: container,
+					create		: function(){
+						var object3d	= new THREE.Sprite({
+							//color			: 0xffaacc,
+							useScreenCoordinates	: false,
+							map			: texture,
+							blending		: THREE.AdditiveBlending,
+							transparent		: true
+						});
+	
+						object3d.opacity= 0.9; 
+						
+						object3d.rotation	= Math.floor(Math.random()*Math.PI*2);
+						
+						object3d.uvScale.set(1, 1/urls.length)
+						
+						return object3d;
+					}	
+				})
+				.createEffect("renderer")
+					.onUpdate(function(particle, deltaTime){
+						var object3d	= particle.get('threejsObject3D').object3d;
+						var canonAge	= particle.get('lifeTime').normalizedAge();
+						var imageIdx	= Math.floor(canonAge * (urls.length));
+						var uvOffsetY	= imageIdx * 1/urls.length;
+						object3d.uvOffset.set(0, uvOffsetY)
+					}).back()
+
+				.back()
+			.start();
+
+		world.loop().hook(function(delta, now){
+			emitter.update(delta).render();
+		})
+		
+		document.body.addEventListener('mousemove', function(event){
+			var mouseX	= (event.clientX / window.innerWidth )*2 - 1;
+			var mouseY	= (event.clientY / window.innerHeight)*2 - 1;
+			var angleY	= Math.PI - mouseX * Math.PI;
+			var angleX	= mouseY * Math.PI/2 * 1/2;
+			
+			var speed	= 20;
+
+			var effect	= emitter.effectByName('velocity');
+			var center	= effect.opts.shape.center;
+			
+			center.set(0, 0, speed);
+			var matrix	= new THREE.Matrix4().makeRotationY(angleY).rotateX(angleX)
+			matrix.multiplyVector3(center);
+
+
+			var effect	= emitter.effectByName('gravity');
+			console.log(effect)
+			
+			var matrix	= container.matrixWorld.clone().transpose();
+			var vector	= new THREE.Vector3(0, 20, 0);
+			matrix.multiplyVector3(vector);
+
+			var position	= effect.opts.shape.position
+			position.copy(vector)
+		});
+	});
+</script></body>
+
+
+
+
+
+
+
+
+
+
+

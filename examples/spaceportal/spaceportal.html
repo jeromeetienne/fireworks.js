@@ -11,10 +11,11 @@
 	var url		= "../assets/images/tremulous/psaw/blue_particle.jpg";
 	var texture	= THREE.ImageUtils.loadTexture( url );
 
-	var emitter	= Fireworks.createEmitter({nParticles : 40})
+	var emitter	= Fireworks.createEmitter({nParticles : 80})
 		.useSpawnerSteadyRate(25)
 		.effectsStackBuilder()
 			.position(Fireworks.createShapeSphere(0, 0, 0, 0.6))
+			.lifeTime(0.5)
 			.createEffect('scale', {
 					birthScale	: 1/12,
 					mulScale	: 0.85
@@ -26,7 +27,6 @@
 					var object3d	= particle.get('threejsObject3D').object3d;
 					object3d.scale.multiplyScalar( this.opts.mulScale )
 				}).back()
-			.lifeTime(0.5)
 			.renderToThreejsObject3D({
 				container	: world,
 				create		: function(){

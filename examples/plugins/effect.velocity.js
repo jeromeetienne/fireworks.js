@@ -3,7 +3,7 @@
 */
 Fireworks.EffectsStackBuilder.prototype.velocity	= function(shape)
 {
-	Fireworks.createEffect('Velocity', {
+	Fireworks.createEffect('velocity', {
 		shape	: shape
 	}).onCreate(function(particle){
 		particle.set('velocity', {
