@@ -9,8 +9,8 @@ Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function(opts)
 	var effect	= Fireworks.createEffect('renderToCanvas', {
 		ctx	: ctx
 	}).pushTo(this._emitter);
-	
-	
+
+
 	if( opts.type === 'arc' )		ctorTypeArc(effect);
 	else if( opts.type === 'drawImage' )	ctorTypeDrawImage(effect);
 	else{
