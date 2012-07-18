@@ -39,7 +39,6 @@
 	// clear canvas and center it
 	ctx.fillStyle	= 'rgba(0,0,0,1)';
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
-	ctx.translate(canvas.width/2, canvas.height/2)
 
 	var emitter	= Fireworks.createEmitter({nParticles : 400})
 		.useSpawnerSteadyRate(40)
@@ -74,11 +73,9 @@
 		// clear the screen
 		ctx.save();
 		ctx.globalAlpha = 0.025;
-		ctx.fillStyle = "rgb(0,0,0)";
-		ctx.fillRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height);
+		ctx.fillStyle	= 'rgba(0,0,0,1)';
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
 		ctx.restore();
-		// set the fillStyle of the particles
-		ctx.fillStyle	= 'rgba(127,0,255, 0.2)';
 		
 		// update emitter and render it
 		var deltaTime	= 1/60;
