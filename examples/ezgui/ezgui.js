@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////////
-//										//
+//                    //
 //////////////////////////////////////////////////////////////////////////////////
 
 var Ezgui = function() {
@@ -8,16 +8,30 @@ var Ezgui = function() {
   this._domElement.classList.add('ezgui');
   this._domElement.classList.add('ezgui');
   document.body.appendChild(this._domElement);
+
+  // create content div
+  this._contentElement = document.createElement('div');
+  this._contentElement.classList.add('content');
+  this._domElement.appendChild(this._contentElement);
+
+  // create toggle div
+  this._toggleElement = document.createElement('div');
+  this._toggleElement.classList.add('toggle');
+  this._domElement.appendChild(this._toggleElement);
 };
 
 Ezgui.prototype.addFolder = function(label) {
   var folder = new Ezgui.Folder(label);
-  this._domElement.appendChild(folder.container());
+  this.content().appendChild(folder.container());
   return folder;
 };
 
 Ezgui.prototype.container = function() {
   return this._domElement;
+};
+
+Ezgui.prototype.content = function() {
+  return this._contentElement;
 };
 
 // ////////////////////////////////////////////////////////////////////////////////
