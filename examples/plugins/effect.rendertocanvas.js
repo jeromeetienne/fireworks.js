@@ -46,7 +46,8 @@ Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function(opts)
 			var size	= particle.get('renderToCanvas').size;
 
 			ctx.beginPath();
-			ctx.arc(position.x, position.y, size, 0, Math.PI*2, true); 
+			ctx.arc(position.x + canvas.width /2, 
+				position.y + canvas.height/2, size, 0, Math.PI*2, true); 
 			ctx.fill();					
 		});
 	};

@@ -40,6 +40,8 @@
 	ctx.fillStyle	= 'rgba(0,0,0,1)';
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+	ctx.fillStyle	= 'rgba(128,64,64,1)';
+
 	var emitter	= Fireworks.createEmitter({nParticles : 400})
 		.useSpawnerSteadyRate(40)
 		.bindTriggerDomEvents()
@@ -56,15 +58,15 @@
 			.friction(0.985)
 			.lifeTime(2, 3)
 			.randomVelocityDrift(Fireworks.createVector(600, 600, 0))
-			// .renderToCanvas({
-			// 	ctx	: ctx,
-			// 	type	: 'arc'
-			// })
 			.renderToCanvas({
 				ctx	: ctx,
-				type	: 'drawImage',
-				image	: "../assets/images/ParticleSmoke2.png"
+				type	: 'arc'
 			})
+			// .renderToCanvas({
+			// 	ctx	: ctx,
+			// 	type	: 'drawImage',
+			// 	image	: "../assets/images/ParticleSmoke2.png"
+			// })
 			.back()
 		.start()
 
