@@ -12,7 +12,7 @@ Fireworks.SpawnerOneShot	= function(nParticles){
 	Fireworks.Spawner.call( this );
 	// init class variables
 	this._nParticles	= nParticles	|| 1;
-	this._completed		= false;
+	this._nSent		= 0;
 	// start the spawner on init
 	this.start();
 }
@@ -23,11 +23,15 @@ Fireworks.SpawnerOneShot.prototype.constructor = Fireworks.SpawnerOneShot;
 
 Fireworks.SpawnerOneShot.prototype.update	= function(emitter, deltaTime){
 	// if already completed, do nothing
-	if( this._completed )	return;
+	if( this._nParticles === this._nSent )	return;
 	// spawn each particle
-	for(var i = 0; i < this._nParticles; i++){
+	var nParticles	= this._nParticles - this._nSent;
+	nParticles	= Math.min(nParticles, emitter.deadParticles().length);
+	for(var i = 0; i < nParticles; i++){
 		emitter.spawnParticle();
 	}
+	// update the amount of sent particles
+	this._nSent	+= nParticles;
 	// mark it as completed
 	this._completed	= true;
 }
@@ -36,5 +40,5 @@ Fireworks.SpawnerOneShot.prototype.update	= function(emitter, deltaTime){
  * reset the spawner
 */
 Fireworks.SpawnerOneShot.prototype.reset	= function(){
-	this._completed	= false;
+	this._nSent	= 0;
 }
