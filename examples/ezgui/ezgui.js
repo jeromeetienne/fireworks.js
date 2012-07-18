@@ -5,19 +5,20 @@
 var Ezgui = function() {
   // create the container
   this._domElement = document.createElement('div');
-  this._domElement.classList.add('ezgui');
-  this._domElement.classList.add('ezgui');
-  document.body.appendChild(this._domElement);
+  this.container().classList.add('ezgui');
+  this.container().classList.add('ezgui');
+  document.body.appendChild(this.container());
 
   // create content div
   this._contentElement = document.createElement('div');
-  this._contentElement.classList.add('content');
-  this._domElement.appendChild(this._contentElement);
-
+  this.content().classList.add('content');
+  this._domElement.appendChild(this.content());
+  
   // create toggle div
   this._toggleElement = document.createElement('div');
-  this._toggleElement.classList.add('toggle');
-  this._domElement.appendChild(this._toggleElement);
+  this.toggle().classList.add('toggle');
+  this.toggle().innerHTML = 'Close Controls';
+  this._domElement.appendChild(this.toggle());
 };
 
 Ezgui.prototype.addFolder = function(label) {
@@ -32,6 +33,10 @@ Ezgui.prototype.container = function() {
 
 Ezgui.prototype.content = function() {
   return this._contentElement;
+};
+
+Ezgui.prototype.toggle = function() {
+  return this._toggleElement;
 };
 
 // ////////////////////////////////////////////////////////////////////////////////

@@ -1,16 +1,37 @@
 .ezgui {
-	position	: absolute;
-	top		: 0px;
-	right		: 20px;
-	background-color: #888888;
-	padding		: 10px; 
-	font-family	: arial;
-	border-bottom-right-radius	: 10px 10px;
-	border-bottom-left-radius	: 10px 10px;
+	position: absolute;
+	top: 0px;
+	right: 20px;
+	color: #EEE;
+	font: 11px 'Lucida Grande', sans-serif;
+	text-shadow: 0 -1px 0 #111;
+	z-index: 100;
+}
+
+.ezgui table {
+	width: 100%;
+	border-spacing: 0px;
 }
 
 .ezgui thead {
 	background-color: #aaaaaa;
-	font-size	: 130%;
-	font-weight	: 400; 
+	font-weight: bold;
+}
+
+.ezgui tbody {
+	background: #1A1A1A;
+	border-bottom: 1px solid #2C2C2C;
+}
+
+.ezgui > .toggle {
+	border: 0;
+	line-height: 19px;
+	height: 20px;
+	cursor: pointer;
+	text-align: center;
+	background-color: black;
+}
+
+.ezgui > .toggle:hover {
+	background-color: #111;
 }
