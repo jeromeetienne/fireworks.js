@@ -4,7 +4,7 @@
 Fireworks.EffectsStackBuilder.prototype.position	= function(shape)
 {
 	console.assert( shape instanceof Fireworks.Shape );
-	Fireworks.createEffect('Position', {
+	Fireworks.createEffect('position', {
 		shape	: shape
 	}).onCreate(function(particle){
 		particle.set('position', {

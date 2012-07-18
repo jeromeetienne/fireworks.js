@@ -140,6 +140,10 @@ Fireworks.Emitter.prototype.render	= function(){
 			effect.onRender(particle);			
 		})
 	}.bind(this));
+	this._effects.forEach(function(effect){
+		if( !effect.onPostRender )	return;
+		effect.onPostRender();			
+	}.bind(this));
 	return this;	// for chained API
 }
 

@@ -57,6 +57,10 @@ Fireworks.createEffect	= function(name, opts){
 			effect.onRender	= val;
 			return methods;
 		},
+		onPostRender: function(val){
+			effect.onPostRender	= val;
+			return methods;
+		},
 		pushTo	: function(emitter){
 			emitter.effects().push(effect);
 			return methods;	
