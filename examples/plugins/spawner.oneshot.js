@@ -32,3 +32,9 @@ Fireworks.SpawnerOneShot.prototype.update	= function(emitter, deltaTime){
 	this._completed	= true;
 }
 
+/**
+ * reset the spawner
+*/
+Fireworks.SpawnerOneShot.prototype.reset	= function(){
+	this._completed	= false;
+}

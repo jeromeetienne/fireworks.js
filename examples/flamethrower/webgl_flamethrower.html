@@ -134,6 +134,7 @@
 			emitter.update(delta).render();
 		})
 		
+		// bind 'mousemove' to control the flamethrower velocity
 		document.body.addEventListener('mousemove', function(event){
 			// get mouse coordinate in [-1, +1]
 			var mouseX	= (event.clientX / window.innerWidth )*2 - 1;
