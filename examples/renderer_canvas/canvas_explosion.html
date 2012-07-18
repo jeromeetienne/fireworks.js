@@ -1,0 +1,97 @@
+<!doctype html><title>Example of firework.js</title>
+
+<script src="../../src/core.js"></script>
+<script src="../../src/emitter.js"></script>
+<script src="../../src/particle.js"></script>
+<script src="../../src/effect.js"></script>
+<script src="../../src/spawner.js"></script>
+<script src="../../src/shape.js"></script>
+<script src="../../src/vector.js"></script>
+
+<script src="../plugins/fireworks.bindtriggerdomeventsto.js"></script>
+
+<script src="../plugins/spawner.rate.js"></script>
+<script src="../plugins/spawner.oneshot.js"></script>
+<script src="../plugins/shape.box.js"></script>
+<script src="../plugins/shape.sphere.js"></script>
+<script src="../plugins/shape.point.js"></script>
+
+<script src="../plugins/effect.friction.js"></script>
+<script src="../plugins/effect.lifetime.js"></script>
+<script src="../plugins/effect.position.js"></script>
+<script src="../plugins/effect.velocity.js"></script>
+<script src="../plugins/effect.radialvelocity.js"></script>
+<script src="../plugins/effect.randomvelocitydrift.js"></script>
+<script src="../plugins/effect.rendertocanvas.js"></script>
+
+<body><script>
+	// build canvas element
+	var canvas	= document.createElement('canvas');
+	canvas.width	= window.innerWidth;
+	canvas.height	= window.innerHeight;
+	document.body.appendChild(canvas);
+	// canvas.style
+	canvas.style.position	= "absolute";
+	canvas.style.left	= 0;
+	canvas.style.top	= 0;
+	// setup ctx
+	var ctx		= canvas.getContext('2d');
+
+	// clear canvas and center it
+	ctx.fillStyle	= 'rgba(0,0,0,1)';
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+	var spritesheet		= new Image();
+	spritesheet.onload	= function(){
+		var images	= [];
+		for(var i = 0; i <= 17; i++){
+			images.push({
+		 		image	: spritesheet,
+		 		offsetX	: i*128,
+		 		offsetY	: 0*128,
+		 		width	: 128,
+		 		height	: 128				
+			});
+		}
+
+		var emitter	= Fireworks.createEmitter({nParticles : 40})
+			.useSpawnerOneShot()
+			.bindTriggerDomEvents()
+			.effectsStackBuilder()
+				.position(Fireworks.createShapeSphere(0, 0, 0, 10))
+				.radialVelocity(200, 200)
+				.lifeTime(0.7, 1)
+				.renderToCanvas({
+				 	ctx	: ctx,
+					type	: 'drawImage',
+				 	image	: images
+				})
+				.back()
+			.start()
+
+
+		setInterval(function(){
+			// clear the screen
+			ctx.save();
+			ctx.fillStyle	= 'rgba(0,0,0,1)';
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+			ctx.restore();
+
+			// update emitter and render it
+			var deltaTime	= 1/60;
+			emitter.update(deltaTime).render();
+		}, 1000/60);		
+	};
+	spritesheet.src	= '../assets/images/explosion.png';
+</script></body>
+
+
+
+
+
+
+
+
+
+
+

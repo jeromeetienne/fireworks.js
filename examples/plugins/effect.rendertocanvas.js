@@ -54,11 +54,13 @@ Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function(opts)
 	function ctorTypeDrawImage(){
 		// handle parameter polymorphism
 		if( typeof(opts.image) === 'string' ){
-			var image	= new Image;
-			image.src	= opts.image;
+			var images	= [new Image];
+			image[0].src	= opts.image;
 		}else if( opts.image instanceof Image ){
-			var image	= opts.image;
-		}else	console.assert('invalid .renderToCanvas() options')
+			var images	= [opts.image];
+		}else if( opts.image instanceof Array ){
+			var images	= opts.image;
+		}else	console.assert(false, 'invalid .renderToCanvas() options')
 
 		return effect.onCreate(function(particle, particleIdx){
 			particle.set('renderToCanvas', {
@@ -69,6 +71,9 @@ Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function(opts)
 		}).onRender(function(particle){
 			var position	= particle.get('position').vector;
 			var data	= particle.get('renderToCanvas');
+			var canonAge	= particle.get('lifeTime').normalizedAge();
+			var imageIdx	= Math.floor(canonAge * images.length);
+			var image	= images[imageIdx];
 			// save the context
 			ctx.save();
 			// translate in canvas's center, and the particle position
@@ -80,7 +85,13 @@ Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function(opts)
 			// set ctx.globalAlpha
 			ctx.globalAlpha	= data.opacity; 
 			// draw the image itself
-			ctx.drawImage(image, -image.width/2, -image.height/2);
+			if( image instanceof Image ){
+				ctx.drawImage(image, -image.width/2, -image.height/2);			
+			}else if( typeof(image) === 'object' ){
+				ctx.drawImage(image.image
+				 	,  image.offsetX,  image.offsetY , image.width, image.height
+					, -image.width/2, -image.height/2, image.width, image.height);
+			}else	console.assert(false);
 			// restore the context
 			ctx.restore();
 		});
