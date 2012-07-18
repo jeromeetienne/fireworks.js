@@ -54,32 +54,12 @@
 			});
 		}
 
-		var emitter	= Fireworks.createEmitter({nParticles : 200})
-			.useSpawnerOneShot(40)
+		var emitter	= Fireworks.createEmitter({nParticles : 80})
+			.useSpawnerOneShot(5)
 			.bindTriggerDomEvents()
 			.effectsStackBuilder()
 				.position(Fireworks.createShapeSphere(0, 0, 0, 1))
-				.createEffect('radialVelocity', {
-						minSpeed	: 100,
-						maxSpeed	: 200
-					}).onCreate(function(particle){
-						particle.set('velocity', {
-							vector	: new Fireworks.Vector()
-						});
-					}).onBirth(function(particle, deltaTime){
-						var position	= particle.get('position').vector;
-						var velocity	= particle.get('velocity').vector;
-						var angle	= Math.random() * Math.PI * 2;
-						var length	= this.opts.minSpeed + (this.opts.maxSpeed - this.opts.minSpeed)*Math.random();
-
-						velocity.x	= Math.cos(angle) * length;
-						velocity.y	= Math.sin(angle) * length;
-					}).onUpdate(function(particle, deltaTime){
-						var position	= particle.get('position').vector;
-						var velocity	= particle.get('velocity').vector;
-						position.x	+= velocity.x * deltaTime;
-						position.y	+= velocity.y * deltaTime;
-					}).back()
+				.velocity(Fireworks.createShapeSphere(0, 0, 0, 200))
 				.lifeTime(0.7, 1)
 				.renderToCanvas({
 				 	ctx	: ctx,
