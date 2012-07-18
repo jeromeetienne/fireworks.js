@@ -170,6 +170,7 @@ Fireworks.Emitter.prototype.killParticle	= function(particle)
  * Spawn a particle
 */
 Fireworks.Emitter.prototype.spawnParticle	= function(){
+	console.assert(this._deadParticles.length >= 1, 'no more particle available' );
 	// change the particles 
 	var particle	= this.deadParticles().pop();
 	this.liveParticles().push(particle);
