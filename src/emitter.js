@@ -12,6 +12,7 @@ Fireworks.Emitter	= function(opts){
 	this._effects	= [];
 	this._started	= false;
 	this._onUpdated	= null;
+	this._intensity	= 0;
 
 	this._effectsStackBuilder	= new Fireworks.EffectsStackBuilder(this)
 }
@@ -69,6 +70,27 @@ Fireworks.Emitter.prototype.spawner	= function(spawner){
 }
 
 /**
+ * Getter/setter for intensity
+*/
+Fireworks.Emitter.prototype.intensity	= function(value){
+	// if it is a getter, return value
+	if( value === undefined )	return this._intensity;
+	// if the value didnt change, return for chained api
+	if( value === this._intensity )	return this;
+	// sanity check
+	console.assert( value >= 0, 'Fireworks.Emitter.intensity: invalid value.', value);
+	console.assert( value <= 1, 'Fireworks.Emitter.intensity: invalid value.', value);
+	// update the value
+	this._intensity	= value;
+	// notify all effects
+	this._effects.forEach(function(effect){
+		if( !effect.onIntensityChange )	return;
+		effect.onIntensityChange(this._intensity);			
+	}.bind(this));
+	return this;	// for chained API
+}
+
+/**
  * for backward compatibility only
 */
 Fireworks.Emitter.prototype.setSpawner	= Fireworks.Emitter.prototype.spawner;
@@ -112,7 +134,7 @@ Fireworks.Emitter.prototype.start	= function()
 			effect.onCreate(particle, particleIdx);			
 		})
 	}.bind(this));
-	
+		
 	return this;	// for chained API
 }
 
