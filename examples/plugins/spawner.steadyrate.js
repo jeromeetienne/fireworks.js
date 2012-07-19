@@ -1,5 +1,7 @@
 /**
  * Make the emitter use a SpawnerSteadyRate
+ * 
+ * @param {Number?} rate the rate at which it gonna emit
 */
 Fireworks.Emitter.prototype.useSpawnerSteadyRate	= function(rate){
 	var spawner	= new Fireworks.SpawnerSteadyRate(rate);
@@ -8,8 +10,9 @@ Fireworks.Emitter.prototype.useSpawnerSteadyRate	= function(rate){
 
 /**
  * Spawner deliverying paricles at a steady rate
+ * 
+ * @param {Number?} rate the rate at which it gonna emit
 */
-Fireworks.SpawnerRate	= // for backward compatibility only
 Fireworks.SpawnerSteadyRate	= function(rate){
 	// call constructor of parent calss
 	Fireworks.Spawner.call( this );
@@ -24,6 +27,28 @@ Fireworks.SpawnerSteadyRate	= function(rate){
 Fireworks.SpawnerSteadyRate.prototype = new Fireworks.Spawner();
 Fireworks.SpawnerSteadyRate.prototype.constructor = Fireworks.SpawnerSteadyRate;
 
+//////////////////////////////////////////////////////////////////////////////////
+//										//
+//////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Getter/Setter for the rate
+ * 
+ * @param {Number?} value the value to change
+ * @returns {Fireworks.SpawnerSteadyRate} for chained API
+*/
+Fireworks.SpawnerSteadyRate.prototype.rate	= function(value){
+	if( value === undefined )	return this._rate;
+	this._rate	= value;
+	return this;
+}
+
+/**
+ * update the spawner
+ *
+ * @param {Fireworks.Emitter} emitter the emitter for which Fireworks.Spawner
+ * @param {Number} deltaTime the amount of seconds since last iteration
+*/
 Fireworks.SpawnerSteadyRate.prototype.update	= function(emitter, deltaTime){
 	// if the spawner is not running, return now
 	if( this.isRunning() === false )	return;
