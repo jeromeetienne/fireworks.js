@@ -12,20 +12,19 @@ Fireworks.BindTriggerDomEvents	= function(emitter, domElement){
 	this._domElement.addEventListener('mousedown'	, this._onMouseDown	);
 	this._domElement.addEventListener('mouseup'	, this._onMouseUp	);
 
-
 	// change emitter intensity on mousewheel		
 	this._onMouseWheel	= function(event){
 		var intensity	= emitter.intensity();
 		intensity	+= event.wheelDelta < 0 ? -0.05 : 0.05;
 		intensity	= Math.max(intensity, 0);
 		intensity	= Math.min(intensity, 1);
-		emitter.intensity(intensity)
+		emitter.intensity(intensity);
 	};
 	this._domElement.addEventListener('mousewheel'	, this._onMouseWheel	);
 }
 
 
-Fireworks.BindTriggerDomEvents.prototype.destroy	= function() {
+Fireworks.BindTriggerDomEvents.prototype.destroy	= function(){
 	this._domElement.removeEventListener('mousedown'	, this._onMouseDown	);
 	this._domElement.removeEventListener('mouseup'		, this._onMouseUp	);
 	this._domElement.removeEventListener('mousewheel'	, this._onMouseWheel	);

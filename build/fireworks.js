@@ -13,6 +13,7 @@ Fireworks.Emitter	= function(opts){
 	this._effects	= [];
 	this._started	= false;
 	this._onUpdated	= null;
+	this._intensity	= 0;
 
 	this._effectsStackBuilder	= new Fireworks.EffectsStackBuilder(this)
 }
@@ -70,6 +71,27 @@ Fireworks.Emitter.prototype.spawner	= function(spawner){
 }
 
 /**
+ * Getter/setter for intensity
+*/
+Fireworks.Emitter.prototype.intensity	= function(value){
+	// if it is a getter, return value
+	if( value === undefined )	return this._intensity;
+	// if the value didnt change, return for chained api
+	if( value === this._intensity )	return this;
+	// sanity check
+	console.assert( value >= 0, 'Fireworks.Emitter.intensity: invalid value.', value);
+	console.assert( value <= 1, 'Fireworks.Emitter.intensity: invalid value.', value);
+	// update the value
+	this._intensity	= value;
+	// notify all effects
+	this._effects.forEach(function(effect){
+		if( !effect.onIntensityChange )	return;
+		effect.onIntensityChange(this._intensity);			
+	}.bind(this));
+	return this;	// for chained API
+}
+
+/**
  * for backward compatibility only
 */
 Fireworks.Emitter.prototype.setSpawner	= Fireworks.Emitter.prototype.spawner;
@@ -113,7 +135,7 @@ Fireworks.Emitter.prototype.start	= function()
 			effect.onCreate(particle, particleIdx);			
 		})
 	}.bind(this));
-	
+		
 	return this;	// for chained API
 }
 
@@ -141,6 +163,10 @@ Fireworks.Emitter.prototype.render	= function(){
 			effect.onRender(particle);			
 		})
 	}.bind(this));
+	this._effects.forEach(function(effect){
+		if( !effect.onPostRender )	return;
+		effect.onPostRender();			
+	}.bind(this));
 	return this;	// for chained API
 }
 
@@ -167,6 +193,7 @@ Fireworks.Emitter.prototype.killParticle	= function(particle)
  * Spawn a particle
 */
 Fireworks.Emitter.prototype.spawnParticle	= function(){
+	console.assert(this._deadParticles.length >= 1, 'no more particle available' );
 	// change the particles 
 	var particle	= this.deadParticles().pop();
 	this.liveParticles().push(particle);
@@ -267,6 +294,14 @@ Fireworks.createEffect	= function(name, opts){
 		},
 		onRender: function(val){
 			effect.onRender	= val;
+			return methods;
+		},
+		onPostRender: function(val){
+			effect.onPostRender	= val;
+			return methods;
+		},
+		onIntensityChange: function(val){
+			effect.onIntensityChange= val;
 			return methods;
 		},
 		pushTo	: function(emitter){
