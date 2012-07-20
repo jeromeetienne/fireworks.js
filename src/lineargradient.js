@@ -38,4 +38,4 @@ Fireworks.LinearGradient.prototype.get	= function(x){
 	var y		= prev.y + ratio * (next.y - prev.y)
 	
 	return y;
-}
+};

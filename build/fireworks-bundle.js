@@ -1,6 +1,115 @@
 
 
-var Fireworks	= {};Fireworks.createEmitter	= function(opts){
+var Fireworks	= {};//////////////////////////////////////////////////////////////////////////////////
+//										//
+//////////////////////////////////////////////////////////////////////////////////
+
+Fireworks.EffectsStackBuilder	= function(emitter){
+	this._emitter	= emitter;
+};
+
+Fireworks.EffectsStackBuilder.prototype.back	= function(){
+	return this._emitter;
+}
+
+Fireworks.EffectsStackBuilder.prototype.createEffect	= function(name, opts){
+	return Fireworks.createEffect(name, opts).pushTo(this._emitter).back(this);
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+//										//
+//////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Basic Fireworks.Effect builder
+*/
+Fireworks.createEffect	= function(name, opts){
+	// handle polymophism
+	if( typeof(name) === 'object' ){
+		opts	= name;
+		name	= undefined;
+	}
+	
+	var effect	= new Fireworks.Effect();
+	effect.opts	= opts;
+	effect.name	= name;
+	effect.back	= null;
+	var methods	= {
+		onCreate: function(val){
+			effect.onCreate	= val;
+			return methods;
+		},
+		onBirth: function(val){
+			effect.onBirth	= val;
+			return methods;
+		},
+		onUpdate: function(val){
+			effect.onUpdate	= val;
+			return methods;
+		},
+		onDeath: function(val){
+			effect.onDeath	= val;
+			return methods;
+		},
+		onPreRender: function(val){
+			effect.onPreRender	= val;
+			return methods;
+		},
+		onRender: function(val){
+			effect.onRender	= val;
+			return methods;
+		},
+		onPostRender: function(val){
+			effect.onPostRender	= val;
+			return methods;
+		},
+		onIntensityChange: function(val){
+			effect.onIntensityChange= val;
+			return methods;
+		},
+		pushTo	: function(emitter){
+			emitter.effects().push(effect);
+			return methods;	
+		},
+		back	: function(value){
+			if( value === undefined )	return effect.back;	
+			effect.back	= value;
+			return methods;	
+		},
+		effect	: function(){
+			return effect;
+		}
+	}
+	return methods;
+}
+
+/**
+ * An effect to apply on particles
+*/
+Fireworks.Effect	= function(){
+}
+
+/**
+ * Callback called on particle creation
+*/
+//Fireworks.Effect.prototype.onCreate	= function(){
+//}
+//
+/**
+ * Callback called when a particle is spawning
+ *
+ * TODO to rename onSpawn
+*/
+//Fireworks.Effect.prototype.onBirth	= function(){
+//}
+//
+//Fireworks.Effect.prototype.onDeath	= function(){
+//}
+//
+//Fireworks.Effect.prototype.onUpdate	= function(){
+//}
+
+Fireworks.createEmitter	= function(opts){
 	return new Fireworks.Emitter(opts);
 }
 
@@ -203,6 +312,47 @@ Fireworks.Emitter.prototype.spawnParticle	= function(){
 		effect.onBirth && effect.onBirth(particle);			
 	}.bind(this));
 }
+Fireworks.createLinearGradient	= function(opts){
+	var LinearGradient	= new Fireworks.LinearGradient(opts);
+	return LinearGradient;
+}
+
+/**
+ * The emitter of particles
+*/
+Fireworks.LinearGradient	= function(opts){
+	this._keyPoints	= [];
+}
+
+Fireworks.LinearGradient.prototype.push	= function(x, y){
+	this._keyPoints.push({
+		x	: x,
+		y	: y
+	});
+	return this;
+}
+
+/**
+ * Compute a value for this LinearGradient
+*/
+Fireworks.LinearGradient.prototype.get	= function(x){
+	for( var i = 0; i < this._keyPoints.length; i++ ){
+		var keyPoint	= this._keyPoints[i];
+		if( x <= keyPoint.x )	break;
+	}
+
+	if( i === 0 )	return this._keyPoints[0].y;
+
+	console.assert(i < this._keyPoints.length )
+
+	var prev	= this._keyPoints[i-1];
+	var next	= this._keyPoints[i];
+	
+	var ratio	= (x - prev.x) / (next.x - prev.x)
+	var y		= prev.y + ratio * (next.y - prev.y)
+	
+	return y;
+};
 Fireworks.Spawner	= function(){
 	this._isRunning	= false;
 }
@@ -238,115 +388,6 @@ Fireworks.Particle.prototype.get	= function(key){
 Fireworks.Particle.prototype.has	= function(key){
 	return this[key] !== undefined	? true : false;
 }
-//////////////////////////////////////////////////////////////////////////////////
-//										//
-//////////////////////////////////////////////////////////////////////////////////
-
-Fireworks.EffectsStackBuilder	= function(emitter){
-	this._emitter	= emitter;
-};
-
-Fireworks.EffectsStackBuilder.prototype.back	= function(){
-	return this._emitter;
-}
-
-Fireworks.EffectsStackBuilder.prototype.createEffect	= function(name, opts){
-	return Fireworks.createEffect(name, opts).pushTo(this._emitter).back(this);
-}
-
-//////////////////////////////////////////////////////////////////////////////////
-//										//
-//////////////////////////////////////////////////////////////////////////////////
-
-/**
- * Basic Fireworks.Effect builder
-*/
-Fireworks.createEffect	= function(name, opts){
-	// handle polymophism
-	if( typeof(name) === 'object' ){
-		opts	= name;
-		name	= undefined;
-	}
-	
-	var effect	= new Fireworks.Effect();
-	effect.opts	= opts;
-	effect.name	= name;
-	effect.back	= null;
-	var methods	= {
-		onCreate: function(val){
-			effect.onCreate	= val;
-			return methods;
-		},
-		onBirth: function(val){
-			effect.onBirth	= val;
-			return methods;
-		},
-		onUpdate: function(val){
-			effect.onUpdate	= val;
-			return methods;
-		},
-		onDeath: function(val){
-			effect.onDeath	= val;
-			return methods;
-		},
-		onPreRender: function(val){
-			effect.onPreRender	= val;
-			return methods;
-		},
-		onRender: function(val){
-			effect.onRender	= val;
-			return methods;
-		},
-		onPostRender: function(val){
-			effect.onPostRender	= val;
-			return methods;
-		},
-		onIntensityChange: function(val){
-			effect.onIntensityChange= val;
-			return methods;
-		},
-		pushTo	: function(emitter){
-			emitter.effects().push(effect);
-			return methods;	
-		},
-		back	: function(value){
-			if( value === undefined )	return effect.back;	
-			effect.back	= value;
-			return methods;	
-		},
-		effect	: function(){
-			return effect;
-		}
-	}
-	return methods;
-}
-
-/**
- * An effect to apply on particles
-*/
-Fireworks.Effect	= function(){
-}
-
-/**
- * Callback called on particle creation
-*/
-//Fireworks.Effect.prototype.onCreate	= function(){
-//}
-//
-/**
- * Callback called when a particle is spawning
- *
- * TODO to rename onSpawn
-*/
-//Fireworks.Effect.prototype.onBirth	= function(){
-//}
-//
-//Fireworks.Effect.prototype.onDeath	= function(){
-//}
-//
-//Fireworks.Effect.prototype.onUpdate	= function(){
-//}
-
 Fireworks.Shape	= function(){
 }
 
@@ -1193,7 +1234,7 @@ Fireworks.Shape.Point.prototype.randomPoint	= function(vector){
 /**
  * Shortcut to create Fireworks.Shape.Box
 */
-Fireworks.createShapeSphere	= function(centerX, centerY, centerZ, radius){
+Fireworks.createShapeSphere	= function(centerX, centerY, centerZ, radius, boundingbox){
 	var center	= new Fireworks.Vector(centerX, centerY, centerZ);
 	return new Fireworks.ShapeSphere(center, radius);
 };
