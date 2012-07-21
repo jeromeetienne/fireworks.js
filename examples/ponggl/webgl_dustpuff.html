@@ -40,23 +40,23 @@
 
 
 	var container	= new THREE.Object3D();
-	container.position.y	= -7;
+	container.position.y	= -10;
 	world.add(container);
 
 	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/cloud10.png");
 
 	var emitter	= Fireworks.createEmitter({nParticles : 200})
-		.useSpawnerOneShot(6)
+		.useSpawnerOneShot(20)
 		//.useSpawnerSteadyRate(10)
 		.bindTriggerDomEvents()
 		.effectsStackBuilder()
-			.position(Fireworks.createShapeSphere(0, 0, 0, 1))
-			.velocity(Fireworks.createShapeSphere(0, 50, 0, 10))
-			.lifeTime(1.2, 1.4)
+			.position(Fireworks.createShapeSphere(0, 0, 0, 0.1))
+			.velocity(Fireworks.createShapeSphere(0, 40, 0, 2))
+			.lifeTime(1.0, 1.4)
 			.friction(0.92)
 			.randomVelocityDrift(Fireworks.createVector(10,10,0))
 			.createEffect('scale', {
-					origin	: 1/40,
+					origin	: 1/30,
 					factor	: 1.005
 				}).onBirth(function(particle){
 					var object3d	= particle.get('threejsObject3D').object3d;
@@ -87,9 +87,9 @@
 				container	: container,
 				create		: function(){
 					return new THREE.Sprite({
-//						color			: 0x668844,
-						color			: 0x886666,
-						color			: 0x888888,
+						// color		: 0x668844,
+						//color		: 0x88aa66,
+						// color		: 0x888888,
 						useScreenCoordinates	: false,
 						map			: texture,
 						//blending		: THREE.AdditiveBlending,
