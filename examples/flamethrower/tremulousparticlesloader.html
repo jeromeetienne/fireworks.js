@@ -43,7 +43,7 @@
 		// quick test for the animation
 		setInterval(function(){
 			var now		= Date.now()/1000;
-			var idx		= Math.floor( (now*30) % 25 );
+			var idx		= Math.floor( (now*10) % 25 );
 			ctx.fillStyle	= "rgba(1,1,1,1)";
 			ctx.fillRect(0, 0, canvas.width, canvas.height);
 			ctx.drawImage(spriteSheet, 0, idx*128, 128, 128, 0, 0, 128, 128)

@@ -33,7 +33,7 @@
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
 	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
-//	world.renderer().setClearColorHex( 0x888888, world.renderer().getClearAlpha() );
+	world.renderer().setClearColorHex( 0x88aaff, world.renderer().getClearAlpha() );
 
 	world.removeCameraControls()
 	world.camera().position.z	= 50;
@@ -46,15 +46,15 @@
 	var texture	= THREE.ImageUtils.loadTexture( "../assets/images/cloud10.png");
 
 	var emitter	= Fireworks.createEmitter({nParticles : 200})
-		.useSpawnerOneShot(20)
+		.useSpawnerOneShot(2)
 		//.useSpawnerSteadyRate(10)
 		.bindTriggerDomEvents()
 		.effectsStackBuilder()
 			.position(Fireworks.createShapeSphere(0, 0, 0, 0.1))
-			.velocity(Fireworks.createShapeSphere(0, 40, 0, 2))
+			.velocity(Fireworks.createShapeSphere(0, 80, 0, 10))
 			.lifeTime(1.0, 1.4)
-			.friction(0.92)
-			.randomVelocityDrift(Fireworks.createVector(10,10,0))
+			.friction(0.90)
+			.randomVelocityDrift(Fireworks.createVector(20,10,0))
 			.createEffect('scale', {
 					origin	: 1/30,
 					factor	: 1.005
@@ -87,9 +87,10 @@
 				container	: container,
 				create		: function(){
 					return new THREE.Sprite({
-						// color		: 0x668844,
+						//color		: 0x668844,
 						//color		: 0x88aa66,
 						// color		: 0x888888,
+						color		: 0x666666,
 						useScreenCoordinates	: false,
 						map			: texture,
 						//blending		: THREE.AdditiveBlending,

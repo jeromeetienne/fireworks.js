@@ -58,12 +58,13 @@ function TremulousParticuleLoader(urls, callback){
 		for(var i = 0, y = 0; y < canvas.height; y++){
 			for(var x = 0; x < canvas.width; x++, i += 4){
 				var luminance	= (0.2126*p[i+0]) + (0.7152*p[i+1]) + (0.0722*p[i+2]);
+				p[i+3]		= luminance * 16;
 				
-				luminance	= luminance/255;
-				//luminance	= luminance * luminance * luminance* luminance;
-				//luminance	= luminance * luminance;
-				p[i+3]		= Math.floor(luminance * 16 * 255);
-				//p[i+3]	= luminance * 4;
+				// luminance	= luminance/255;
+				// //luminance	= luminance * luminance * luminance* luminance;
+				// //luminance	= luminance * luminance;
+				// p[i+3]		= Math.floor(luminance * 16 * 255);
+				// //p[i+3]	= luminance * 4;
 			}
 		}
 		// put the generated image in the canvas
