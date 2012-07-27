@@ -1,10 +1,13 @@
 /**
- * Shortcut to create Fireworks.EffectRandomDriftVelocity
+ * Create a velocity effect
+ * @param {Fireworks.Shape}	shape	set the direction of the velocity by a randompoint in this shape
+ * @param {Number?}		speed	set the speed itself. if undefined, keep randompoint length for speed
 */
-Fireworks.EffectsStackBuilder.prototype.velocity	= function(shape)
+Fireworks.EffectsStackBuilder.prototype.velocity	= function(shape, speed)
 {
 	Fireworks.createEffect('velocity', {
-		shape	: shape
+		shape	: shape, 
+		speed	: speed
 	}).onCreate(function(particle){
 		particle.set('velocity', {
 			vector	: new Fireworks.Vector()
@@ -12,6 +15,8 @@ Fireworks.EffectsStackBuilder.prototype.velocity	= function(shape)
 	}).onBirth(function(particle){
 		var velocity	= particle.get('velocity').vector;
 		this.opts.shape.randomPoint(velocity)
+		if( this.opts.speed !== undefined )	velocity.setLength(this.opts.speed);
+		console.log('speed', this.opts.speed)
 	}).onUpdate(function(particle, deltaTime){
 		var position	= particle.get('position').vector;
 		var velocity	= particle.get('velocity').vector;
