@@ -1,6 +1,7 @@
 /**
  * render to three.js THREE.Object3D
- }
+ * If i play with object3D.visible true/false instead of Object3D.add/remove
+ * i got a lot of artefacts
 */
 Fireworks.EffectsStackBuilder.prototype.renderToThreejsObject3D	= function(opts)
 {
@@ -17,6 +18,7 @@ Fireworks.EffectsStackBuilder.prototype.renderToThreejsObject3D	= function(opts)
 		console.assert(particle.get('threejsObject3D').object3d instanceof THREE.Object3D);
 		
 		var object3d	= particle.get('threejsObject3D').object3d;
+
 //		object3d.visible= false;
 	}).onBirth(function(particle){
 		var object3d	= particle.get('threejsObject3D').object3d;
