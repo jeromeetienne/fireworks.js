@@ -1,7 +1,7 @@
-Fireworks.ComboEmitter.Flamethrower	= function(){
-	// TODO make a local THREE.Object3D instead ?
+Fireworks.ComboEmitter.Flamethrower	= function(onLoad){
 	this._container	= new THREE.Object3D();
 	this._emitterJet= null;	
+	this._onLoad	= onLoad;
 
 	this._baseSound	= null;
 	this._webaudio	= null;
@@ -11,8 +11,8 @@ Fireworks.ComboEmitter.Flamethrower	= function(){
 	this._lastStart	= 0;
 	this._lastStop	= 0;
 
-	this._attackTime	= 1.0;
-	this._releaseTime	= 0.2;
+	this._attackTime	= 2.0;
+	this._releaseTime	= 0.5;
 	
 	
 	this._flamejetCtor();
@@ -50,7 +50,6 @@ Fireworks.ComboEmitter.Flamethrower.prototype.stop	= function(){
 	this._state	= 'stopped';
 	this._lastStop	= Date.now()/1000;
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////
 //		Getter								//
@@ -145,7 +144,7 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 			.effectsStackBuilder()
 				.position(Fireworks.createShapeSphere(0, 0,   0, 0.01))
 				.velocity(Fireworks.createShapeSphere(0, 0, -30, 0.1))
-				.lifeTime(1.5)
+				.lifeTime(1.0, 1.5)
 				.friction(0.98)
 				.acceleration({
 					effectId	: 'gravity',
@@ -224,14 +223,22 @@ Fireworks.ComboEmitter.Flamethrower.prototype._soundCtor	= function()
 {
 	// init the library
 	var webaudio	= new WebAudio();
-	// create a sound 
-	var buffer	= webaudio.context().createBuffer(1, 44100, 44100);
-	var fArray	= buffer.getChannelData(0);
-	for(var i = 0; i < fArray.length; i++){
-		fArray[i]	= Math.random()*2;
+	if(false){
+		// create a sound 
+		var buffer	= webaudio.context().createBuffer(1, 44100, 44100);
+		var fArray	= buffer.getChannelData(0);
+		for(var i = 0; i < fArray.length; i++){
+			fArray[i]	= Math.random()*2;
+		}
+		// set the buffer
+		this._baseSound	= webaudio.createSound().loop(true).buffer(buffer);	
 	}
-	// set the buffer
-	this._baseSound	= webaudio.createSound().loop(true).buffer(buffer);
+	if(true){
+		this._baseSound	= webaudio.createSound().loop(true);	
+		this._baseSound.load('flamethrower-freesoundloop.wav', function(sound){
+			console.log('sound loaded');
+		});	
+	}
 
 }
 
@@ -244,12 +251,17 @@ Fireworks.ComboEmitter.Flamethrower.prototype._soundDtor	= function()
 
 Fireworks.ComboEmitter.Flamethrower.prototype._soundSetIntensity= function(newIntensity, oldIntensity)
 {
+	//console.log('isPlayable', this._baseSound.isPlayable())
+	// if sound isnt yet playable (like not loaded), return now
+	if( this._baseSound.isPlayable() === false )	return;
+	
 	if( newIntensity > 0 && this._sound === null ){
 		this._sound	= this._baseSound.play();
 	}
 
 	var sound	= this._sound;
-	sound.node.gain.value	= newIntensity;
+	sound.node.playbackRate.value	= 0.5+newIntensity*1.5;
+	sound.node.gain.value		= newIntensity*4;
 }
 
 

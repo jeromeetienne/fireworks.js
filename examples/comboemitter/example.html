@@ -38,7 +38,7 @@
 	var world	= tQuery.createWorld().boilerplate().start();
 	tQuery.createCylinder(0.55, 0.0001, 2).addTo(world)
 		.geometry().rotateX(-Math.PI/2).back()
-		.translateZ(-1)
+		//.translateZ(-1)
 		.scale(2);
 
 	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
@@ -49,12 +49,12 @@
 	var flamethrower= new Fireworks.ComboEmitter.Flamethrower();
 	world.add( flamethrower.object3D() )
 
-	flamethrower.start();
+	//flamethrower.start();
 
-	document.body.addEventListener('keydown', function(){
+	document.body.addEventListener('mousedown', function(){
 		flamethrower.start();
 	});
-	document.body.addEventListener('keyup', function(){
+	document.body.addEventListener('mouseup', function(){
 		flamethrower.stop();
 	});
 
