@@ -80,12 +80,14 @@ Fireworks.Emitter.prototype.intensity	= function(value){
 	// sanity check
 	console.assert( value >= 0, 'Fireworks.Emitter.intensity: invalid value.', value);
 	console.assert( value <= 1, 'Fireworks.Emitter.intensity: invalid value.', value);
+	// backup the old value
+	var oldValue	= this._intensity;
 	// update the value
 	this._intensity	= value;
 	// notify all effects
 	this._effects.forEach(function(effect){
 		if( !effect.onIntensityChange )	return;
-		effect.onIntensityChange(this._intensity);			
+		effect.onIntensityChange(this._intensity, oldValue);			
 	}.bind(this));
 	return this;	// for chained API
 }
