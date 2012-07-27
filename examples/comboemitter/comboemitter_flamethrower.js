@@ -1,24 +1,95 @@
-Fireworks.ComboEmitter.Flamethrower	= function(container){
-	this._container	= container;
+Fireworks.ComboEmitter.Flamethrower	= function(){
+	// TODO make a local THREE.Object3D instead ?
+	this._container	= new THREE.Object3D();
 	this._emitterJet= null;	
 
 	this._baseSound	= null;
 	this._webaudio	= null;
 	this._sound	= null;
 	
+	this._state	= 'stopped';
+	this._lastStart	= 0;
+	this._lastStop	= 0;
+
+	this._attackTime	= 1.0;
+	this._releaseTime	= 0.2;
+	
 	
 	this._flamejetCtor();
 	this._soundCtor();
+	// update the emitter in rendering loop
+	this._$loopCb	= this._loopCb.bind(this);
+	world.loop().hook(this._$loopCb);
 }
 
-Fireworks.ComboEmitter.Flamethrower.prototype._destroy	= function(){
-	this._flamejetDtor();	
+Fireworks.ComboEmitter.Flamethrower.prototype._destroy	= function()
+{
+	world.loop().unhook(this._$loopCb);
+	this._flamejetDtor();
 	this._soundDtor();
 }
 
 // inherit from Fireworks.ComboEmitter
 Fireworks.ComboEmitter.Flamethrower.prototype			= new Fireworks.ComboEmitter();
 Fireworks.ComboEmitter.Flamethrower.prototype.constructor	= Fireworks.ComboEmitter.Flamethrower;
+
+//////////////////////////////////////////////////////////////////////////////////
+//		Getter								//
+//////////////////////////////////////////////////////////////////////////////////
+
+Fireworks.ComboEmitter.Flamethrower.prototype.start	= function(){
+	console.assert( this._state === 'stopped' )
+	this._state	= 'started';
+	this._lastStart	= Date.now()/1000;
+}
+
+Fireworks.ComboEmitter.Flamethrower.prototype.stop	= function(){
+	if( this._state === 'stopped' )	return;
+	console.assert( this._state === 'started' )
+	this._state	= 'stopped';
+	this._lastStop	= Date.now()/1000;
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+//		Getter								//
+//////////////////////////////////////////////////////////////////////////////////
+
+Fireworks.ComboEmitter.Flamethrower.prototype.object3D	= function(){
+	return this._container;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////
+//		rendering loop function						//
+//////////////////////////////////////////////////////////////////////////////////
+
+
+Fireworks.ComboEmitter.Flamethrower.prototype._loopCb	= function(delta, now){
+	if( !this._emitterJet ) return;
+	
+	
+	this._emitterJet.update(delta).render();
+	
+	console.assert( this._state === 'started' || this._state === 'stopped' );	
+	var present	= Date.now()/1000;
+	if( this._state === 'started' ){
+		if( present - this._lastStart <= this._attackTime ){
+			var intensity	= (present - this._lastStart) / this._attackTime;		
+		}else{
+			var intensity	= 1;
+		}
+		//console.log('starting', intensity, (present - this._lastStart));		
+		this._emitterJet.intensity( intensity );
+	}else if( this._state === 'stopped' ){
+		if( present - this._lastStop <= this._releaseTime ){
+			var intensity	= 1 - (present - this._lastStop) / this._releaseTime;			
+		}else{
+			var intensity	= 0;
+		}
+		this._emitterJet.intensity( intensity );
+		//console.log('stopping')		
+	}
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -63,13 +134,12 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 
 	function buildEmitter(spriteSheet){
 		console.log("spriteSheet loaded");
-
+		// create the texture
 		var texture	= new THREE.Texture( spriteSheet );
 		texture.needsUpdate = true;
 	
-		var emitter	= this._emitterJet	= Fireworks.createEmitter({nParticles : 200})
+		var emitter	= this._emitterJet	= Fireworks.createEmitter({nParticles : 40})
 			.useSpawnerSteadyRate(20)
-			.bindTriggerDomEvents()
 			.effectsStackBuilder()
 				.position(Fireworks.createShapeSphere(0, 0,   0, 0.01))
 				.velocity(Fireworks.createShapeSphere(0, 0, -30, 0.1))
@@ -101,15 +171,11 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 							blending		: THREE.AdditiveBlending,
 							transparent		: true
 						});
-	
-						object3d.opacity= 0.9; 
-						
+						object3d.opacity	= 0.9;
 						object3d.rotation	= Math.floor(Math.random()*Math.PI*2);
-						
-						object3d.uvScale.set(1, 1/urls.length)
-						
+						object3d.uvScale.set(1, 1/urls.length);
 						return object3d;
-					}	
+					}
 				})
 				.createEffect("spriteSheetAnimation")
 					.onUpdate(function(particle, deltaTime){
@@ -125,11 +191,11 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 					}.bind(this)).back()
 				.createEffect("updateSpeed")
 					.onIntensityChange(function(newIntensity, oldIntensity){
-						console.log('onIntensityChange', arguments, this)
+						//console.log('onIntensityChange', arguments, this) 
 						var effect		= this.emitter().effectByName('velocity');
-						effect.opts.speed	= 15 + 15 * newIntensity;
+						effect.opts.speed	= 20 + 10 * newIntensity;
 					}).back()
-				.createEffect("blabla")
+				.createEffect("blablaTOREMOVE")
 					.onIntensityChange(function(newIntensity, oldIntensity){
 						if( newIntensity === 0 ){
 							this.emitter().spawner().stop();						
@@ -139,21 +205,12 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 						}
 					}).back()
 				.back()
-			.start('prout');
-
-		// update the emitter in rendering loop
-		world.loop().hook(this._flamejetLoopCb.bind(this));
+			.start();
+		emitter.intensity(0);
 	};
 }
 
-Fireworks.ComboEmitter.Flamethrower.prototype._flamejetLoopCb	= function(delta, now){
-	var emitter	= this._emitterJet;
-	emitter.update(delta).render();
-}
-
 Fireworks.ComboEmitter.Flamethrower.prototype._flamejetDtor	= function(){
-	world.loop().unhook(this._flamejetLoopCb.bind(this));
-	// TODO what about the emitter itself ?
 }
 
 
@@ -161,7 +218,8 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetDtor	= function(){
 //		sound								//
 //////////////////////////////////////////////////////////////////////////////////
 
-Fireworks.ComboEmitter.Flamethrower.prototype._soundCtor	= function(){
+Fireworks.ComboEmitter.Flamethrower.prototype._soundCtor	= function()
+{
 	// init the library
 	var webaudio	= new WebAudio();
 	// create a sound 
@@ -173,20 +231,21 @@ Fireworks.ComboEmitter.Flamethrower.prototype._soundCtor	= function(){
 	// set the buffer
 	this._baseSound	= webaudio.createSound().loop(true).buffer(buffer);
 
-	// play the sound
-	// TODO change that for and bind it to start/stop
-	this._sound	= this._baseSound.play();
 }
 
 Fireworks.ComboEmitter.Flamethrower.prototype._soundDtor	= function()
 {
-	this._sound.stop();
+	this._sound	&& this._sound.stop();
 	this._baseSound.destroy();
 	this._webaudio.destroy();
 }
 
 Fireworks.ComboEmitter.Flamethrower.prototype._soundSetIntensity= function(newIntensity, oldIntensity)
 {
+	if( newIntensity > 0 && this._sound === null ){
+		this._sound	= this._baseSound.play();
+	}
+
 	var sound	= this._sound;
 	sound.node.gain.value	= newIntensity;
 }

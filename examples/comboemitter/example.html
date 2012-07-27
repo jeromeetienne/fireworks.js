@@ -46,9 +46,12 @@
 	world.camera().position.z	= 15;
 	//world.camera().position.x	= 20;
 
-	var container	= world.scene();
-	var flamethrower= new Fireworks.ComboEmitter.Flamethrower( container );
+	var flamethrower= new Fireworks.ComboEmitter.Flamethrower();
+	world.add( flamethrower.object3D() )
 
+	document.body.addEventListener('keypress', function(){
+		console.log('keypress')
+	});
 
 	document.body.addEventListener('mousedown', function(){
 		flamethrower.start();

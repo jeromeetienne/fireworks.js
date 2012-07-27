@@ -116,7 +116,6 @@ Fireworks.Emitter.prototype.getParticleData	= function(particle, namespace){
 
 Fireworks.Emitter.prototype.start	= function()
 {
-console.log('start', arguments)
 	console.assert( this._spawner, "a spawner MUST be set" );
 	console.assert( this._effects.length > 0, "At least one effect MUST be set")
 	console.assert( this._started === false );
