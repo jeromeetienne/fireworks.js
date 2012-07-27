@@ -7,12 +7,12 @@ Fireworks.ComboEmitter.Flamethrower	= function(onLoad){
 	this._webaudio	= null;
 	this._sound	= null;
 	
+	// data to handle attackTime/releaseTime
 	this._state	= 'stopped';
 	this._lastStart	= 0;
 	this._lastStop	= 0;
-
-	this._attackTime	= 2.0;
-	this._releaseTime	= 0.5;
+	this._attackTime	= 1.0;
+	this._releaseTime	= 0.3;
 	
 	
 	this._flamejetCtor();

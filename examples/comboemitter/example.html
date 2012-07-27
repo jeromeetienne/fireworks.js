@@ -36,7 +36,12 @@
 
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
-	tQuery.createCylinder(0.55, 0.0001, 2).addTo(world)
+	
+	var container	= tQuery.createObject3D().addTo(world)
+		.rotateX(Math.PI/2)
+	
+	
+	tQuery.createCylinder(0.55, 0.0001, 2).addTo(container)
 		.geometry().rotateX(-Math.PI/2).back()
 		//.translateZ(-1)
 		.scale(2);
@@ -47,7 +52,7 @@
 	//world.camera().position.x	= 20;
 
 	var flamethrower= new Fireworks.ComboEmitter.Flamethrower();
-	world.add( flamethrower.object3D() )
+	container.add( flamethrower.object3D() )
 
 	//flamethrower.start();
 
