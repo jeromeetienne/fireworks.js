@@ -11,7 +11,9 @@ Fireworks.EffectsStackBuilder.prototype.back	= function(){
 }
 
 Fireworks.EffectsStackBuilder.prototype.createEffect	= function(name, opts){
-	return Fireworks.createEffect(name, opts).pushTo(this._emitter).back(this);
+	var creator	= Fireworks.createEffect(name, opts).pushTo(this._emitter).back(this);
+	creator.effect().emitter(this._emitter);
+	return creator;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -85,7 +87,17 @@ Fireworks.createEffect	= function(name, opts){
  * An effect to apply on particles
 */
 Fireworks.Effect	= function(){
+	this._emitter	= null;
 }
+
+/**
+ * Getter/Setter for the emitter 
+*/
+Fireworks.Effect.prototype.emitter	= function(value){
+	if( value === undefined )	return this._emitter;	
+	this._emitter	= value;
+	return this;	
+};
 
 /**
  * Callback called on particle creation

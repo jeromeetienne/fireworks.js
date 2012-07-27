@@ -116,8 +116,9 @@ Fireworks.Emitter.prototype.getParticleData	= function(particle, namespace){
 
 Fireworks.Emitter.prototype.start	= function()
 {
+console.log('start', arguments)
 	console.assert( this._spawner, "a spawner MUST be set" );
-	console.assert( this._effects.length > 0, "Some effects MUST be set")
+	console.assert( this._effects.length > 0, "At least one effect MUST be set")
 	console.assert( this._started === false );
 	
 	this._particles		= new Array(this._nParticles);
@@ -136,7 +137,9 @@ Fireworks.Emitter.prototype.start	= function()
 			effect.onCreate(particle, particleIdx);			
 		})
 	}.bind(this));
-		
+	// set the intensity to 1
+	this.intensity(1)
+
 	return this;	// for chained API
 }
 
