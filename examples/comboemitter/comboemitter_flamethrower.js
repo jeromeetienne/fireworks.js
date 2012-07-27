@@ -51,6 +51,7 @@ Fireworks.ComboEmitter.Flamethrower.prototype.stop	= function(){
 	this._lastStop	= Date.now()/1000;
 }
 
+
 //////////////////////////////////////////////////////////////////////////////////
 //		Getter								//
 //////////////////////////////////////////////////////////////////////////////////
@@ -68,9 +69,10 @@ Fireworks.ComboEmitter.Flamethrower.prototype.object3D	= function(){
 Fireworks.ComboEmitter.Flamethrower.prototype._loopCb	= function(delta, now){
 	if( !this._emitterJet ) return;
 	
-	
+	// render this._emitterJet
 	this._emitterJet.update(delta).render();
 	
+	// handle intensity depending on attackTime/releaseTime
 	console.assert( this._state === 'started' || this._state === 'stopped' );	
 	var present	= Date.now()/1000;
 	if( this._state === 'started' ){
@@ -90,6 +92,15 @@ Fireworks.ComboEmitter.Flamethrower.prototype._loopCb	= function(delta, now){
 		}
 		this._emitterJet.intensity( intensity );
 	}
+	
+	// set gravity in local space
+	var emitter	= this._emitterJet;
+	var container	= this._container;
+	
+	var effect	= emitter.effectByName('gravity');
+	var matrix	= container.matrixWorld.clone().transpose();
+	var position	= effect.opts.shape.position.set(0, 10, 0);
+	matrix.multiplyVector3(position);
 }
 
 
