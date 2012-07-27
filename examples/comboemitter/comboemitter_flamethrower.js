@@ -125,18 +125,21 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 					}.bind(this)).back()
 				.createEffect("updateSpeed")
 					.onIntensityChange(function(newIntensity, oldIntensity){
-						var effect		= emitter.effectByName('velocity');
+						console.log('onIntensityChange', arguments, this)
+						var effect		= this.emitter().effectByName('velocity');
 						effect.opts.speed	= 15 + 15 * newIntensity;
-					}.bind(this)).back()
+					}).back()
 				.createEffect("blabla")
 					.onIntensityChange(function(newIntensity, oldIntensity){
-						if( newIntensity === 0 )	emitter.spawner().stop();
-						if( newIntensity > 0 && oldIntensity === 0 ){
-							emitter.spawner().start();
+						if( newIntensity === 0 ){
+							this.emitter().spawner().stop();						
+						}
+						if( oldIntensity === 0 && newIntensity > 0 ){
+							this.emitter().spawner().start();
 						}
 					}).back()
 				.back()
-			.start();
+			.start('prout');
 
 		// update the emitter in rendering loop
 		world.loop().hook(this._flamejetLoopCb.bind(this));
