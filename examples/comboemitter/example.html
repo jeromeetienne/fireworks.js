@@ -49,14 +49,12 @@
 	var flamethrower= new Fireworks.ComboEmitter.Flamethrower();
 	world.add( flamethrower.object3D() )
 
-	document.body.addEventListener('keypress', function(){
-		console.log('keypress')
-	});
+	flamethrower.start();
 
-	document.body.addEventListener('mousedown', function(){
+	document.body.addEventListener('keydown', function(){
 		flamethrower.start();
 	});
-	document.body.addEventListener('mouseup', function(){
+	document.body.addEventListener('keyup', function(){
 		flamethrower.stop();
 	});
 

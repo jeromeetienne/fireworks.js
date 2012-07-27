@@ -38,6 +38,7 @@ Fireworks.ComboEmitter.Flamethrower.prototype.constructor	= Fireworks.ComboEmitt
 //////////////////////////////////////////////////////////////////////////////////
 
 Fireworks.ComboEmitter.Flamethrower.prototype.start	= function(){
+	if( this._state === 'started' )	return;
 	console.assert( this._state === 'stopped' )
 	this._state	= 'started';
 	this._lastStart	= Date.now()/1000;
@@ -49,6 +50,7 @@ Fireworks.ComboEmitter.Flamethrower.prototype.stop	= function(){
 	this._state	= 'stopped';
 	this._lastStop	= Date.now()/1000;
 }
+
 
 //////////////////////////////////////////////////////////////////////////////////
 //		Getter								//
@@ -75,19 +77,19 @@ Fireworks.ComboEmitter.Flamethrower.prototype._loopCb	= function(delta, now){
 	if( this._state === 'started' ){
 		if( present - this._lastStart <= this._attackTime ){
 			var intensity	= (present - this._lastStart) / this._attackTime;		
+			//console.log('starting', intensity);		
 		}else{
 			var intensity	= 1;
 		}
-		//console.log('starting', intensity, (present - this._lastStart));		
 		this._emitterJet.intensity( intensity );
 	}else if( this._state === 'stopped' ){
 		if( present - this._lastStop <= this._releaseTime ){
 			var intensity	= 1 - (present - this._lastStop) / this._releaseTime;			
+			//console.log('stopping', intensity)		
 		}else{
 			var intensity	= 0;
 		}
 		this._emitterJet.intensity( intensity );
-		//console.log('stopping')		
 	}
 }
 
