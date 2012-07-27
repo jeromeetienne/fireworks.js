@@ -26,29 +26,36 @@
 <script src="../plugins/effect.rendertocanvas.js"></script>
 <script src="../plugins/effect.rendertothreejsobject3d.js"></script>
 
-<script src="../flamethrower/tremulousparticlesloader.js"></script>
-
 <!-- for sound -->
 <script src="../flamethrower/vendor/webaudio.js"></script>
-<script src="../flamethrower/vendor/jsfx/audio.js"></script>
-<script src="../flamethrower/vendor/jsfx/jsfx.js"></script>
-<script src="../flamethrower/vendor/jsfx/jsfxlib.js"></script>
 
+<script src="../flamethrower/tremulousparticlesloader.js"></script>
 
 <script src="./comboemitter.js"></script>
 <script src="./comboemitter_flamethrower.js"></script>
 
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
-	tQuery.createTorus().addTo(world);
+	tQuery.createCylinder(0.55, 0.0001, 2).addTo(world)
+		.geometry().rotateX(-Math.PI/2).back()
+		.translateZ(-1)
+		.scale(2);
 
 	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
 
-	world.camera().position.z	= 20;
+	world.camera().position.z	= 15;
 	//world.camera().position.x	= 20;
 
 	var container	= world.scene();
 	var flamethrower= new Fireworks.ComboEmitter.Flamethrower( container );
+
+
+	document.body.addEventListener('mousedown', function(){
+		flamethrower.start();
+	});
+	document.body.addEventListener('mouseup', function(){
+		flamethrower.stop();
+	});
 
 </script></body>
 
