@@ -16,7 +16,6 @@ Fireworks.EffectsStackBuilder.prototype.velocity	= function(shape, speed)
 		var velocity	= particle.get('velocity').vector;
 		this.opts.shape.randomPoint(velocity)
 		if( this.opts.speed !== undefined )	velocity.setLength(this.opts.speed);
-		console.log('speed', this.opts.speed)
 	}).onUpdate(function(particle, deltaTime){
 		var position	= particle.get('position').vector;
 		var velocity	= particle.get('velocity').vector;
