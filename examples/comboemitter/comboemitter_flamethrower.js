@@ -50,6 +50,11 @@ Fireworks.ComboEmitter.Flamethrower.prototype.stop	= function(){
 	this._lastStop	= Date.now()/1000;
 }
 
+Fireworks.ComboEmitter.Flamethrower.prototype.ungracefullStop	= function(){
+	this._state	= 'stopped';
+	this._lastStop	= 0;
+}
+
 /**
  * @return {boolean} true if it is ready, false otherwise
 */
