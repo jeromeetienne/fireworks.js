@@ -55,7 +55,7 @@ Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function(opts)
 		// handle parameter polymorphism
 		if( typeof(opts.image) === 'string' ){
 			var images	= [new Image];
-			image[0].src	= opts.image;
+			images[0].src	= opts.image;
 		}else if( opts.image instanceof Image ){
 			var images	= [opts.image];
 		}else if( opts.image instanceof Array ){
