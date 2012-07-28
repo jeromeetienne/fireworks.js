@@ -26,11 +26,11 @@
 
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
-	var tScene	= world.scene();
+	var tScene	= world.tScene();
 	
-	world.camera().position.z	= 10;
+	world.tCamera().position.z	= 10;
 	
-	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
+	world.tRenderer().setClearColorHex( 0x000000, world.tRenderer().getClearAlpha() );
 
 
 	// create the emitter

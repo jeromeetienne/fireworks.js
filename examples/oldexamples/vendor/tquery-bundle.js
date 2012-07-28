@@ -1423,7 +1423,7 @@ tQuery.Object3D._removeClassOne	= function(object3d, className){
 //////////////////////////////////////////////////////////////////////////////////
 
 tQuery.Object3D._select	= function(selector, root){
-	root		= root	|| tQuery.world.scene();
+	root		= root	|| tQuery.world.tScene();
 	var selectItems	= selector.split(' ').filter(function(v){ return v.length > 0;})
 
 	var lists	= [];	
@@ -1673,7 +1673,7 @@ tQuery.World	= function()
 	tQuery.world	= this;
 	
 	// create a scene
-	this._scene	= new THREE.Scene();
+	this._scene	= new THREE.tScene();
 
  	// create a camera in the scene
 	// FIXME this window dimension is crap
@@ -2746,8 +2746,8 @@ tQuery.World.register('addBoilerplate', function(opts){
 	}
 
 	// get some variables
-	var camera	= this.camera();
-	var renderer	= this.renderer();
+	var camera	= this.tCamera();
+	var renderer	= this.tRenderer();
 
 	// create a camera contol
 	if( opts.cameraControls ){

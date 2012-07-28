@@ -32,10 +32,10 @@
 
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
-	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
+	world.tRenderer().setClearColorHex( 0x000000, world.tRenderer().getClearAlpha() );
 
 	world.removeCameraControls()
-	world.camera().position.z	= 50;
+	world.tCamera().position.z	= 50;
 
 
 	var container	= new THREE.Object3D();

@@ -30,9 +30,9 @@
 
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
-	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
+	world.tRenderer().setClearColorHex( 0x000000, world.tRenderer().getClearAlpha() );
 
-	world.camera().position.z	= 10;
+	world.tCamera().position.z	= 10;
 	
 	world.getCameraControls().rangeX	/= -2;
 	world.getCameraControls().rangeY	/= -4;

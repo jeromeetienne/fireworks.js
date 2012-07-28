@@ -49,10 +49,10 @@
 
 	var world	= tQuery.createWorld().boilerplate().start();
 
-	world.renderer().setClearColorHex( 0x000000, 0 );
+	world.tRenderer().setClearColorHex( 0x000000, 0 );
 	// world.getCameraControls().rangeX*= 0.05;
 	// world.getCameraControls().rangeY*= 0.1;
-	world.camera().position.z	= 8;
+	world.tCamera().position.z	= 8;
 
 	var object	= tQuery.createTorus().addTo(world).scaleBy(4);
 

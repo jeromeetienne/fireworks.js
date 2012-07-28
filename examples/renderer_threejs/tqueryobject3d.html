@@ -28,7 +28,7 @@
 	var object	= tQuery.createTorus(0.8, 0.2, 32, 32).addTo(world)
 				.rotateZ(1*Math.PI/8);
 
-	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
+	world.tRenderer().setClearColorHex( 0x000000, world.tRenderer().getClearAlpha() );
 
 	var texture	= THREE.ImageUtils.loadTexture("../assets/images/tremulous/psaw/blue_particle.jpg");
 
