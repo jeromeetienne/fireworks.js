@@ -18,7 +18,7 @@
 			.lifeTime(0.5)
 			.createEffect('scale', {
 					birthScale	: 1/12,
-					mulScale	: 0.85
+					mulScale	: 0.88
 				}).onBirth(function(particle, deltaTime){
 					var object3d	= particle.get('threejsObject3D').object3d;
 					var birthScale	= this.opts.birthScale;
@@ -30,13 +30,15 @@
 			.renderToThreejsObject3D({
 				container	: world,
 				create		: function(){
-					return new THREE.Sprite({
+					var object3d	= new THREE.Sprite({
 						color			: 0xAA4488,
 						useScreenCoordinates	: false,
 						map			: texture,
 						blending		: THREE.AdditiveBlending,
 						transparent		: true
 					});
+					object3d.rotation	= Math.random() * Math.PI*2;
+					return object3d;
 				}	
 			})
 			.back()
