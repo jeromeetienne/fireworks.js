@@ -1,7 +1,7 @@
-Fireworks.ComboEmitter.Flamethrower	= function(onLoad){
+Fireworks.ComboEmitter.Flamethrower	= function(onReady){
 	this._container	= new THREE.Object3D();
 	this._emitterJet= null;	
-	this._onLoad	= onLoad;
+	this._onReady	= onReady	|| function(comboEmitter){};
 
 	this._baseSound	= null;
 	this._webaudio	= null;
@@ -51,6 +51,22 @@ Fireworks.ComboEmitter.Flamethrower.prototype.stop	= function(){
 	this._lastStop	= Date.now()/1000;
 }
 
+/**
+ * @return {boolean} true if it is ready, false otherwise
+*/
+Fireworks.ComboEmitter.Flamethrower.prototype.isReady	= function(){
+	// test if the sound has been loaded
+	if( !this._baseSound.isPlayable() )	return false;
+	// test the spritesheet has been loaded
+	if( !this._emitterJet )			return false;
+	// if all previous tests passed, it is ready
+	return true;
+}
+
+Fireworks.ComboEmitter.Flamethrower.prototype._notifyReadyIfPossible	= function(){
+	if( this.isReady() === false )	return;
+	this._onReady(this);
+}
 
 //////////////////////////////////////////////////////////////////////////////////
 //		Getter								//
@@ -96,10 +112,9 @@ Fireworks.ComboEmitter.Flamethrower.prototype._loopCb	= function(delta, now){
 	// set gravity in local space
 	var emitter	= this._emitterJet;
 	var container	= this._container;
-	
 	var effect	= emitter.effectByName('gravity');
 	var matrix	= container.matrixWorld.clone().transpose();
-	var position	= effect.opts.shape.position.set(0, 10, 0);
+	var position	= effect.opts.shape.position.set(0, 5, 0);
 	matrix.multiplyVector3(position);
 }
 
@@ -113,8 +128,8 @@ Fireworks.ComboEmitter.Flamethrower.prototype._loopCb	= function(delta, now){
 */
 Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 	var urls	= [
-		"../assets/images/flame/flame00.png",
-		"../assets/images/flame/flame01.png",
+		// "../assets/images/flame/flame00.png",
+		// "../assets/images/flame/flame01.png",
 		"../assets/images/flame/flame02.png",
 		"../assets/images/flame/flame03.png",
 		"../assets/images/flame/flame04.png",
@@ -150,18 +165,18 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 		var texture	= new THREE.Texture( spriteSheet );
 		texture.needsUpdate = true;
 	
-		var emitter	= this._emitterJet	= Fireworks.createEmitter({nParticles : 40})
+		var emitter	= this._emitterJet	= Fireworks.createEmitter({nParticles : 100})
 			.useSpawnerSteadyRate(20)
 			.effectsStackBuilder()
 				.position(Fireworks.createShapeSphere(0, 0,   0, 0.01))
-				.velocity(Fireworks.createShapeSphere(0, 0, -30, 0.1))
-				.lifeTime(1.0, 1.5)
+				.velocity(Fireworks.createShapeSphere(0, 0, -30, 0.1), 30)
+				.lifeTime(0.8, 1.5)
 				.friction(0.98)
 				.acceleration({
 					effectId	: 'gravity',
 					shape		: Fireworks.createShapePoint(0, 5, 0)
 				})
-				.randomVelocityDrift(Fireworks.createVector(0,0,9))
+				.randomVelocityDrift(Fireworks.createVector(0,10,20))
 				.createEffect('scale', {
 						origin	: 1/8,
 						factor	: 1.005
@@ -205,7 +220,7 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 					.onIntensityChange(function(newIntensity, oldIntensity){
 						//console.log('onIntensityChange', arguments, this) 
 						var effect		= this.emitter().effectByName('velocity');
-						effect.opts.speed	= 20 + 10 * newIntensity;
+						//effect.opts.speed	= 15 + 15 * newIntensity;
 					}).back()
 				.createEffect("blablaTOREMOVE")
 					.onIntensityChange(function(newIntensity, oldIntensity){
@@ -219,6 +234,8 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 				.back()
 			.start();
 		emitter.intensity(0);
+		// notify the caller it is ready if possible
+		this._notifyReadyIfPossible();
 	};
 }
 
@@ -234,23 +251,14 @@ Fireworks.ComboEmitter.Flamethrower.prototype._soundCtor	= function()
 {
 	// init the library
 	var webaudio	= new WebAudio();
-	if(false){
-		// create a sound 
-		var buffer	= webaudio.context().createBuffer(1, 44100, 44100);
-		var fArray	= buffer.getChannelData(0);
-		for(var i = 0; i < fArray.length; i++){
-			fArray[i]	= Math.random()*2;
-		}
-		// set the buffer
-		this._baseSound	= webaudio.createSound().loop(true).buffer(buffer);	
-	}
-	if(true){
-		this._baseSound	= webaudio.createSound().loop(true);	
-		this._baseSound.load('flamethrower-freesoundloop.wav', function(sound){
-			console.log('sound loaded');
-		});	
-	}
-
+	// create a sound 
+	this._baseSound	= webaudio.createSound().loop(true);	
+	// load the sound
+	this._baseSound.load('flamethrower-freesoundloop.wav', function(sound){
+		console.log('sound loaded');
+		// notify the caller it is ready if possible
+		this._notifyReadyIfPossible();
+	}.bind(this));
 }
 
 Fireworks.ComboEmitter.Flamethrower.prototype._soundDtor	= function()

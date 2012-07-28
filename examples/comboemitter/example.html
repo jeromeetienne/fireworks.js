@@ -38,20 +38,24 @@
 	var world	= tQuery.createWorld().boilerplate().start();
 	
 	var container	= tQuery.createObject3D().addTo(world)
-		.rotateX(Math.PI/2)
-	
-	
+		.rotateY(-Math.PI/2)
+		.translateX(-10)
+		
 	tQuery.createCylinder(0.55, 0.0001, 2).addTo(container)
 		.geometry().rotateX(-Math.PI/2).back()
-		//.translateZ(-1)
+		.translateZ(2)
 		.scale(2);
 
+	// world.renderer().setClearColorHex( 0x80bbff, world.renderer().getClearAlpha() );
 	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
 
-	world.camera().position.z	= 15;
+	world.removeCameraControls();
+	world.camera().position.z	= 20;
 	//world.camera().position.x	= 20;
 
-	var flamethrower= new Fireworks.ComboEmitter.Flamethrower();
+	var flamethrower= new Fireworks.ComboEmitter.Flamethrower(function(){
+		console.log("comboemitter ready", arguments)
+	});
 	container.add( flamethrower.object3D() )
 
 	//flamethrower.start();
