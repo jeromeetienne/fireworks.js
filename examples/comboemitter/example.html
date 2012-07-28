@@ -40,7 +40,6 @@
 	world.tRenderer().setClearColorHex( 0x000000, world.tRenderer().getClearAlpha() );
 	// world.removetCameraControls();
 	world.tCamera().position.z	= 20;
-	
 
 	// create the container for the comboemitter	
 	var container	= tQuery.createObject3D().addTo(world)
@@ -55,11 +54,9 @@
 		.scale(2);
 
 	var flamethrower= new Fireworks.ComboEmitter.Flamethrower(function(){
-		console.log("comboemitter ready", arguments)
+		flamethrower.start();
 	});
 	container.add( flamethrower.object3D() )
-
-	//flamethrower.start();
 
 	document.body.addEventListener('mousedown', function(){
 		flamethrower.start();
@@ -67,7 +64,9 @@
 	document.body.addEventListener('mouseup', function(){
 		flamethrower.stop();
 	});
-	document.body.addEventListener('keydown', function(){
+	document.body.addEventListener('keydown', function(event){
+		// if the pressed key isnt 'esc', return now
+		if( event.keyCode !== 27 )	return;
 		flamethrower.ungracefullStop();
 	});
 

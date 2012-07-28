@@ -13,7 +13,9 @@ Fireworks.EffectsStackBuilder.prototype.back	= function(){
 }
 
 Fireworks.EffectsStackBuilder.prototype.createEffect	= function(name, opts){
-	return Fireworks.createEffect(name, opts).pushTo(this._emitter).back(this);
+	var creator	= Fireworks.createEffect(name, opts).pushTo(this._emitter).back(this);
+	creator.effect().emitter(this._emitter);
+	return creator;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -87,7 +89,17 @@ Fireworks.createEffect	= function(name, opts){
  * An effect to apply on particles
 */
 Fireworks.Effect	= function(){
+	this._emitter	= null;
 }
+
+/**
+ * Getter/Setter for the emitter 
+*/
+Fireworks.Effect.prototype.emitter	= function(value){
+	if( value === undefined )	return this._emitter;	
+	this._emitter	= value;
+	return this;	
+};
 
 /**
  * Callback called on particle creation
@@ -191,12 +203,14 @@ Fireworks.Emitter.prototype.intensity	= function(value){
 	// sanity check
 	console.assert( value >= 0, 'Fireworks.Emitter.intensity: invalid value.', value);
 	console.assert( value <= 1, 'Fireworks.Emitter.intensity: invalid value.', value);
+	// backup the old value
+	var oldValue	= this._intensity;
 	// update the value
 	this._intensity	= value;
 	// notify all effects
 	this._effects.forEach(function(effect){
 		if( !effect.onIntensityChange )	return;
-		effect.onIntensityChange(this._intensity);			
+		effect.onIntensityChange(this._intensity, oldValue);			
 	}.bind(this));
 	return this;	// for chained API
 }
@@ -226,7 +240,7 @@ Fireworks.Emitter.prototype.getParticleData	= function(particle, namespace){
 Fireworks.Emitter.prototype.start	= function()
 {
 	console.assert( this._spawner, "a spawner MUST be set" );
-	console.assert( this._effects.length > 0, "Some effects MUST be set")
+	console.assert( this._effects.length > 0, "At least one effect MUST be set")
 	console.assert( this._started === false );
 	
 	this._particles		= new Array(this._nParticles);
@@ -245,7 +259,9 @@ Fireworks.Emitter.prototype.start	= function()
 			effect.onCreate(particle, particleIdx);			
 		})
 	}.bind(this));
-		
+	// set the intensity to 1
+	this.intensity(1)
+
 	return this;	// for chained API
 }
 
@@ -900,7 +916,7 @@ Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function(opts)
 		// handle parameter polymorphism
 		if( typeof(opts.image) === 'string' ){
 			var images	= [new Image];
-			image[0].src	= opts.image;
+			images[0].src	= opts.image;
 		}else if( opts.image instanceof Image ){
 			var images	= [opts.image];
 		}else if( opts.image instanceof Array ){
@@ -944,7 +960,8 @@ Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function(opts)
 };
 /**
  * render to three.js THREE.Object3D
- }
+ * If i play with object3D.visible true/false instead of Object3D.add/remove
+ * i got a lot of artefacts
 */
 Fireworks.EffectsStackBuilder.prototype.renderToThreejsObject3D	= function(opts)
 {
@@ -961,6 +978,7 @@ Fireworks.EffectsStackBuilder.prototype.renderToThreejsObject3D	= function(opts)
 		console.assert(particle.get('threejsObject3D').object3d instanceof THREE.Object3D);
 		
 		var object3d	= particle.get('threejsObject3D').object3d;
+
 //		object3d.visible= false;
 	}).onBirth(function(particle){
 		var object3d	= particle.get('threejsObject3D').object3d;
@@ -1065,12 +1083,15 @@ Fireworks.EffectsStackBuilder.prototype.renderToThreejsParticleSystem	= function
 };
 
 /**
- * Shortcut to create Fireworks.EffectRandomDriftVelocity
+ * Create a velocity effect
+ * @param {Fireworks.Shape}	shape	set the direction of the velocity by a randompoint in this shape
+ * @param {Number?}		speed	set the speed itself. if undefined, keep randompoint length for speed
 */
-Fireworks.EffectsStackBuilder.prototype.velocity	= function(shape)
+Fireworks.EffectsStackBuilder.prototype.velocity	= function(shape, speed)
 {
 	Fireworks.createEffect('velocity', {
-		shape	: shape
+		shape	: shape, 
+		speed	: speed !== undefined ? speed : -1
 	}).onCreate(function(particle){
 		particle.set('velocity', {
 			vector	: new Fireworks.Vector()
@@ -1078,6 +1099,7 @@ Fireworks.EffectsStackBuilder.prototype.velocity	= function(shape)
 	}).onBirth(function(particle){
 		var velocity	= particle.get('velocity').vector;
 		this.opts.shape.randomPoint(velocity)
+		if( this.opts.speed !== -1 )	velocity.setLength(this.opts.speed);
 	}).onUpdate(function(particle, deltaTime){
 		var position	= particle.get('position').vector;
 		var velocity	= particle.get('velocity').vector;

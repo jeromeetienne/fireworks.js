@@ -99,6 +99,11 @@
 						var object3d	= particle.get('threejsObject3D').object3d;
 						object3d.scale.multiplyScalar(this.opts.factor);
 					}).back()
+				.createEffect('rotation')
+					.onBirth(function(particle){
+						var object3d	= particle.get('threejsObject3D').object3d;
+						object3d.rotation	= Math.random()*Math.PI*2;
+					}).back()
 				.createEffect('opacity', {
 						gradient: Fireworks.createLinearGradient()
 								.push(0.00, 0.00)
@@ -120,17 +125,12 @@
 							blending		: THREE.AdditiveBlending,
 							transparent		: true
 						});
-	
 						object3d.opacity= 0.2; 
-						
-						object3d.rotation	= Math.floor(Math.random()*Math.PI*2);
-						
-						object3d.uvScale.set(1, 1/urls.length)
-						
+						object3d.uvScale.set(1, 1/urls.length)					
 						return object3d;
 					}	
 				})
-				.createEffect("renderer")
+				.createEffect("updateSpritesheet")
 					.onUpdate(function(particle, deltaTime){
 						var object3d	= particle.get('threejsObject3D').object3d;
 						var canonAge	= particle.get('lifeTime').normalizedAge();

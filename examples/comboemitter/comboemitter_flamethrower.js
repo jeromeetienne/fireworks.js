@@ -192,6 +192,11 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 						var object3d	= particle.get('threejsObject3D').object3d;
 						object3d.scale.multiplyScalar(this.opts.factor);
 					}).back()
+				.createEffect('rotation')
+					.onBirth(function(particle){
+						var object3d	= particle.get('threejsObject3D').object3d;
+						object3d.rotation	= Math.random()*Math.PI*2;
+					}).back()
 				.renderToThreejsObject3D({
 					container	: this._container,
 					create		: function(){
@@ -203,7 +208,6 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 							transparent		: true
 						});
 						object3d.opacity	= 0.9;
-						object3d.rotation	= Math.floor(Math.random()*Math.PI*2);
 						object3d.uvScale.set(1, 1/urls.length);
 						return object3d;
 					}

@@ -7,7 +7,7 @@ Fireworks.EffectsStackBuilder.prototype.velocity	= function(shape, speed)
 {
 	Fireworks.createEffect('velocity', {
 		shape	: shape, 
-		speed	: speed
+		speed	: speed !== undefined ? speed : -1
 	}).onCreate(function(particle){
 		particle.set('velocity', {
 			vector	: new Fireworks.Vector()
@@ -15,7 +15,7 @@ Fireworks.EffectsStackBuilder.prototype.velocity	= function(shape, speed)
 	}).onBirth(function(particle){
 		var velocity	= particle.get('velocity').vector;
 		this.opts.shape.randomPoint(velocity)
-		if( this.opts.speed !== undefined )	velocity.setLength(this.opts.speed);
+		if( this.opts.speed !== -1 )	velocity.setLength(this.opts.speed);
 	}).onUpdate(function(particle, deltaTime){
 		var position	= particle.get('position').vector;
 		var velocity	= particle.get('velocity').vector;

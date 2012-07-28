@@ -12,7 +12,9 @@ Fireworks.EffectsStackBuilder.prototype.back	= function(){
 }
 
 Fireworks.EffectsStackBuilder.prototype.createEffect	= function(name, opts){
-	return Fireworks.createEffect(name, opts).pushTo(this._emitter).back(this);
+	var creator	= Fireworks.createEffect(name, opts).pushTo(this._emitter).back(this);
+	creator.effect().emitter(this._emitter);
+	return creator;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -86,7 +88,17 @@ Fireworks.createEffect	= function(name, opts){
  * An effect to apply on particles
 */
 Fireworks.Effect	= function(){
+	this._emitter	= null;
 }
+
+/**
+ * Getter/Setter for the emitter 
+*/
+Fireworks.Effect.prototype.emitter	= function(value){
+	if( value === undefined )	return this._emitter;	
+	this._emitter	= value;
+	return this;	
+};
 
 /**
  * Callback called on particle creation
@@ -190,12 +202,14 @@ Fireworks.Emitter.prototype.intensity	= function(value){
 	// sanity check
 	console.assert( value >= 0, 'Fireworks.Emitter.intensity: invalid value.', value);
 	console.assert( value <= 1, 'Fireworks.Emitter.intensity: invalid value.', value);
+	// backup the old value
+	var oldValue	= this._intensity;
 	// update the value
 	this._intensity	= value;
 	// notify all effects
 	this._effects.forEach(function(effect){
 		if( !effect.onIntensityChange )	return;
-		effect.onIntensityChange(this._intensity);			
+		effect.onIntensityChange(this._intensity, oldValue);			
 	}.bind(this));
 	return this;	// for chained API
 }
@@ -225,7 +239,7 @@ Fireworks.Emitter.prototype.getParticleData	= function(particle, namespace){
 Fireworks.Emitter.prototype.start	= function()
 {
 	console.assert( this._spawner, "a spawner MUST be set" );
-	console.assert( this._effects.length > 0, "Some effects MUST be set")
+	console.assert( this._effects.length > 0, "At least one effect MUST be set")
 	console.assert( this._started === false );
 	
 	this._particles		= new Array(this._nParticles);
@@ -244,7 +258,9 @@ Fireworks.Emitter.prototype.start	= function()
 			effect.onCreate(particle, particleIdx);			
 		})
 	}.bind(this));
-		
+	// set the intensity to 1
+	this.intensity(1)
+
 	return this;	// for chained API
 }
 
