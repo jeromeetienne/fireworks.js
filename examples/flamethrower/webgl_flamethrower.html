@@ -150,7 +150,7 @@
 
 			// set gravity in local space
 			var effect	= emitter.effectByName('gravity');
-			var matrix	= container.matrixWorld.clone().transpose();
+			var matrix	= container.matrixWorld.clone().setPosition({x:0,y:0,z:0}).transpose();
 			var position	= effect.opts.shape.position.set(0, 20, 0);
 			matrix.multiplyVector3(position);
 		});
