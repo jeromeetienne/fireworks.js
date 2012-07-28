@@ -113,8 +113,8 @@ Fireworks.ComboEmitter.Flamethrower.prototype._loopCb	= function(delta, now){
 	var emitter	= this._emitterJet;
 	var container	= this._container;
 	var effect	= emitter.effectByName('gravity');
-	var matrix	= container.matrixWorld.clone().transpose();
-	var position	= effect.opts.shape.position.set(0, 5, 0);
+	var matrix	= container.matrixWorld.clone().setPosition({x:0,y:0,z:0}).transpose();
+	var position	= effect.opts.shape.position.set(0, 10, 0);
 	matrix.multiplyVector3(position);
 }
 
@@ -160,7 +160,7 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 	return;
 
 	function buildEmitter(spriteSheet){
-		console.log("spriteSheet loaded");
+		// console.log("spriteSheet loaded");
 		// create the texture
 		var texture	= new THREE.Texture( spriteSheet );
 		texture.needsUpdate = true;
@@ -174,9 +174,9 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 				.friction(0.98)
 				.acceleration({
 					effectId	: 'gravity',
-					shape		: Fireworks.createShapePoint(0, 5, 0)
+					shape		: Fireworks.createShapePoint(0, 10, 0)
 				})
-				.randomVelocityDrift(Fireworks.createVector(0,10,20))
+				.randomVelocityDrift(Fireworks.createVector(0,0,20))
 				.createEffect('scale', {
 						origin	: 1/8,
 						factor	: 1.005
@@ -255,7 +255,7 @@ Fireworks.ComboEmitter.Flamethrower.prototype._soundCtor	= function()
 	this._baseSound	= webaudio.createSound().loop(true);	
 	// load the sound
 	this._baseSound.load('flamethrower-freesoundloop.wav', function(sound){
-		console.log('sound loaded');
+		// console.log('sound loaded');
 		// notify the caller it is ready if possible
 		this._notifyReadyIfPossible();
 	}.bind(this));
