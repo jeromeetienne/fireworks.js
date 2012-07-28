@@ -29,10 +29,8 @@
 <script src="../flamethrower/tremulousparticlesloader.js"></script>
 
 <!-- for sound -->
-<script src="../flamethrower/vendor/webaudio.js"></script>
-<script src="../flamethrower/vendor/jsfx/audio.js"></script>
-<script src="../flamethrower/vendor/jsfx/jsfx.js"></script>
-<script src="../flamethrower/vendor/jsfx/jsfxlib.js"></script> <body><script>
+<script src="vendor/webaudio.js"></script>
+<body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
 	var container	= world.scene();
 	world.renderer().setClearColorHex( 0x000000, world.renderer().getClearAlpha() );
@@ -138,6 +136,8 @@
 					}).back()
 				.createEffect("blabla")
 					.onIntensityChange(function(intensity){
+						
+						var emitter	= this.emitter();
 						var effect	= emitter.effectByName('velocity');
 						var center	= effect.opts.shape.center.set(20 + 20*emitter.intensity(), 0, 0);
 
@@ -189,12 +189,6 @@ return;
 	var sound	= webaudio.createSound();
 
 	// load sound and play it
-	var playingSound;
-
-	var lib		= ["noise",0.0000,0.4000,0.0000,0.4000,0.0000,0.0000,20.0000,367.0000,2400.0000,0.0000,0.0000,0.0000,0.0100,0.0003,0.0000,0.0000,0.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000,0.0000,0.0000,0.1000,0.0000]
-	var params	= jsfxlib.arrayToParams(lib);
-	var data	= jsfx.generate(params);
-	
 	var buffer	= webaudio.context().createBuffer(1, 44100, 44100);
 	var fArray	= buffer.getChannelData(0);
 	for(var i = 0; i < fArray.length; i++){
@@ -204,7 +198,7 @@ return;
 	sound.buffer(buffer);
 	// play the sound
 	// TODO change that for and bind it to start/stop
-	playingSound	= sound.loop(true).play();	
+	var playingSound	= sound.loop(true).play();	
 </script></body>
 
 
