@@ -1,4 +1,1109 @@
 // tquery.js - https://github.com/jeromeetienne/tquery - MIT License
+// vim: ts=4 sts=4 sw=4 expandtab
+// -- kriskowal Kris Kowal Copyright (C) 2009-2011 MIT License
+// -- tlrobinson Tom Robinson Copyright (C) 2009-2010 MIT License (Narwhal Project)
+// -- dantman Daniel Friesen Copyright (C) 2010 XXX TODO License or CLA
+// -- fschaefer Florian Schäfer Copyright (C) 2010 MIT License
+// -- Gozala Irakli Gozalishvili Copyright (C) 2010 MIT License
+// -- kitcambridge Kit Cambridge Copyright (C) 2011 MIT License
+// -- kossnocorp Sasha Koss XXX TODO License or CLA
+// -- bryanforbes Bryan Forbes XXX TODO License or CLA
+// -- killdream Quildreen Motta Copyright (C) 2011 MIT Licence
+// -- michaelficarra Michael Ficarra Copyright (C) 2011 3-clause BSD License
+// -- sharkbrainguy Gerard Paapu Copyright (C) 2011 MIT License
+// -- bbqsrc Brendan Molloy (C) 2011 Creative Commons Zero (public domain)
+// -- iwyg XXX TODO License or CLA
+// -- DomenicDenicola Domenic Denicola Copyright (C) 2011 MIT License
+// -- xavierm02 Montillet Xavier Copyright (C) 2011 MIT License
+// -- Raynos Jake Verbaten Copyright (C) 2011 MIT Licence
+// -- samsonjs Sami Samhuri Copyright (C) 2010 MIT License
+// -- rwldrn Rick Waldron Copyright (C) 2011 MIT License
+// -- lexer Alexey Zakharov XXX TODO License or CLA
+
+/*!
+    Copyright (c) 2009, 280 North Inc. http://280north.com/
+    MIT License. http://github.com/280north/narwhal/blob/master/README.md
+*/
+
+// Module systems magic dance
+(function (definition) {
+    // RequireJS
+    if (typeof define == "function") {
+        define(definition);
+    // CommonJS and <script>
+    } else {
+        definition();
+    }
+})(function () {
+
+/**
+ * Brings an environment as close to ECMAScript 5 compliance
+ * as is possible with the facilities of erstwhile engines.
+ *
+ * Annotated ES5: http://es5.github.com/ (specific links below)
+ * ES5 Spec: http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
+ * Required reading: http://javascriptweblog.wordpress.com/2011/12/05/extending-javascript-natives/
+ */
+
+//
+// Function
+// ========
+//
+
+// ES-5 15.3.4.5
+// http://es5.github.com/#x15.3.4.5
+
+if (!Function.prototype.bind) {
+    Function.prototype.bind = function bind(that) { // .length is 1
+        // 1. Let Target be the this value.
+        var target = this;
+        // 2. If IsCallable(Target) is false, throw a TypeError exception.
+        if (typeof target != "function") {
+            throw new TypeError("Function.prototype.bind called on incompatible " + target);
+        }
+        // 3. Let A be a new (possibly empty) internal list of all of the
+        //   argument values provided after thisArg (arg1, arg2 etc), in order.
+        // XXX slicedArgs will stand in for "A" if used
+        var args = slice.call(arguments, 1); // for normal call
+        // 4. Let F be a new native ECMAScript object.
+        // 11. Set the [[Prototype]] internal property of F to the standard
+        //   built-in Function prototype object as specified in 15.3.3.1.
+        // 12. Set the [[Call]] internal property of F as described in
+        //   15.3.4.5.1.
+        // 13. Set the [[Construct]] internal property of F as described in
+        //   15.3.4.5.2.
+        // 14. Set the [[HasInstance]] internal property of F as described in
+        //   15.3.4.5.3.
+        var bound = function () {
+
+            if (this instanceof bound) {
+                // 15.3.4.5.2 [[Construct]]
+                // When the [[Construct]] internal method of a function object,
+                // F that was created using the bind function is called with a
+                // list of arguments ExtraArgs, the following steps are taken:
+                // 1. Let target be the value of F's [[TargetFunction]]
+                //   internal property.
+                // 2. If target has no [[Construct]] internal method, a
+                //   TypeError exception is thrown.
+                // 3. Let boundArgs be the value of F's [[BoundArgs]] internal
+                //   property.
+                // 4. Let args be a new list containing the same values as the
+                //   list boundArgs in the same order followed by the same
+                //   values as the list ExtraArgs in the same order.
+                // 5. Return the result of calling the [[Construct]] internal
+                //   method of target providing args as the arguments.
+
+                var F = function(){};
+                F.prototype = target.prototype;
+                var self = new F;
+
+                var result = target.apply(
+                    self,
+                    args.concat(slice.call(arguments))
+                );
+                if (Object(result) === result) {
+                    return result;
+                }
+                return self;
+
+            } else {
+                // 15.3.4.5.1 [[Call]]
+                // When the [[Call]] internal method of a function object, F,
+                // which was created using the bind function is called with a
+                // this value and a list of arguments ExtraArgs, the following
+                // steps are taken:
+                // 1. Let boundArgs be the value of F's [[BoundArgs]] internal
+                //   property.
+                // 2. Let boundThis be the value of F's [[BoundThis]] internal
+                //   property.
+                // 3. Let target be the value of F's [[TargetFunction]] internal
+                //   property.
+                // 4. Let args be a new list containing the same values as the
+                //   list boundArgs in the same order followed by the same
+                //   values as the list ExtraArgs in the same order.
+                // 5. Return the result of calling the [[Call]] internal method
+                //   of target providing boundThis as the this value and
+                //   providing args as the arguments.
+
+                // equiv: target.call(this, ...boundArgs, ...args)
+                return target.apply(
+                    that,
+                    args.concat(slice.call(arguments))
+                );
+
+            }
+
+        };
+        // XXX bound.length is never writable, so don't even try
+        //
+        // 15. If the [[Class]] internal property of Target is "Function", then
+        //     a. Let L be the length property of Target minus the length of A.
+        //     b. Set the length own property of F to either 0 or L, whichever is
+        //       larger.
+        // 16. Else set the length own property of F to 0.
+        // 17. Set the attributes of the length own property of F to the values
+        //   specified in 15.3.5.1.
+
+        // TODO
+        // 18. Set the [[Extensible]] internal property of F to true.
+
+        // TODO
+        // 19. Let thrower be the [[ThrowTypeError]] function Object (13.2.3).
+        // 20. Call the [[DefineOwnProperty]] internal method of F with
+        //   arguments "caller", PropertyDescriptor {[[Get]]: thrower, [[Set]]:
+        //   thrower, [[Enumerable]]: false, [[Configurable]]: false}, and
+        //   false.
+        // 21. Call the [[DefineOwnProperty]] internal method of F with
+        //   arguments "arguments", PropertyDescriptor {[[Get]]: thrower,
+        //   [[Set]]: thrower, [[Enumerable]]: false, [[Configurable]]: false},
+        //   and false.
+
+        // TODO
+        // NOTE Function objects created using Function.prototype.bind do not
+        // have a prototype property or the [[Code]], [[FormalParameters]], and
+        // [[Scope]] internal properties.
+        // XXX can't delete prototype in pure-js.
+
+        // 22. Return F.
+        return bound;
+    };
+}
+
+// Shortcut to an often accessed properties, in order to avoid multiple
+// dereference that costs universally.
+// _Please note: Shortcuts are defined after `Function.prototype.bind` as we
+// us it in defining shortcuts.
+var call = Function.prototype.call;
+var prototypeOfArray = Array.prototype;
+var prototypeOfObject = Object.prototype;
+var slice = prototypeOfArray.slice;
+// Having a toString local variable name breaks in Opera so use _toString.
+var _toString = call.bind(prototypeOfObject.toString);
+var owns = call.bind(prototypeOfObject.hasOwnProperty);
+
+// If JS engine supports accessors creating shortcuts.
+var defineGetter;
+var defineSetter;
+var lookupGetter;
+var lookupSetter;
+var supportsAccessors;
+if ((supportsAccessors = owns(prototypeOfObject, "__defineGetter__"))) {
+    defineGetter = call.bind(prototypeOfObject.__defineGetter__);
+    defineSetter = call.bind(prototypeOfObject.__defineSetter__);
+    lookupGetter = call.bind(prototypeOfObject.__lookupGetter__);
+    lookupSetter = call.bind(prototypeOfObject.__lookupSetter__);
+}
+
+//
+// Array
+// =====
+//
+
+// ES5 15.4.3.2
+// http://es5.github.com/#x15.4.3.2
+// https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/isArray
+if (!Array.isArray) {
+    Array.isArray = function isArray(obj) {
+        return _toString(obj) == "[object Array]";
+    };
+}
+
+// The IsCallable() check in the Array functions
+// has been replaced with a strict check on the
+// internal class of the object to trap cases where
+// the provided function was actually a regular
+// expression literal, which in V8 and
+// JavaScriptCore is a typeof "function".  Only in
+// V8 are regular expression literals permitted as
+// reduce parameters, so it is desirable in the
+// general case for the shim to match the more
+// strict and common behavior of rejecting regular
+// expressions.
+
+// ES5 15.4.4.18
+// http://es5.github.com/#x15.4.4.18
+// https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/array/forEach
+if (!Array.prototype.forEach) {
+    Array.prototype.forEach = function forEach(fun /*, thisp*/) {
+        var self = toObject(this),
+            thisp = arguments[1],
+            i = -1,
+            length = self.length >>> 0;
+
+        // If no callback function or if callback is not a callable function
+        if (_toString(fun) != "[object Function]") {
+            throw new TypeError(); // TODO message
+        }
+
+        while (++i < length) {
+            if (i in self) {
+                // Invoke the callback function with call, passing arguments:
+                // context, property value, property key, thisArg object context
+                fun.call(thisp, self[i], i, self);
+            }
+        }
+    };
+}
+
+// ES5 15.4.4.19
+// http://es5.github.com/#x15.4.4.19
+// https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Objects/Array/map
+if (!Array.prototype.map) {
+    Array.prototype.map = function map(fun /*, thisp*/) {
+        var self = toObject(this),
+            length = self.length >>> 0,
+            result = Array(length),
+            thisp = arguments[1];
+
+        // If no callback function or if callback is not a callable function
+        if (_toString(fun) != "[object Function]") {
+            throw new TypeError(fun + " is not a function");
+        }
+
+        for (var i = 0; i < length; i++) {
+            if (i in self)
+                result[i] = fun.call(thisp, self[i], i, self);
+        }
+        return result;
+    };
+}
+
+// ES5 15.4.4.20
+// http://es5.github.com/#x15.4.4.20
+// https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Objects/Array/filter
+if (!Array.prototype.filter) {
+    Array.prototype.filter = function filter(fun /*, thisp */) {
+        var self = toObject(this),
+            length = self.length >>> 0,
+            result = [],
+            value,
+            thisp = arguments[1];
+
+        // If no callback function or if callback is not a callable function
+        if (_toString(fun) != "[object Function]") {
+            throw new TypeError(fun + " is not a function");
+        }
+
+        for (var i = 0; i < length; i++) {
+            if (i in self) {
+                value = self[i];
+                if (fun.call(thisp, value, i, self)) {
+                    result.push(value);
+                }
+            }
+        }
+        return result;
+    };
+}
+
+// ES5 15.4.4.16
+// http://es5.github.com/#x15.4.4.16
+// https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/every
+if (!Array.prototype.every) {
+    Array.prototype.every = function every(fun /*, thisp */) {
+        var self = toObject(this),
+            length = self.length >>> 0,
+            thisp = arguments[1];
+
+        // If no callback function or if callback is not a callable function
+        if (_toString(fun) != "[object Function]") {
+            throw new TypeError(fun + " is not a function");
+        }
+
+        for (var i = 0; i < length; i++) {
+            if (i in self && !fun.call(thisp, self[i], i, self)) {
+                return false;
+            }
+        }
+        return true;
+    };
+}
+
+// ES5 15.4.4.17
+// http://es5.github.com/#x15.4.4.17
+// https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/some
+if (!Array.prototype.some) {
+    Array.prototype.some = function some(fun /*, thisp */) {
+        var self = toObject(this),
+            length = self.length >>> 0,
+            thisp = arguments[1];
+
+        // If no callback function or if callback is not a callable function
+        if (_toString(fun) != "[object Function]") {
+            throw new TypeError(fun + " is not a function");
+        }
+
+        for (var i = 0; i < length; i++) {
+            if (i in self && fun.call(thisp, self[i], i, self)) {
+                return true;
+            }
+        }
+        return false;
+    };
+}
+
+// ES5 15.4.4.21
+// http://es5.github.com/#x15.4.4.21
+// https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Objects/Array/reduce
+if (!Array.prototype.reduce) {
+    Array.prototype.reduce = function reduce(fun /*, initial*/) {
+        var self = toObject(this),
+            length = self.length >>> 0;
+
+        // If no callback function or if callback is not a callable function
+        if (_toString(fun) != "[object Function]") {
+            throw new TypeError(fun + " is not a function");
+        }
+
+        // no value to return if no initial value and an empty array
+        if (!length && arguments.length == 1) {
+            throw new TypeError('reduce of empty array with no initial value');
+        }
+
+        var i = 0;
+        var result;
+        if (arguments.length >= 2) {
+            result = arguments[1];
+        } else {
+            do {
+                if (i in self) {
+                    result = self[i++];
+                    break;
+                }
+
+                // if array contains no values, no initial value to return
+                if (++i >= length) {
+                    throw new TypeError('reduce of empty array with no initial value');
+                }
+            } while (true);
+        }
+
+        for (; i < length; i++) {
+            if (i in self) {
+                result = fun.call(void 0, result, self[i], i, self);
+            }
+        }
+
+        return result;
+    };
+}
+
+// ES5 15.4.4.22
+// http://es5.github.com/#x15.4.4.22
+// https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Objects/Array/reduceRight
+if (!Array.prototype.reduceRight) {
+    Array.prototype.reduceRight = function reduceRight(fun /*, initial*/) {
+        var self = toObject(this),
+            length = self.length >>> 0;
+
+        // If no callback function or if callback is not a callable function
+        if (_toString(fun) != "[object Function]") {
+            throw new TypeError(fun + " is not a function");
+        }
+
+        // no value to return if no initial value, empty array
+        if (!length && arguments.length == 1) {
+            throw new TypeError('reduceRight of empty array with no initial value');
+        }
+
+        var result, i = length - 1;
+        if (arguments.length >= 2) {
+            result = arguments[1];
+        } else {
+            do {
+                if (i in self) {
+                    result = self[i--];
+                    break;
+                }
+
+                // if array contains no values, no initial value to return
+                if (--i < 0) {
+                    throw new TypeError('reduceRight of empty array with no initial value');
+                }
+            } while (true);
+        }
+
+        do {
+            if (i in this) {
+                result = fun.call(void 0, result, self[i], i, self);
+            }
+        } while (i--);
+
+        return result;
+    };
+}
+
+// ES5 15.4.4.14
+// http://es5.github.com/#x15.4.4.14
+// https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/indexOf
+if (!Array.prototype.indexOf) {
+    Array.prototype.indexOf = function indexOf(sought /*, fromIndex */ ) {
+        var self = toObject(this),
+            length = self.length >>> 0;
+
+        if (!length) {
+            return -1;
+        }
+
+        var i = 0;
+        if (arguments.length > 1) {
+            i = toInteger(arguments[1]);
+        }
+
+        // handle negative indices
+        i = i >= 0 ? i : Math.max(0, length + i);
+        for (; i < length; i++) {
+            if (i in self && self[i] === sought) {
+                return i;
+            }
+        }
+        return -1;
+    };
+}
+
+// ES5 15.4.4.15
+// http://es5.github.com/#x15.4.4.15
+// https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/lastIndexOf
+if (!Array.prototype.lastIndexOf) {
+    Array.prototype.lastIndexOf = function lastIndexOf(sought /*, fromIndex */) {
+        var self = toObject(this),
+            length = self.length >>> 0;
+
+        if (!length) {
+            return -1;
+        }
+        var i = length - 1;
+        if (arguments.length > 1) {
+            i = Math.min(i, toInteger(arguments[1]));
+        }
+        // handle negative indices
+        i = i >= 0 ? i : length - Math.abs(i);
+        for (; i >= 0; i--) {
+            if (i in self && sought === self[i]) {
+                return i;
+            }
+        }
+        return -1;
+    };
+}
+
+//
+// Object
+// ======
+//
+
+// ES5 15.2.3.2
+// http://es5.github.com/#x15.2.3.2
+if (!Object.getPrototypeOf) {
+    // https://github.com/kriskowal/es5-shim/issues#issue/2
+    // http://ejohn.org/blog/objectgetprototypeof/
+    // recommended by fschaefer on github
+    Object.getPrototypeOf = function getPrototypeOf(object) {
+        return object.__proto__ || (
+            object.constructor
+                ? object.constructor.prototype
+                : prototypeOfObject
+        );
+    };
+}
+
+// ES5 15.2.3.3
+// http://es5.github.com/#x15.2.3.3
+if (!Object.getOwnPropertyDescriptor) {
+    var ERR_NON_OBJECT = "Object.getOwnPropertyDescriptor called on a non-object: ";
+
+    Object.getOwnPropertyDescriptor = function getOwnPropertyDescriptor(object, property) {
+        if ((typeof object != "object" && typeof object != "function") || object === null) {
+            throw new TypeError(ERR_NON_OBJECT + object);
+        }
+        // If object does not owns property return undefined immediately.
+        if (!owns(object, property)) {
+            return;
+        }
+
+        // If object has a property then it's for sure both `enumerable` and
+        // `configurable`.
+        var descriptor =  { enumerable: true, configurable: true };
+
+        // If JS engine supports accessor properties then property may be a
+        // getter or setter.
+        if (supportsAccessors) {
+            // Unfortunately `__lookupGetter__` will return a getter even
+            // if object has own non getter property along with a same named
+            // inherited getter. To avoid misbehavior we temporary remove
+            // `__proto__` so that `__lookupGetter__` will return getter only
+            // if it's owned by an object.
+            var prototype = object.__proto__;
+            object.__proto__ = prototypeOfObject;
+
+            var getter = lookupGetter(object, property);
+            var setter = lookupSetter(object, property);
+
+            // Once we have getter and setter we can put values back.
+            object.__proto__ = prototype;
+
+            if (getter || setter) {
+                if (getter) {
+                    descriptor.get = getter;
+                }
+                if (setter) {
+                    descriptor.set = setter;
+                }
+                // If it was accessor property we're done and return here
+                // in order to avoid adding `value` to the descriptor.
+                return descriptor;
+            }
+        }
+
+        // If we got this far we know that object has an own property that is
+        // not an accessor so we set it as a value and return descriptor.
+        descriptor.value = object[property];
+        return descriptor;
+    };
+}
+
+// ES5 15.2.3.4
+// http://es5.github.com/#x15.2.3.4
+if (!Object.getOwnPropertyNames) {
+    Object.getOwnPropertyNames = function getOwnPropertyNames(object) {
+        return Object.keys(object);
+    };
+}
+
+// ES5 15.2.3.5
+// http://es5.github.com/#x15.2.3.5
+if (!Object.create) {
+    Object.create = function create(prototype, properties) {
+        var object;
+        if (prototype === null) {
+            object = { "__proto__": null };
+        } else {
+            if (typeof prototype != "object") {
+                throw new TypeError("typeof prototype["+(typeof prototype)+"] != 'object'");
+            }
+            var Type = function () {};
+            Type.prototype = prototype;
+            object = new Type();
+            // IE has no built-in implementation of `Object.getPrototypeOf`
+            // neither `__proto__`, but this manually setting `__proto__` will
+            // guarantee that `Object.getPrototypeOf` will work as expected with
+            // objects created using `Object.create`
+            object.__proto__ = prototype;
+        }
+        if (properties !== void 0) {
+            Object.defineProperties(object, properties);
+        }
+        return object;
+    };
+}
+
+// ES5 15.2.3.6
+// http://es5.github.com/#x15.2.3.6
+
+// Patch for WebKit and IE8 standard mode
+// Designed by hax <hax.github.com>
+// related issue: https://github.com/kriskowal/es5-shim/issues#issue/5
+// IE8 Reference:
+//     http://msdn.microsoft.com/en-us/library/dd282900.aspx
+//     http://msdn.microsoft.com/en-us/library/dd229916.aspx
+// WebKit Bugs:
+//     https://bugs.webkit.org/show_bug.cgi?id=36423
+
+function doesDefinePropertyWork(object) {
+    try {
+        Object.defineProperty(object, "sentinel", {});
+        return "sentinel" in object;
+    } catch (exception) {
+        // returns falsy
+    }
+}
+
+// check whether defineProperty works if it's given. Otherwise,
+// shim partially.
+if (Object.defineProperty) {
+    var definePropertyWorksOnObject = doesDefinePropertyWork({});
+    var definePropertyWorksOnDom = typeof document == "undefined" ||
+        doesDefinePropertyWork(document.createElement("div"));
+    if (!definePropertyWorksOnObject || !definePropertyWorksOnDom) {
+        var definePropertyFallback = Object.defineProperty;
+    }
+}
+
+if (!Object.defineProperty || definePropertyFallback) {
+    var ERR_NON_OBJECT_DESCRIPTOR = "Property description must be an object: ";
+    var ERR_NON_OBJECT_TARGET = "Object.defineProperty called on non-object: "
+    var ERR_ACCESSORS_NOT_SUPPORTED = "getters & setters can not be defined " +
+                                      "on this javascript engine";
+
+    Object.defineProperty = function defineProperty(object, property, descriptor) {
+        if ((typeof object != "object" && typeof object != "function") || object === null) {
+            throw new TypeError(ERR_NON_OBJECT_TARGET + object);
+        }
+        if ((typeof descriptor != "object" && typeof descriptor != "function") || descriptor === null) {
+            throw new TypeError(ERR_NON_OBJECT_DESCRIPTOR + descriptor);
+        }
+        // make a valiant attempt to use the real defineProperty
+        // for I8's DOM elements.
+        if (definePropertyFallback) {
+            try {
+                return definePropertyFallback.call(Object, object, property, descriptor);
+            } catch (exception) {
+                // try the shim if the real one doesn't work
+            }
+        }
+
+        // If it's a data property.
+        if (owns(descriptor, "value")) {
+            // fail silently if "writable", "enumerable", or "configurable"
+            // are requested but not supported
+            /*
+            // alternate approach:
+            if ( // can't implement these features; allow false but not true
+                !(owns(descriptor, "writable") ? descriptor.writable : true) ||
+                !(owns(descriptor, "enumerable") ? descriptor.enumerable : true) ||
+                !(owns(descriptor, "configurable") ? descriptor.configurable : true)
+            )
+                throw new RangeError(
+                    "This implementation of Object.defineProperty does not " +
+                    "support configurable, enumerable, or writable."
+                );
+            */
+
+            if (supportsAccessors && (lookupGetter(object, property) ||
+                                      lookupSetter(object, property)))
+            {
+                // As accessors are supported only on engines implementing
+                // `__proto__` we can safely override `__proto__` while defining
+                // a property to make sure that we don't hit an inherited
+                // accessor.
+                var prototype = object.__proto__;
+                object.__proto__ = prototypeOfObject;
+                // Deleting a property anyway since getter / setter may be
+                // defined on object itself.
+                delete object[property];
+                object[property] = descriptor.value;
+                // Setting original `__proto__` back now.
+                object.__proto__ = prototype;
+            } else {
+                object[property] = descriptor.value;
+            }
+        } else {
+            if (!supportsAccessors) {
+                throw new TypeError(ERR_ACCESSORS_NOT_SUPPORTED);
+            }
+            // If we got that far then getters and setters can be defined !!
+            if (owns(descriptor, "get")) {
+                defineGetter(object, property, descriptor.get);
+            }
+            if (owns(descriptor, "set")) {
+                defineSetter(object, property, descriptor.set);
+            }
+        }
+        return object;
+    };
+}
+
+// ES5 15.2.3.7
+// http://es5.github.com/#x15.2.3.7
+if (!Object.defineProperties) {
+    Object.defineProperties = function defineProperties(object, properties) {
+        for (var property in properties) {
+            if (owns(properties, property) && property != "__proto__") {
+                Object.defineProperty(object, property, properties[property]);
+            }
+        }
+        return object;
+    };
+}
+
+// ES5 15.2.3.8
+// http://es5.github.com/#x15.2.3.8
+if (!Object.seal) {
+    Object.seal = function seal(object) {
+        // this is misleading and breaks feature-detection, but
+        // allows "securable" code to "gracefully" degrade to working
+        // but insecure code.
+        return object;
+    };
+}
+
+// ES5 15.2.3.9
+// http://es5.github.com/#x15.2.3.9
+if (!Object.freeze) {
+    Object.freeze = function freeze(object) {
+        // this is misleading and breaks feature-detection, but
+        // allows "securable" code to "gracefully" degrade to working
+        // but insecure code.
+        return object;
+    };
+}
+
+// detect a Rhino bug and patch it
+try {
+    Object.freeze(function () {});
+} catch (exception) {
+    Object.freeze = (function freeze(freezeObject) {
+        return function freeze(object) {
+            if (typeof object == "function") {
+                return object;
+            } else {
+                return freezeObject(object);
+            }
+        };
+    })(Object.freeze);
+}
+
+// ES5 15.2.3.10
+// http://es5.github.com/#x15.2.3.10
+if (!Object.preventExtensions) {
+    Object.preventExtensions = function preventExtensions(object) {
+        // this is misleading and breaks feature-detection, but
+        // allows "securable" code to "gracefully" degrade to working
+        // but insecure code.
+        return object;
+    };
+}
+
+// ES5 15.2.3.11
+// http://es5.github.com/#x15.2.3.11
+if (!Object.isSealed) {
+    Object.isSealed = function isSealed(object) {
+        return false;
+    };
+}
+
+// ES5 15.2.3.12
+// http://es5.github.com/#x15.2.3.12
+if (!Object.isFrozen) {
+    Object.isFrozen = function isFrozen(object) {
+        return false;
+    };
+}
+
+// ES5 15.2.3.13
+// http://es5.github.com/#x15.2.3.13
+if (!Object.isExtensible) {
+    Object.isExtensible = function isExtensible(object) {
+        // 1. If Type(O) is not Object throw a TypeError exception.
+        if (Object(object) !== object) {
+            throw new TypeError(); // TODO message
+        }
+        // 2. Return the Boolean value of the [[Extensible]] internal property of O.
+        var name = '';
+        while (owns(object, name)) {
+            name += '?';
+        }
+        object[name] = true;
+        var returnValue = owns(object, name);
+        delete object[name];
+        return returnValue;
+    };
+}
+
+// ES5 15.2.3.14
+// http://es5.github.com/#x15.2.3.14
+if (!Object.keys) {
+    // http://whattheheadsaid.com/2010/10/a-safer-object-keys-compatibility-implementation
+    var hasDontEnumBug = true,
+        dontEnums = [
+            "toString",
+            "toLocaleString",
+            "valueOf",
+            "hasOwnProperty",
+            "isPrototypeOf",
+            "propertyIsEnumerable",
+            "constructor"
+        ],
+        dontEnumsLength = dontEnums.length;
+
+    for (var key in {"toString": null}) {
+        hasDontEnumBug = false;
+    }
+
+    Object.keys = function keys(object) {
+
+        if ((typeof object != "object" && typeof object != "function") || object === null) {
+            throw new TypeError("Object.keys called on a non-object");
+        }
+
+        var keys = [];
+        for (var name in object) {
+            if (owns(object, name)) {
+                keys.push(name);
+            }
+        }
+
+        if (hasDontEnumBug) {
+            for (var i = 0, ii = dontEnumsLength; i < ii; i++) {
+                var dontEnum = dontEnums[i];
+                if (owns(object, dontEnum)) {
+                    keys.push(dontEnum);
+                }
+            }
+        }
+        return keys;
+    };
+
+}
+
+//
+// Date
+// ====
+//
+
+// ES5 15.9.5.43
+// http://es5.github.com/#x15.9.5.43
+// This function returns a String value represent the instance in time
+// represented by this Date object. The format of the String is the Date Time
+// string format defined in 15.9.1.15. All fields are present in the String.
+// The time zone is always UTC, denoted by the suffix Z. If the time value of
+// this object is not a finite Number a RangeError exception is thrown.
+if (!Date.prototype.toISOString || (new Date(-62198755200000).toISOString().indexOf('-000001') === -1)) {
+    Date.prototype.toISOString = function toISOString() {
+        var result, length, value, year;
+        if (!isFinite(this)) {
+            throw new RangeError("Date.prototype.toISOString called on non-finite value.");
+        }
+
+        // the date time string format is specified in 15.9.1.15.
+        result = [this.getUTCMonth() + 1, this.getUTCDate(),
+            this.getUTCHours(), this.getUTCMinutes(), this.getUTCSeconds()];
+        year = this.getUTCFullYear();
+        year = (year < 0 ? '-' : (year > 9999 ? '+' : '')) + ('00000' + Math.abs(year)).slice(0 <= year && year <= 9999 ? -4 : -6);
+
+        length = result.length;
+        while (length--) {
+            value = result[length];
+            // pad months, days, hours, minutes, and seconds to have two digits.
+            if (value < 10) {
+                result[length] = "0" + value;
+            }
+        }
+        // pad milliseconds to have three digits.
+        return year + "-" + result.slice(0, 2).join("-") + "T" + result.slice(2).join(":") + "." +
+            ("000" + this.getUTCMilliseconds()).slice(-3) + "Z";
+    }
+}
+
+// ES5 15.9.4.4
+// http://es5.github.com/#x15.9.4.4
+if (!Date.now) {
+    Date.now = function now() {
+        return new Date().getTime();
+    };
+}
+
+// ES5 15.9.5.44
+// http://es5.github.com/#x15.9.5.44
+// This function provides a String representation of a Date object for use by
+// JSON.stringify (15.12.3).
+if (!Date.prototype.toJSON) {
+    Date.prototype.toJSON = function toJSON(key) {
+        // When the toJSON method is called with argument key, the following
+        // steps are taken:
+
+        // 1.  Let O be the result of calling ToObject, giving it the this
+        // value as its argument.
+        // 2. Let tv be ToPrimitive(O, hint Number).
+        // 3. If tv is a Number and is not finite, return null.
+        // XXX
+        // 4. Let toISO be the result of calling the [[Get]] internal method of
+        // O with argument "toISOString".
+        // 5. If IsCallable(toISO) is false, throw a TypeError exception.
+        if (typeof this.toISOString != "function") {
+            throw new TypeError('toISOString property is not callable');
+        }
+        // 6. Return the result of calling the [[Call]] internal method of
+        //  toISO with O as the this value and an empty argument list.
+        return this.toISOString();
+
+        // NOTE 1 The argument is ignored.
+
+        // NOTE 2 The toJSON function is intentionally generic; it does not
+        // require that its this value be a Date object. Therefore, it can be
+        // transferred to other kinds of objects for use as a method. However,
+        // it does require that any such object have a toISOString method. An
+        // object is free to use the argument key to filter its
+        // stringification.
+    };
+}
+
+// ES5 15.9.4.2
+// http://es5.github.com/#x15.9.4.2
+// based on work shared by Daniel Friesen (dantman)
+// http://gist.github.com/303249
+if (!Date.parse || Date.parse("+275760-09-13T00:00:00.000Z") !== 8.64e15) {
+    // XXX global assignment won't work in embeddings that use
+    // an alternate object for the context.
+    Date = (function(NativeDate) {
+
+        // Date.length === 7
+        var Date = function Date(Y, M, D, h, m, s, ms) {
+            var length = arguments.length;
+            if (this instanceof NativeDate) {
+                var date = length == 1 && String(Y) === Y ? // isString(Y)
+                    // We explicitly pass it through parse:
+                    new NativeDate(Date.parse(Y)) :
+                    // We have to manually make calls depending on argument
+                    // length here
+                    length >= 7 ? new NativeDate(Y, M, D, h, m, s, ms) :
+                    length >= 6 ? new NativeDate(Y, M, D, h, m, s) :
+                    length >= 5 ? new NativeDate(Y, M, D, h, m) :
+                    length >= 4 ? new NativeDate(Y, M, D, h) :
+                    length >= 3 ? new NativeDate(Y, M, D) :
+                    length >= 2 ? new NativeDate(Y, M) :
+                    length >= 1 ? new NativeDate(Y) :
+                                  new NativeDate();
+                // Prevent mixups with unfixed Date object
+                date.constructor = Date;
+                return date;
+            }
+            return NativeDate.apply(this, arguments);
+        };
+
+        // 15.9.1.15 Date Time String Format.
+        var isoDateExpression = new RegExp("^" +
+            "(\\d{4}|[\+\-]\\d{6})" + // four-digit year capture or sign + 6-digit extended year
+            "(?:-(\\d{2})" + // optional month capture
+            "(?:-(\\d{2})" + // optional day capture
+            "(?:" + // capture hours:minutes:seconds.milliseconds
+                "T(\\d{2})" + // hours capture
+                ":(\\d{2})" + // minutes capture
+                "(?:" + // optional :seconds.milliseconds
+                    ":(\\d{2})" + // seconds capture
+                    "(?:\\.(\\d{3}))?" + // milliseconds capture
+                ")?" +
+            "(?:" + // capture UTC offset component
+                "Z|" + // UTC capture
+                "(?:" + // offset specifier +/-hours:minutes
+                    "([-+])" + // sign capture
+                    "(\\d{2})" + // hours offset capture
+                    ":(\\d{2})" + // minutes offset capture
+                ")" +
+            ")?)?)?)?" +
+        "$");
+
+        // Copy any custom methods a 3rd party library may have added
+        for (var key in NativeDate) {
+            Date[key] = NativeDate[key];
+        }
+
+        // Copy "native" methods explicitly; they may be non-enumerable
+        Date.now = NativeDate.now;
+        Date.UTC = NativeDate.UTC;
+        Date.prototype = NativeDate.prototype;
+        Date.prototype.constructor = Date;
+
+        // Upgrade Date.parse to handle simplified ISO 8601 strings
+        Date.parse = function parse(string) {
+            var match = isoDateExpression.exec(string);
+            if (match) {
+                match.shift(); // kill match[0], the full match
+                // parse months, days, hours, minutes, seconds, and milliseconds
+                for (var i = 1; i < 7; i++) {
+                    // provide default values if necessary
+                    match[i] = +(match[i] || (i < 3 ? 1 : 0));
+                    // match[1] is the month. Months are 0-11 in JavaScript
+                    // `Date` objects, but 1-12 in ISO notation, so we
+                    // decrement.
+                    if (i == 1) {
+                        match[i]--;
+                    }
+                }
+
+                // parse the UTC offset component
+                var minuteOffset = +match.pop(), hourOffset = +match.pop(), sign = match.pop();
+
+                // compute the explicit time zone offset if specified
+                var offset = 0;
+                if (sign) {
+                    // detect invalid offsets and return early
+                    if (hourOffset > 23 || minuteOffset > 59) {
+                        return NaN;
+                    }
+
+                    // express the provided time zone offset in minutes. The offset is
+                    // negative for time zones west of UTC; positive otherwise.
+                    offset = (hourOffset * 60 + minuteOffset) * 6e4 * (sign == "+" ? -1 : 1);
+                }
+
+                // Date.UTC for years between 0 and 99 converts year to 1900 + year
+                // The Gregorian calendar has a 400-year cycle, so
+                // to Date.UTC(year + 400, .... ) - 12622780800000 == Date.UTC(year, ...),
+                // where 12622780800000 - number of milliseconds in Gregorian calendar 400 years
+                var year = +match[0];
+                if (0 <= year && year <= 99) {
+                    match[0] = year + 400;
+                    return NativeDate.UTC.apply(this, match) + offset - 12622780800000;
+                }
+
+                // compute a new UTC date value, accounting for the optional offset
+                return NativeDate.UTC.apply(this, match) + offset;
+            }
+            return NativeDate.parse.apply(this, arguments);
+        };
+
+        return Date;
+    })(Date);
+}
+
+//
+// String
+// ======
+//
+
+// ES5 15.5.4.20
+// http://es5.github.com/#x15.5.4.20
+var ws = "\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u2002\u2003" +
+    "\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028" +
+    "\u2029\uFEFF";
+if (!String.prototype.trim || ws.trim()) {
+    // http://blog.stevenlevithan.com/archives/faster-trim-javascript
+    // http://perfectionkills.com/whitespace-deviations/
+    ws = "[" + ws + "]";
+    var trimBeginRegexp = new RegExp("^" + ws + ws + "*"),
+        trimEndRegexp = new RegExp(ws + ws + "*$");
+    String.prototype.trim = function trim() {
+        if (this === undefined || this === null) {
+            throw new TypeError("can't convert "+this+" to object");
+        }
+        return String(this).replace(trimBeginRegexp, "").replace(trimEndRegexp, "");
+    };
+}
+
+//
+// Util
+// ======
+//
+
+// ES5 9.4
+// http://es5.github.com/#x9.4
+// http://jsperf.com/to-integer
+var toInteger = function (n) {
+    n = +n;
+    if (n !== n) { // isNaN
+        n = 0;
+    } else if (n !== 0 && n !== (1/0) && n !== -(1/0)) {
+        n = (n > 0 || -1) * Math.floor(Math.abs(n));
+    }
+    return n;
+};
+
+var prepareString = "a"[0] != "a";
+    // ES5 9.9
+    // http://es5.github.com/#x9.9
+var toObject = function (o) {
+    if (o == null) { // this matches both null and undefined
+        throw new TypeError("can't convert "+o+" to object");
+    }
+    // If the implementation doesn't support by-index access of
+    // string characters (ex. IE < 9), split the string
+    if (prepareString && typeof o == "string" && o) {
+        return o.split("");
+    }
+    return Object(o);
+};
+});
 // Three.js - http://github.com/mrdoob/three.js
 'use strict';var THREE=THREE||{REVISION:"49"};self.Int32Array||(self.Int32Array=Array,self.Float32Array=Array);
 (function(){for(var a=0,b=["ms","moz","webkit","o"],c=0;c<b.length&&!window.requestAnimationFrame;++c){window.requestAnimationFrame=window[b[c]+"RequestAnimationFrame"];window.cancelAnimationFrame=window[b[c]+"CancelAnimationFrame"]||window[b[c]+"CancelRequestAnimationFrame"]}if(!window.requestAnimationFrame)window.requestAnimationFrame=function(b){var c=Date.now(),f=Math.max(0,16-(c-a)),g=window.setTimeout(function(){b(c+f)},f);a=c+f;return g};if(!window.cancelAnimationFrame)window.cancelAnimationFrame=
@@ -744,29 +1849,44 @@ fragmentShader:"precision mediump float;\nuniform vec3 color;\nuniform sampler2D
 */
 var tQuery	= function(object, root)
 {
+	// support for tQuery(geometry, material)
+	if( arguments.length === 2 && 
+			(arguments[0] instanceof THREE.Geometry || arguments[0] instanceof tQuery.Geometry)
+			&& 
+			(arguments[1] instanceof THREE.Material || arguments[1] instanceof tQuery.Material)
+			){
+		var tGeometry	= arguments[0] instanceof tQuery.Geometry ? arguments[0].get(0) : arguments[0];
+		var tMaterial	= arguments[1] instanceof tQuery.Material ? arguments[1].get(0) : arguments[1];
+		var tMesh	= new THREE.Mesh(tGeometry, tMaterial);
+		return tQuery( tMesh );
+	}
+
 // TODO make tthat cleaner
 // - there is a list of functions registered by each plugins
 //   - handle() object instanceof THREE.Mesh
 //   - create() return new tQuery(object)
 // - this list is processed in order here
 
-	if( object instanceof THREE.Mesh  && tQuery.Mesh){
-		return new tQuery.Mesh(object);
+	// if the object is an array, compare only the first element
+	// - up to the subconstructor to check if the whole array has proper type
+	var instance	= Array.isArray(object) ? object[0] : object;
 
-	}else if( object instanceof THREE.DirectionalLight && tQuery.DirectionalLight){
+	if( instance instanceof THREE.Mesh  && tQuery.Mesh){
+		return new tQuery.Mesh(object);
+	}else if( instance instanceof THREE.DirectionalLight && tQuery.DirectionalLight){
 		return new tQuery.DirectionalLight(object);
-	}else if( object instanceof THREE.AmbientLight && tQuery.AmbientLight){
+	}else if( instance instanceof THREE.AmbientLight && tQuery.AmbientLight){
 		return new tQuery.AmbientLight(object);
-	}else if( object instanceof THREE.Light && tQuery.Light){
+	}else if( instance instanceof THREE.Light && tQuery.Light){
 		return new tQuery.Light(object);
 
-	}else if( object instanceof THREE.Object3D  && tQuery.Object3D){
+	}else if( instance instanceof THREE.Object3D  && tQuery.Object3D){
 		return new tQuery.Object3D(object);
-	}else if( object instanceof THREE.Geometry && tQuery.Geometry){
+	}else if( instance instanceof THREE.Geometry && tQuery.Geometry){
 		return new tQuery.Geometry(object);
-	}else if( object instanceof THREE.Material && tQuery.Material){
+	}else if( instance instanceof THREE.Material && tQuery.Material){
 		return new tQuery.Material(object);
-	}else if( typeof object === "string" && tQuery.Object3D){
+	}else if( typeof instance === "string" && tQuery.Object3D){
 		return new tQuery.Object3D(object, root);
 	}else{
 		console.assert(false, "unsupported type")
@@ -777,7 +1897,7 @@ var tQuery	= function(object, root)
 /**
  * The version of tQuery
 */
-tQuery.VERSION	= "0.0.1";
+tQuery.VERSION	= "r49.1";
 
 //////////////////////////////////////////////////////////////////////////////////
 //										//
@@ -928,12 +2048,10 @@ tQuery.pluginsStaticOn	= function(klass){ return tQuery._pluginsOn(klass, klass,
 
 /** for backward compatibility only */
 tQuery.pluginsOn	= function(object, dest){
-	console.warn("tQuery.pluginsOn is obsolete. prefere .pluginsInstanceOn, .pluginsStaticon");
+	console.warn("tQuery.pluginsOn is obsolete. prefere .pluginsInstanceOn, .pluginsStaticOn");
 	console.trace();
 	return tQuery._pluginsOn(object, dest)
 }
-
-
 // make it pluginable
 tQuery.pluginsOn(tQuery, tQuery);
 
@@ -1012,24 +2130,42 @@ tQuery.Flow	= function(){
  * microevents.js - https://github.com/jeromeetienne/microevent.js
 */
 tQuery.MicroeventMixin	= function(destObj){
-	destObj.bind	= function(event, fct){
+	var bind	= function(event, fct){
 		if(this._events === undefined) 	this._events	= {};
 		this._events[event] = this._events[event]	|| [];
 		this._events[event].push(fct);
 		return fct;
 	};
-	destObj.unbind	= function(event, fct){
+	var unbind	= function(event, fct){
 		if(this._events === undefined) 	this._events	= {};
 		if( event in this._events === false  )	return;
 		this._events[event].splice(this._events[event].indexOf(fct), 1);
 	};
-	destObj.trigger	= function(event /* , args... */){
+	var trigger	= function(event /* , args... */){
 		if(this._events === undefined) 	this._events	= {};
 		if( this._events[event] === undefined )	return;
 		var tmpArray	= this._events[event].slice(); 
 		for(var i = 0; i < tmpArray.length; i++){
 			tmpArray[i].apply(this, Array.prototype.slice.call(arguments, 1))
 		}
+	};
+	
+	// backward compatibility
+	destObj.bind	= bind;
+	destObj.unbind	= unbind;
+	destObj.trigger	= trigger;
+
+	destObj.addEventListener	= function(event, fct){
+		destObj.bind(event, fct)
+		return this;	// for chained API
+	}
+	destObj.removeEventListener	= function(event, fct){
+		destObj.unbind(event, fct)
+		return this;	// for chained API
+	}
+	destObj.dispatchEvent		= function(event){
+		destObj.trigger(event)
+		return this;
 	}
 };
 
@@ -1088,6 +2224,30 @@ tQuery.convert.identity	= function(value){
 tQuery.convert.toBool	= function(value){
 	if( arguments.length === 1 && typeof(value) === 'boolean'){
 		return value;
+	}else{
+		console.assert(false, "invalid parameter");
+	}
+	return undefined;	// never reached - just to workaround linter complaint
+};
+
+tQuery.convert.toString	= function(value){
+	if( arguments.length === 1 && typeof(value) === 'string'){
+		return value;
+	}else{
+		console.assert(false, "invalid parameter");
+	}
+	return undefined;	// never reached - just to workaround linter complaint
+};
+
+tQuery.convert.toTexture	= function(value){
+	if( arguments.length === 1 && value instanceof THREE.Texture ){
+		return value;
+	}else if( arguments.length === 1 && typeof(value) === 'string' ){
+		return THREE.ImageUtils.loadTexture(value);
+	}else if( arguments.length === 1 && (value instanceof Image || value instanceof HTMLCanvasElement) ){
+		var texture		= new THREE.Texture( value );
+		texture.needsUpdate	= true;
+		return texture;
 	}else{
 		console.assert(false, "invalid parameter");
 	}
@@ -1220,6 +2380,41 @@ tQuery.inherit(tQuery.Object3D, tQuery.Node);
 */
 tQuery.pluginsInstanceOn(tQuery.Object3D);
 
+/**
+ * define all acceptable attributes for this class
+*/
+tQuery.mixinAttributes(tQuery.Object3D, {
+	eulerOrder		: tQuery.convert.toString,
+	
+	doubleSided		: tQuery.convert.toBool,
+	flipSided		: tQuery.convert.toBool,
+	
+	rotationAutoUpdate	: tQuery.convert.toBool,
+	matrixAutoUpdate	: tQuery.convert.toBool,
+	matrixWorldNeedsUpdate	: tQuery.convert.toBool,
+	useQuaternion		: tQuery.convert.toBool,
+
+	visible			: tQuery.convert.toBool,
+
+	receiveShadow		: tQuery.convert.toBool,
+	castShadow		: tQuery.convert.toBool
+});
+
+/**
+ * Traverse the hierarchy of Object3D. 
+ * 
+ * @returns {tQuery.Object3D} return the tQuery.Object3D itself
+*/
+tQuery.Object3D.prototype.traverseHierarchy	= function(callback){
+	this.each(function(object3d){
+		THREE.SceneUtils.traverseHierarchy(object3d, function(object3d){
+			callback(object3d);
+		});
+	});
+	return this;	// for chained API
+};
+
+
 //////////////////////////////////////////////////////////////////////////////////
 //		geometry and material						//
 //////////////////////////////////////////////////////////////////////////////////
@@ -1253,6 +2448,19 @@ tQuery.Object3D.prototype.material	= function(){
 	});
 	return new tQuery.Material(materials);
 };
+
+
+/**
+ * Clone a Object3D
+*/
+tQuery.Object3D.prototype.clone	= function(){
+	var clones	= [];
+	this._lists.forEach(function(object3d){
+		var clone	= THREE.SceneUtils.cloneObject(object3d)
+		clones.push(clone);
+	})  
+	return tQuery(clones)
+}
 
 //////////////////////////////////////////////////////////////////////////////////
 //			addTo/removeFrom tQuery.World/tQuery.Object3d		//
@@ -1423,10 +2631,15 @@ tQuery.Object3D._removeClassOne	= function(object3d, className){
 //////////////////////////////////////////////////////////////////////////////////
 
 tQuery.Object3D._select	= function(selector, root){
-	root		= root	|| tQuery.world.scene();
+	// handle parameter
+	root		= root	|| tQuery.world.tScene();
+	if( root instanceof tQuery.Object3D )	root	= root.get(0)
 	var selectItems	= selector.split(' ').filter(function(v){ return v.length > 0;})
+	
+	// sanity check
+	console.assert(root instanceof THREE.Object3D);
 
-	var lists	= [];	
+	var lists	= [];
 	root.children.forEach(function(child){
 		var nodes	= this._crawls(child, selectItems);
 		// FIXME reallocate the array without need
@@ -1535,7 +2748,15 @@ tQuery.inherit(tQuery.Geometry, tQuery.Node);
 /**
  * Make it pluginable
 */
-tQuery.pluginsInstanceOn(tQuery.Geometry);/**
+tQuery.pluginsInstanceOn(tQuery.Geometry);
+
+/**
+ * define all acceptable attributes for this class
+*/
+tQuery.mixinAttributes(tQuery.Geometry, {
+	hasTangents	: tQuery.convert.toBool,
+	dynamic		: tQuery.convert.toBool
+});/**
  * Handle material
  *
  * @class include THREE.Material. It inherit from {@link tQuery.Node}
@@ -1637,13 +2858,18 @@ tQuery.Mesh	= function(elements)
 */
 tQuery.inherit(tQuery.Mesh, tQuery.Object3D);
 
-
 /**
  * Make it pluginable
 */
 tQuery.pluginsInstanceOn(tQuery.Mesh);
 
+//////////////////////////////////////////////////////////////////////////////////
+//										//
+//////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * TODO to remove. this function is crap
+*/
 tQuery.Mesh.prototype.material	= function(value){
 	var parent	= tQuery.Mesh.parent;
 	// handle the getter case
@@ -1666,37 +2892,66 @@ tQuery.Mesh.prototype.material	= function(value){
  * 
  * @param {THREE.Material} object an instance or an array of instance
 */
-tQuery.World	= function()
+tQuery.World	= function(opts)
 {
+	// handle parameters
+	opts	= opts	|| {};
+	opts	= tQuery.extend(opts, {
+		renderW		: window.innerWidth,
+		renderH		: window.innerHeight,
+		webGLNeeded	: true, 
+		autoRendering	: true,
+		scene		: null,
+		camera		: null,
+		renderer	: null
+	});
+	this._opts	= opts;
+
 	// update default world.
 	// - TODO no sanity check ?
+	// - not clear what to do with this...
+	// - tQuery.world is the user world. like the camera controls
+	console.assert( !tQuery.word );
 	tQuery.world	= this;
+
+	this._autoRendering	= true;
 	
 	// create a scene
-	this._scene	= new THREE.Scene();
+	this._scene	= opts.scene	||(new THREE.Scene());
 
  	// create a camera in the scene
-	// FIXME this window dimension is crap
-	this._camera	= new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.01, 10000 );
-	this._camera.position.set(0, 0, 3);
-	this._scene.add(this._camera);
+	if( !opts.camera ){
+		this._camera	= new THREE.PerspectiveCamera(35, opts.renderW / opts.renderH, 0.01, 10000 );
+		this._camera.position.set(0, 0, 3);
+		this._scene.add(this._camera);
+	}else{
+		this._camera	= opts.camera;
+	}
 	
 	// create the loop
-	this._loop	= new tQuery.Loop(this)
+	this._loop	= new tQuery.Loop();
+
+	// hook the render function in this._loop
+	this._loop.hookOnRender(this._$loopCb = function(){
+		this.render();
+	}.bind(this));
 
 	// create a renderer
-	if( tQuery.World.hasWebGL() ){
-		this._renderer = new THREE.WebGLRenderer({
+	if( opts.renderer ){
+		this._renderer	= opts.renderer;
+	}else if( tQuery.World.hasWebGL() ){
+		this._renderer	= new THREE.WebGLRenderer({
 			antialias		: true,	// to get smoother output
 			preserveDrawingBuffer	: true	// to allow screenshot
 		});
-		this._renderer.setClearColorHex( 0xBBBBBB, 1 );
-		// FIXME this window dimension is crap
-		this._renderer.setSize( window.innerWidth, window.innerHeight );
+	}else if( !opts.webGLNeeded ){
+		this._renderer	= new THREE.CanvasRenderer();
 	}else{
-		//this._addGetWebGLMessage();
+		this._addGetWebGLMessage();
 		throw new Error("WebGL required and not available")
 	}
+	this._renderer.setClearColorHex( 0xBBBBBB, 1 );
+	this._renderer.setSize( opts.renderW, opts.renderH );
 };
 
 // make it pluginable
@@ -1709,6 +2964,8 @@ tQuery.MicroeventMixin(tQuery.World.prototype)
 tQuery.World.prototype.destroy	= function(){
 	// microevent.js notification
 	this.trigger('destroy');
+	// unhook the render function in this._loop
+	this._loop.unhookOnRender(this._$loopCb);
 	// destroy the loop
 	this._loop.destroy();
 	// remove this._cameraControls if needed
@@ -1752,15 +3009,15 @@ tQuery.World.prototype._addGetWebGLMessage	= function(parent)
 	
 	// message directly taken from Detector.js
 	var domElement = document.createElement( 'div' );
-	domElement.style.fontFamily = 'monospace';
-	domElement.style.fontSize = '13px';
-	domElement.style.textAlign = 'center';
-	domElement.style.background = '#eee';
-	domElement.style.color = '#000';
-	domElement.style.padding = '1em';
-	domElement.style.width = '475px';
-	domElement.style.margin = '5em auto 0';
-	domElement.innerHTML = window.WebGLRenderingContext ? [
+	domElement.style.fontFamily	= 'monospace';
+	domElement.style.fontSize	= '13px';
+	domElement.style.textAlign	= 'center';
+	domElement.style.background	= '#eee';
+	domElement.style.color		= '#000';
+	domElement.style.padding	= '1em';
+	domElement.style.width		= '475px';
+	domElement.style.margin		= '5em auto 0';
+	domElement.innerHTML		= window.WebGLRenderingContext ? [
 		'Your graphics card does not seem to support <a href="http://khronos.org/webgl/wiki/Getting_a_WebGL_Implementation">WebGL</a>.<br />',
 		'Find out how to get it <a href="http://get.webgl.org/">here</a>.'
 	].join( '\n' ) : [
@@ -1838,7 +3095,6 @@ tQuery.World.prototype.remove	= function(object3d)
 tQuery.World.prototype.appendTo	= function(domElement)
 {
 	domElement.appendChild(this._renderer.domElement)
-	this._renderer.setSize( domElement.offsetWidth, domElement.offsetHeight );
 	// for chained API
 	return this;
 }
@@ -1859,21 +3115,38 @@ tQuery.World.prototype.stop	= function(){
 }
 
 tQuery.World.prototype.loop	= function(){ return this._loop;	}
-tQuery.World.prototype.renderer	= function(){ return this._renderer;	}
-tQuery.World.prototype.camera	= function(){ return this._camera;	}
-tQuery.World.prototype.scene	= function(){ return this._scene;	}
+
+tQuery.World.prototype.tRenderer= function(){ return this._renderer;	}
+tQuery.World.prototype.tCamera	= function(){ return this._camera;	}
+tQuery.World.prototype.tScene	= function(){ return this._scene;	}
+
+
+// backward compatible functions to remove
+tQuery.World.prototype.renderer	= function(){  console.trace();console.warn("world.renderer() is ovbslete, use .tRenderer() instead");
+						return this._renderer;	}
+tQuery.World.prototype.camera	= function(){ console.trace();console.warn("world.camera() is obsolete, use .tCamerar() instead");
+						return this._camera;	}
+tQuery.World.prototype.scene	= function(){ console.trace();console.warn("world.scene() is obsolete, use .tScene() instead");
+						return this._scene;	}
 tQuery.World.prototype.get	= function(){ return this._scene;	}
 
 //////////////////////////////////////////////////////////////////////////////////
 //										//
 //////////////////////////////////////////////////////////////////////////////////
 
+tQuery.World.prototype.autoRendering	= function(value){
+	if(value === undefined)	return this._autoRendering;
+	this._autoRendering	= value;
+	return this;
+}
+
+
 tQuery.World.prototype.render	= function()
 {
 	// update the cameraControl
 	if( this.hasCameraControls() )	this._cameraControls.update();
-	// actually render the scene
-	this._renderer.render( this._scene, this._camera );
+	// render the scene 
+	if( this._autoRendering )	this._renderer.render( this._scene, this._camera );
 }
 //////////////////////////////////////////////////////////////////////////////////
 //										//
@@ -1886,17 +3159,11 @@ tQuery.World.prototype.render	= function()
  *
  * @param {THREE.World} world the world to display (optional)
 */
-tQuery.Loop	= function(world)
+tQuery.Loop	= function()
 {	
 	// internally if world present do that
-	this._world	= world;
 	this._hooks	= [];
 	this._lastTime	= null;
-
-	// if world is available, hook it ON_RENDER
-	this._world && this.hookOnRender(function(){
-		this._world.render();
-	}.bind(this));
 };
 
 // make it pluginable
@@ -1908,7 +3175,6 @@ tQuery.pluginsInstanceOn(tQuery.Loop);
 tQuery.Loop.prototype.destroy	= function()
 {
 	this.stop();
-	if( tQuery.loop === this )	tQuery.loop = null;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -1949,19 +3215,17 @@ tQuery.Loop.prototype._onAnimationFrame	= function(time)
 	this._timerId	= requestAnimationFrame( this._onAnimationFrame.bind(this) );
 
 	// update time values
-	var currentTime	= time/1000;
-	if( !this._lastTime )	this._lastTime = currentTime - 1/60;
-	var deltaTime	= currentTime - this._lastTime;
-	this._lastTime	= currentTime;
+	var now		= time/1000;
+	if( !this._lastTime )	this._lastTime = now - 1/60;
+	var delta	= now - this._lastTime;
+	this._lastTime	= now;
 
 	// run all the hooks - from lower priority to higher - in order of registration
 	for(var priority = 0; priority <= this._hooks.length; priority++){
 		if( this._hooks[priority] === undefined )	continue;
 		var callbacks	= this._hooks[priority].slice(0)
 		for(var i = 0; i < callbacks.length; i++){
-			// TODO ? change that to {delta, current} ?
-			// thus function(time){ time.current }
-			callbacks[i](deltaTime, currentTime);
+			callbacks[i](delta, now);
 		}
 	}
 }
@@ -1979,7 +3243,8 @@ tQuery.Loop.prototype.POST_RENDER	= 80;
  *
  * @param {Number} priority for this callback
  * @param {Function} callback the function which will be called function(time){}
- * @returns {tQuery.Loop} chained API
+ * @returns {Function} the callback function. usefull for this._$callback = loop.hook(this._callback.bind(this))
+ *                     and later loop.unhook(this._$callback)
 */
 tQuery.Loop.prototype.hook	= function(priority, callback)
 {
@@ -1992,8 +3257,7 @@ tQuery.Loop.prototype.hook	= function(priority, callback)
 	this._hooks[priority]	= this._hooks[priority] || [];
 	console.assert(this._hooks[priority].indexOf(callback) === -1)
 	this._hooks[priority].push(callback);
-	// for chained API
-	return this;
+	return callback;
 }
 
 /**
@@ -2041,8 +3305,8 @@ tQuery.Loop.prototype.unhookPostRender	= function(callback){ return this.unhook(
 /**
  * Create tQuery.World
 */
-tQuery.register('createWorld', function(){
-	return new tQuery.World();
+tQuery.register('createWorld', function(opts){
+	return new tQuery.World(opts);
 });
 
 /**
@@ -2066,20 +3330,23 @@ tQuery.register('createLoop', function(world){
 
 
 tQuery.register('createDirectionalLight', function(){
-	var tLight	= new THREE.DirectionalLight(0xFFFFFF * Math.random());
-	tLight.position.set(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5).normalize();
-	return tQuery(tLight);
+	var tLight	= new THREE.DirectionalLight();
+	return new tQuery.DirectionalLight([tLight]);
 });
 
 tQuery.register('createSpotLight', function(){
-	var tLight	= new THREE.SpotLight(0xFFFFFF * Math.random());
-	tLight.position.set(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5).normalize();
-	return tQuery(tLight);
+	var tLight	= new THREE.SpotLight();
+	return new tQuery.SpotLight([tLight]);
+});
+
+tQuery.register('createPointLight', function(){
+	var tLight	= new THREE.PointLight();
+	return new tQuery.PointLight([tLight]);
 });
 
 tQuery.register('createAmbientLight', function(){
-	var tLight	= new THREE.AmbientLight(0xFFFFFF);
-	return tQuery(tLight);
+	var tLight	= new THREE.AmbientLight();
+	return new tQuery.AmbientLight([tLight]);
 });
 
 
@@ -2124,6 +3391,10 @@ tQuery.register('createTorus', function(){
 	var ctor	= THREE.TorusGeometry;
 	var dflGeometry	= [0.5-0.15, 0.15];
 	return this._createMesh(ctor, dflGeometry, arguments)
+});
+
+tQuery.register('createVector3', function(){
+	return new THREE.Vector3();
 });
 
 tQuery.register('createSphere', function(){
@@ -2250,11 +3521,12 @@ tQuery.mixinAttributes(tQuery.DirectionalLight, {
 	intensity	: tQuery.convert.toNumber,
 	distance	: tQuery.convert.toNumber,
 
-	castShadow	: tQuery.convert.toBool,
-
 	shadowDarkness		: tQuery.convert.toNumberZeroToOne,
+	shadowBias		: tQuery.convert.toNumber,
+
 	shadowMapWidth		: tQuery.convert.toInteger,
 	shadowMapHeight		: tQuery.convert.toInteger,
+
 	shadowCameraRight	: tQuery.convert.toNumber,
 	shadowCameraLeft	: tQuery.convert.toNumber,
 	shadowCameraTop		: tQuery.convert.toNumber,
@@ -2343,9 +3615,8 @@ tQuery.mixinAttributes(tQuery.SpotLight, {
 	intensity	: tQuery.convert.toNumber,
 	distance	: tQuery.convert.toNumber,
 
-	castShadow	: tQuery.convert.toBool,
-
 	shadowDarkness		: tQuery.convert.toNumberZeroToOne,
+	shadowBias		: tQuery.convert.toNumber,
 	shadowMapWidth		: tQuery.convert.toInteger,
 	shadowMapHeight		: tQuery.convert.toInteger,
 	shadowCameraRight	: tQuery.convert.toNumber,
@@ -2541,6 +3812,27 @@ tQuery.Geometry.register('center', function(noX, noY, noZ){
 	return this;
 });
 
+/**
+ * Smooth the geometry using catmull-clark
+ *
+ * @param {Number} subdivision the number of subdivision to do
+*/
+tQuery.Geometry.register('smooth', function(subdivision){
+	// init the modifier
+	var modifier	= new THREE.SubdivisionModifier( subdivision );
+	// apply it to each geometry
+	this.each(function(geometry){
+		// apply it
+		modifier.modify( geometry )
+	
+		// mark the vertices as dirty
+		geometry.verticesNeedUpdate = true;
+		geometry.computeBoundingBox();
+	});
+	// return this, to get chained API	
+	return this;
+});
+
 // some shortcuts
 tQuery.Geometry.register('translateX'	, function(delta){ return this.translate(delta, 0, 0);	});
 tQuery.Geometry.register('translateY'	, function(delta){ return this.translate(0, delta, 0);	});
@@ -2707,10 +3999,33 @@ tQuery.World.register('boilerplate', function(opts){
 	domElement.style.padding	= "0";
 	domElement.style.overflow	= 'hidden';
 	this.appendTo(domElement);
-
+	this._renderer.setSize( domElement.offsetWidth, domElement.offsetHeight );
+	
 	// add the boilerplate
 	this.addBoilerplate(opts);
 	
+	// for chained API
+	return this;
+});
+
+/**
+ * Define a page title
+*/
+tQuery.World.register('pageTitle', function(element){
+	// handle parameters polymorphism
+	if( typeof(element) === 'string' ){
+		var element	= document.querySelector(element);
+	}
+	// sanity check
+	console.assert( element instanceof HTMLElement);
+	// set element.style
+	element.style.position	= "absolute";
+	element.style.width	= "100%";
+	element.style.textAlign	= "center";
+	element.style.fontWeight= "bolder";
+	element.style.fontColor	= "white";
+	element.style.paddingTop= "0.5em";
+	element.style.fontFamily= "arial";
 	// for chained API
 	return this;
 });
@@ -2729,39 +4044,43 @@ tQuery.World.register('addBoilerplate', function(opts){
 	});
 	// get the context
 	var ctx	= {};
+	
+	// make tRenderer.domElement style "display: block" - by default it is inline-block
+	// - so it is affected by line-height and create a white line at the bottom
+	this.tRenderer().domElement.style.display = "block"
 
 	// create the context
 	tQuery.data(this, '_boilerplateCtx', ctx);
+
+	// get some variables
+	var tCamera	= this.tCamera();
+	var tRenderer	= this.tRenderer();
 
 	// add Stats.js - https://github.com/mrdoob/stats.js
 	if( opts.stats ){
 		ctx.stats	= new Stats();
 		ctx.stats.domElement.style.position	= 'absolute';
 		ctx.stats.domElement.style.bottom	= '0px';
-		document.body.appendChild( ctx.stats.domElement );
+		tRenderer.domElement.parentNode && tRenderer.domElement.parentNode.appendChild( ctx.stats.domElement );
 		ctx.loopStats	= function(){
 			ctx.stats.update();
 		};
 		this.loop().hook(ctx.loopStats);		
 	}
 
-	// get some variables
-	var camera	= this.camera();
-	var renderer	= this.renderer();
-
 	// create a camera contol
 	if( opts.cameraControls ){
-		ctx.cameraControls	= new THREEx.DragPanControls(camera);
+		ctx.cameraControls	= new THREEx.DragPanControls(tCamera);
 		this.setCameraControls(ctx.cameraControls);		
 	}
 
 	// transparently support window resize
 	if( opts.windowResize ){
-		ctx.windowResize	= THREEx.WindowResize.bind(renderer, camera);		
+		ctx.windowResize	= THREEx.WindowResize.bind(tRenderer, tCamera);		
 	}
 	// allow 'p' to make screenshot
 	if( opts.screenshot ){		
-		ctx.screenshot		= THREEx.Screenshot.bindKey(renderer);
+		ctx.screenshot		= THREEx.Screenshot.bindKey(tRenderer);
 	}
 	// allow 'f' to go fullscreen where this feature is supported
 	if( opts.fullscreen && THREEx.FullScreen.available() ){
