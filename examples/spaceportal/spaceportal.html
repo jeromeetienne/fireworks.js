@@ -1,7 +1,6 @@
 <!doctype html><title>Example of firework.js</title>
-<script src="../vendor/tquery-bundle.js"></script>
 <script src="../../build/fireworks-bundle.js"></script>
-
+<script src="../vendor/tquery-bundle.js"></script>
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
 	var object	= tQuery.createTorus(0.8, 0.2, 32, 32).addTo(world).rotateZ(1*Math.PI/8);
@@ -12,8 +11,8 @@
 	var texture	= THREE.ImageUtils.loadTexture( url );
 
 	var emitter	= Fireworks.createEmitter({nParticles : 80})
-		.useSpawnerSteadyRate(25)
 		.effectsStackBuilder()
+			.spawnerSteadyRate(25)
 			.position(Fireworks.createShapeSphere(0, 0, 0, 0.6))
 			.lifeTime(0.5)
 			.createEffect('scale', {
