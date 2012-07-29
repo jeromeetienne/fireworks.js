@@ -6,6 +6,13 @@ Fireworks.EffectsStackBuilder	= function(emitter){
 	this._emitter	= emitter;
 };
 
+/**
+ * Getter for the emitter 
+*/
+Fireworks.EffectsStackBuilder.prototype.emitter	= function(){
+	return this._emitter;	
+};
+
 Fireworks.EffectsStackBuilder.prototype.back	= function(){
 	return this._emitter;
 }
@@ -49,6 +56,10 @@ Fireworks.createEffect	= function(name, opts){
 		},
 		onDeath: function(val){
 			effect.onDeath	= val;
+			return methods;
+		},
+		onPreUpdate: function(val){
+			effect.onPreUpdate	= val;
 			return methods;
 		},
 		onPreRender: function(val){

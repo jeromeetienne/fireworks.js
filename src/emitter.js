@@ -116,7 +116,6 @@ Fireworks.Emitter.prototype.getParticleData	= function(particle, namespace){
 
 Fireworks.Emitter.prototype.start	= function()
 {
-	console.assert( this._spawner, "a spawner MUST be set" );
 	console.assert( this._effects.length > 0, "At least one effect MUST be set")
 	console.assert( this._started === false );
 	
@@ -144,7 +143,12 @@ Fireworks.Emitter.prototype.start	= function()
 
 Fireworks.Emitter.prototype.update	= function(deltaTime){
 	// update the generator
-	this._spawner.update(this, deltaTime);
+	this._spawner	 && this._spawner.update(this, deltaTime);
+	// honor effect.onPreUpdate
+	this._effects.forEach(function(effect){
+		if( !effect.onPreUpdate )	return;
+		effect.onPreUpdate(deltaTime);			
+	}.bind(this));
 	// update each particles
 	this._effects.forEach(function(effect){
 		if( !effect.onUpdate )	return;
