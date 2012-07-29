@@ -220,17 +220,11 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 						var uvOffsetY	= imageIdx * 1/urls.length;
 						object3d.uvOffset.set(0, uvOffsetY)
 					}).back()
-				.createEffect("updateSound")
+				.createEffect("soundIntensity")
 					.onIntensityChange(function(newIntensity, oldIntensity){
 						this._soundSetIntensity(newIntensity, oldIntensity);
 					}.bind(this)).back()
-				.createEffect("updateSpeed")
-					.onIntensityChange(function(newIntensity, oldIntensity){
-						//console.log('onIntensityChange', arguments, this) 
-						var effect		= this.emitter().effectByName('velocity');
-						//effect.opts.speed	= 15 + 15 * newIntensity;
-					}).back()
-				.createEffect("blablaTOREMOVE")
+				.createEffect("spawnerIntensity")
 					.onIntensityChange(function(newIntensity, oldIntensity){
 						if( newIntensity === 0 ){
 							this.emitter().spawner().stop();						
@@ -262,8 +256,7 @@ Fireworks.ComboEmitter.Flamethrower.prototype._soundCtor	= function()
 	// create a sound 
 	this._baseSound	= webaudio.createSound().loop(true);	
 	// load the sound
-	this._baseSound.load('flamethrower-freesoundloop.wav', function(sound){
-		// console.log('sound loaded');
+	this._baseSound.load('sounds/flamethrower-freesoundloop.wav', function(sound){
 		// notify the caller it is ready if possible
 		this._notifyReadyIfPossible();
 	}.bind(this));
@@ -288,7 +281,7 @@ Fireworks.ComboEmitter.Flamethrower.prototype._soundSetIntensity= function(newIn
 
 	var sound	= this._sound;
 	sound.node.playbackRate.value	= 0.5+newIntensity*1.5;
-	sound.node.gain.value		= newIntensity*4;
+	sound.node.gain.value		= newIntensity*10;
 }
 
 
