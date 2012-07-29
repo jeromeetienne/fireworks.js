@@ -1,11 +1,3 @@
-/**
- * @file
- * 
- * TODO do something to load lots of images
- * TODO do something to build spritesheet
- * use all that to make the flameloader.js something useless
-*/
-
 tQuery.register('TextureUtils', {});
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -104,7 +96,9 @@ tQuery.TextureUtils.loadImages	= function(urls, onLoad){
 	});
 };
 
-
+/**
+ * Build a canvas spritesheet based on opts
+*/
 tQuery.TextureUtils.buildTiledSpriteSheet	= function(opts){
 	var images	= opts.images	|| console.assert(false);
 	var spriteW	= opts.spriteW	|| console.assert(false);
