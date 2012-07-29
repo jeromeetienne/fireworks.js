@@ -90,7 +90,7 @@
 
 			emitter.spawner().reset();
 			
-			var effect	= emitter.effectByName('position');
+			var effect	= emitter.effect('position');
 			var center	= effect.opts.shape.center;
 			center.set(mouseX, mouseY, 0);
 		});

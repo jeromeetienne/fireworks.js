@@ -116,7 +116,7 @@ Fireworks.ComboEmitter.Flamethrower.prototype._loopCb	= function(delta, now){
 	// set gravity in local space
 	var emitter	= this._emitterJet;
 	var container	= this._container;
-	var effect	= emitter.effectByName('gravity');
+	var effect	= emitter.effect('gravity');
 	var matrix	= container.matrixWorld.clone().setPosition({x:0,y:0,z:0}).transpose();
 	var position	= effect.opts.shape.position.set(0, 10, 0);
 	matrix.multiplyVector3(position);

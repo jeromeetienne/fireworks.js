@@ -42,7 +42,7 @@
 		.start();
 
 	// get particleSystem from .renderToThreejsParticleSystem()
-	var particleSystem	= emitter.effectByName('renderToThreejsParticleSystem').opts.particleSystem;
+	var particleSystem	= emitter.effect('renderToThreejsParticleSystem').opts.particleSystem;
 	world.add(particleSystem);
 
 	world.loop().hook(function(delta, now){

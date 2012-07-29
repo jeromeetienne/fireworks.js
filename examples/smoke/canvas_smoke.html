@@ -109,7 +109,7 @@
 		var mouseY	= event.clientY - window.innerHeight/2;
 
 		// set gravity in local space
-		var effect	= emitter.effectByName('position');
+		var effect	= emitter.effect('position');
 		var center	= effect.opts.shape.center;
 		center.set(mouseX, mouseY, 0)
 	});

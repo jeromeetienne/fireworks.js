@@ -157,13 +157,13 @@
 			// set velocity direction
 			var angleY	= Math.PI - mouseX * Math.PI;
 			var angleX	=           mouseY * Math.PI;
-			var effect	= emitter.effectByName('velocity');
+			var effect	= emitter.effect('velocity');
 			var center	= effect.opts.shape.center.set(0, 0, 40);
 			var matrix	= new THREE.Matrix4().makeRotationY(angleY).rotateX(angleX)
 			matrix.multiplyVector3(center);
 
 			// set gravity in local space
-			var effect	= emitter.effectByName('gravity');
+			var effect	= emitter.effect('gravity');
 			var matrix	= container.matrixWorld.clone().transpose();
 			var position	= effect.opts.shape.position.set(0, 20, 0);
 			matrix.multiplyVector3(position);
