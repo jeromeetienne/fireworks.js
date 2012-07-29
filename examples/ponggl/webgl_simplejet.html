@@ -3,8 +3,6 @@
 <script src="../../build/fireworks-bundle.js"></script>
 <script src="../vendor/dat.gui.js"></script>
 
-<script src="../flamethrower/tremulousparticlesloader.js"></script>
-
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
 	world.tRenderer().setClearColorHex( 0x00bbff, world.tRenderer().getClearAlpha() );
@@ -24,9 +22,9 @@
 	});
 
 	var emitter	= Fireworks.createEmitter({nParticles : 50})
-		.useSpawnerSteadyRate(10)
 		.bindTriggerDomEvents()
 		.effectsStackBuilder()
+			.spawnerSteadyRate(10)
 			.position(Fireworks.createShapePoint(0, 0, 0))
 			.velocity(Fireworks.createShapeSphere(0, 60, 0, 20), 20)
 			.lifeTime(2, 3)
