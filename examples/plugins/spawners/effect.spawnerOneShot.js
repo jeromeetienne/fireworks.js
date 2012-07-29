@@ -6,7 +6,7 @@
 Fireworks.EffectsStackBuilder.prototype.spawnerOneShot	= function(nParticles)
 {
 	// handle parameter polymorphism
-	nParticles	= nParticles	|| this.emitter().nParticles;
+	nParticles	= nParticles	|| this.emitter().nParticles();
 	// define local variables
 	var emitter	= this.emitter();
 	var nSent	= 0;
