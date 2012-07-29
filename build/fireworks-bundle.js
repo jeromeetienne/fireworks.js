@@ -1098,74 +1098,6 @@ Fireworks.EffectsStackBuilder.prototype.renderToThreejsParticleSystem	= function
 };
 
 /**
- * Spawner deliverying paricles in one shot
- * 
- * @param {Number?} the number of particle to emit
-*/
-Fireworks.EffectsStackBuilder.prototype.spawnerOneShot	= function(nParticles)
-{
-console.log(arguments)
-	// handle parameter polymorphism
-	nParticles	= nParticles	|| this.emitter().nParticles;
-console.log(nParticles)
-	// define local variables
-	var emitter	= this.emitter();
-	var nSent	= 0;
-
-	// create the effect itself
-	Fireworks.createEffect('spawner')
-	.onPreUpdate(function(deltaTime){
-		// if already completed, do nothing
-		if( nParticles === nSent )	return;
-		// spawn each particle
-		var amount	= nParticles - nSent;
-console.log('nParticles', nParticles)
-		amount		= Math.min(amount, emitter.deadParticles().length);
-		for(var i = 0; i < amount; i++){
-			emitter.spawnParticle();
-		}
-		// update the amount of sent particles
-		nSent	+= amount;
-	}).pushTo(this._emitter);
-	// return this for chained API
-	return this;
-};
-/**
- * Spawner deliverying paricles at a steady rate
- * 
- * @param {Number?} rate the rate at which it gonna emit
-*/
-Fireworks.EffectsStackBuilder.prototype.spawnerSteadyRate	= function(rate)
-{
-	// handle parameter polymorphism
-	rate	= rate !== undefined ? rate	: 1;
-	// define local variables
-	var emitter	= this.emitter();
-	var nToCreate	= 1;
-	
-	// create the effect itself
-	Fireworks.createEffect('spawner', {
-		rate	: rate
-	}).onPreUpdate(function(deltaTime){
-		var rate	= this.opts.rate;
-		// update nToCreate
-		nToCreate	+= rate * deltaTime;
-		// nParticles is the interger part of nToCreate as you spawn them one by one
-		var nParticles	= Math.floor(nToCreate);
-		// dont spawn more particles than available
-		// TODO here estimate how much more is needed to never lack of it
-		nParticles	= Math.min(nParticles, emitter.deadParticles().length);
-		// update nToCreate
-		nToCreate	-= nParticles;
-		// spawn each particle
-		for(var i = 0; i < nParticles; i++){
-			emitter.spawnParticle();
-		}
-	}).pushTo(this._emitter);
-	// return this for chained API
-	return this;
-};
-/**
  * Create a velocity effect
  * @param {Fireworks.Shape}	shape	set the direction of the velocity by a randompoint in this shape
  * @param {Number?}		speed	set the speed itself. if undefined, keep randompoint length for speed
@@ -1496,3 +1428,68 @@ Fireworks.SpawnerSteadyRate.prototype.update	= function(emitter, deltaTime){
 	}
 }
 
+/**
+ * Spawner deliverying paricles in one shot
+ * 
+ * @param {Number?} the number of particle to emit
+*/
+Fireworks.EffectsStackBuilder.prototype.spawnerOneShot	= function(nParticles)
+{
+	// handle parameter polymorphism
+	nParticles	= nParticles	|| this.emitter().nParticles;
+	// define local variables
+	var emitter	= this.emitter();
+	var nSent	= 0;
+
+	// create the effect itself
+	Fireworks.createEffect('spawner')
+	.onPreUpdate(function(deltaTime){
+		// if already completed, do nothing
+		if( nParticles === nSent )	return;
+		// spawn each particle
+		var amount	= nParticles - nSent;
+		amount		= Math.min(amount, emitter.deadParticles().length);
+		for(var i = 0; i < amount; i++){
+			emitter.spawnParticle();
+		}
+		// update the amount of sent particles
+		nSent	+= amount;
+	}).pushTo(this._emitter);
+	// return this for chained API
+	return this;
+};
+/**
+ * Spawner deliverying paricles at a steady rate
+ * 
+ * @param {Number?} rate the rate at which it gonna emit
+*/
+Fireworks.EffectsStackBuilder.prototype.spawnerSteadyRate	= function(rate)
+{
+	// handle parameter polymorphism
+	rate	= rate !== undefined ? rate	: 1;
+	// define local variables
+	var emitter	= this.emitter();
+	var nToCreate	= 1;
+	
+	// create the effect itself
+	Fireworks.createEffect('spawner', {
+		rate	: rate
+	}).onPreUpdate(function(deltaTime){
+		var rate	= this.opts.rate;
+		// update nToCreate
+		nToCreate	+= rate * deltaTime;
+		// nParticles is the interger part of nToCreate as you spawn them one by one
+		var nParticles	= Math.floor(nToCreate);
+		// dont spawn more particles than available
+		// TODO here estimate how much more is needed to never lack of it
+		nParticles	= Math.min(nParticles, emitter.deadParticles().length);
+		// update nToCreate
+		nToCreate	-= nParticles;
+		// spawn each particle
+		for(var i = 0; i < nParticles; i++){
+			emitter.spawnParticle();
+		}
+	}).pushTo(this._emitter);
+	// return this for chained API
+	return this;
+};
