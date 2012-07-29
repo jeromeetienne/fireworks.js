@@ -1,6 +1,6 @@
 <!doctype html><title>Example of firework.js</title>
-<script src="../vendor/tquery-bundle.js"></script>
 <script src="../../build/fireworks-bundle.js"></script>
+<script src="../vendor/tquery-bundle.js"></script>
 
 
 <body><script>
@@ -42,8 +42,8 @@
 
 	// create the emitter
 	var emitter	= Fireworks.createEmitter({nParticles : 30})
-		.useSpawnerOneShot()
 		.effectsStackBuilder()
+			.spawnerOneShot()
 			.position(Fireworks.createShapeBox(0, -3, 0, 32, 0.1, 32))
 			.renderToThreejsObject3D({
 				container	: world,
