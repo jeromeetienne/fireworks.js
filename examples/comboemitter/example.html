@@ -20,10 +20,11 @@
 
 	// create the container for the comboemitter
 	var container	= tQuery.createObject3D().addTo(world)
+//	container.scale(2)
 	// container.rotateX(-Math.PI/2).translateY(10)
 	// container.rotateX(Math.PI/2).translateY(-10)
 	// container.rotateY(-Math.PI/2).translateX(-10)
-
+	
 	// create a torch and add it to the container
 	tQuery.createCylinder(0.55, 0.0001, 2).addTo(container)
 		.geometry().rotateX(-Math.PI/2).back()
@@ -34,6 +35,7 @@
 		flamethrower.start();
 	});
 	container.add( flamethrower.object3D() )
+	flamethrower.object3D().scale	= container.get(0).scale;
 
 	document.body.addEventListener('mousedown', function(){
 		flamethrower.start();

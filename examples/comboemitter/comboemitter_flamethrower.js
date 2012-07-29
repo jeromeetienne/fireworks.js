@@ -164,8 +164,8 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 	return;
 
 	function buildEmitter(texture){
-		// console.log("spriteSheet loaded");
-	
+		//console.log("spriteSheet loaded");
+		var cemitter	= this;
 		var emitter	= this._emitterJet	= Fireworks.createEmitter({nParticles : 100})
 			.effectsStackBuilder()
 				.spawnerSteadyRate(20)
@@ -183,7 +183,7 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 						factor	: 1.005
 					}).onBirth(function(particle){
 						var object3d	= particle.get('threejsObject3D').object3d;
-						var scale	= this.opts.origin;
+						var scale	= this.opts.origin * cemitter.object3D().scale.x;
 						object3d.scale.set(scale, scale, scale)
 					}).onUpdate(function(particle, deltaTime){
 						var object3d	= particle.get('threejsObject3D').object3d;
