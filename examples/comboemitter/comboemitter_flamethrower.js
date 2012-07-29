@@ -160,14 +160,11 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 	];
 
 
-	new TremulousParticuleLoader(urls, buildEmitter.bind(this));
+	loadTremulousFlameParticule(urls, buildEmitter.bind(this));
 	return;
 
-	function buildEmitter(spriteSheet){
+	function buildEmitter(texture){
 		// console.log("spriteSheet loaded");
-		// create the texture
-		var texture	= new THREE.Texture( spriteSheet );
-		texture.needsUpdate = true;
 	
 		var emitter	= this._emitterJet	= Fireworks.createEmitter({nParticles : 100})
 			.effectsStackBuilder()
@@ -240,6 +237,29 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 		// notify the caller it is ready if possible
 		this._notifyReadyIfPossible();
 	};
+	
+	//////////////////////////////////////////////////////////////////////////
+	//		misc helpers						//
+	//////////////////////////////////////////////////////////////////////////
+	function loadTremulousFlameParticule(urls, onReady){
+		tQuery.TextureUtils.loadImages(urls, function(images, urls){
+			//console.log('images', images)
+			var canvas	= tQuery.TextureUtils.buildTiledSpriteSheet({
+				images	: images,
+				spriteW	: images[0].width,
+				spriteH	: images[0].height,
+				nSpriteX: 1
+			});
+			//document.body.appendChild(canvas);
+
+			var texture	= new THREE.Texture( canvas );
+			texture.needsUpdate = true;
+
+			tQuery.TextureUtils.generateAlphaFromLuminance(texture, 16, 1);
+
+			onReady(texture, urls)
+		})
+	}
 }
 
 Fireworks.ComboEmitter.Flamethrower.prototype._flamejetDtor	= function(){

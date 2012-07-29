@@ -2,7 +2,7 @@
 <script src="../vendor/tquery-bundle.js"></script>
 <script src="../../build/fireworks-bundle.js"></script>
 
-<script src="../flamethrower/tremulousparticlesloader.js"></script>
+<script src="../flamethrower/tquery.textureutils.js"></script>
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
 	world.tRenderer().setClearColorHex( 0x000000, world.tRenderer().getClearAlpha() );
@@ -45,13 +45,10 @@
 	];
 
 
-	new TremulousParticuleLoader(urls, function(spriteSheet){
+	loadTremulousFlameParticule(urls, function(texture){
 		//console.log("images", images)
 		console.log("all images loaded");
 
-		var texture	= new THREE.Texture( spriteSheet );
-		texture.needsUpdate = true;
-	
 		var emitter	= Fireworks.createEmitter({nParticles : 200})
 			.bindTriggerDomEvents()
 			.effectsStackBuilder()
@@ -75,7 +72,7 @@
 				.createEffect('rotation')
 					.onBirth(function(particle){
 						var object3d	= particle.get('threejsObject3D').object3d;
-						object3d.rotation	= Math.floor(Math.random()*Math.PI*2);
+						object3d.rotation	= Math.random()*Math.PI*2;
 					}).back()
 				.createEffect('opacity', {
 						gradient: Fireworks.createLinearGradient()
@@ -122,6 +119,31 @@
 			emitter.update(delta).render();
 		})
 	});
+
+
+
+	//////////////////////////////////////////////////////////////////////////
+	//		misc helpers						//
+	//////////////////////////////////////////////////////////////////////////
+	function loadTremulousFlameParticule(urls, onReady){
+		tQuery.TextureUtils.loadImages(urls, function(images, urls){
+			//console.log('images', images)
+			var canvas	= tQuery.TextureUtils.buildTiledSpriteSheet({
+				images	: images,
+				spriteW	: images[0].width,
+				spriteH	: images[0].height,
+				nSpriteX: 1
+			});
+			//document.body.appendChild(canvas);
+
+			var texture	= new THREE.Texture( canvas );
+			texture.needsUpdate = true;
+
+			tQuery.TextureUtils.generateAlphaFromLuminance(texture, 16, 1);
+
+			onReady(texture, urls)
+		})
+	}
 </script></body>
 
 

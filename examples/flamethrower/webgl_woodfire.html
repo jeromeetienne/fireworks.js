@@ -2,7 +2,7 @@
 <script src="../../build/fireworks-bundle.js"></script>
 <script src="../vendor/tquery-bundle.js"></script>
 
-<script src="./tremulousparticlesloader.js"></script>
+<script src="../flamethrower/tquery.textureutils.js"></script>
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
 	var container	= tQuery.createObject3D().translateY(-20).addTo(world);
@@ -45,13 +45,9 @@
 		"../assets/images/flame/flame24.png"
 	];
 
-
-	new TremulousParticuleLoader(urls, function(spriteSheet){
+	loadTremulousFlameParticule(urls, function(texture){
 		//console.log("images", images)
 		console.log("all images loaded");
-
-		var texture	= new THREE.Texture( spriteSheet );
-		texture.needsUpdate = true;
 	
 		var emitter	= Fireworks.createEmitter({nParticles : 200})
 			.bindTriggerDomEvents()
@@ -143,6 +139,29 @@
 			matrix.multiplyVector3(position);
 		});
 	});
+
+	//////////////////////////////////////////////////////////////////////////
+	//		misc helpers						//
+	//////////////////////////////////////////////////////////////////////////
+	function loadTremulousFlameParticule(urls, onReady){
+		tQuery.TextureUtils.loadImages(urls, function(images, urls){
+			//console.log('images', images)
+			var canvas	= tQuery.TextureUtils.buildTiledSpriteSheet({
+				images	: images,
+				spriteW	: images[0].width,
+				spriteH	: images[0].height,
+				nSpriteX: 1
+			});
+			//document.body.appendChild(canvas);
+
+			var texture	= new THREE.Texture( canvas );
+			texture.needsUpdate = true;
+
+			tQuery.TextureUtils.generateAlphaFromLuminance(texture, 16, 1);
+
+			onReady(texture, urls)
+		})
+	}
 </script></body>
 
 
