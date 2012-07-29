@@ -1,29 +1,5 @@
 <!doctype html><title>Example of firework.js</title>
-
-<script src="../../src/core.js"></script>
-<script src="../../src/emitter.js"></script>
-<script src="../../src/particle.js"></script>
-<script src="../../src/effect.js"></script>
-<script src="../../src/spawner.js"></script>
-<script src="../../src/shape.js"></script>
-<script src="../../src/vector.js"></script>
-
-<script src="../plugins/fireworks.bindtriggerdomeventsto.js"></script>
-
-<script src="../plugins/spawner.steadyrate.js"></script>
-<script src="../plugins/spawner.oneshot.js"></script>
-<script src="../plugins/shape.box.js"></script>
-<script src="../plugins/shape.sphere.js"></script>
-<script src="../plugins/shape.point.js"></script>
-
-<script src="../plugins/effect.friction.js"></script>
-<script src="../plugins/effect.lifetime.js"></script>
-<script src="../plugins/effect.position.js"></script>
-<script src="../plugins/effect.velocity.js"></script>
-<script src="../plugins/effect.radialvelocity.js"></script>
-<script src="../plugins/effect.randomvelocitydrift.js"></script>
-<script src="../plugins/effect.rendertocanvas.js"></script>
-
+<script src="../../build/fireworks-bundle.js"></script>
 <body><script>
 	// build canvas element
 	var canvas	= document.createElement('canvas');
@@ -55,9 +31,9 @@
 		}
 
 		var emitter	= Fireworks.createEmitter({nParticles : 80})
-			.useSpawnerOneShot(5)
 			.bindTriggerDomEvents()
 			.effectsStackBuilder()
+				.spawnerOneShot(5)
 				.position(Fireworks.createShapeSphere(0, 0, 0, 1))
 				.velocity(Fireworks.createShapeSphere(0, 0, 0, 200))
 				.lifeTime(0.7, 1)

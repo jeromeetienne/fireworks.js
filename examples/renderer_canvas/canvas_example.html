@@ -21,9 +21,9 @@
 	ctx.fillStyle	= 'rgba(128,64,64,1)';
 
 	var emitter	= Fireworks.createEmitter({nParticles : 400})
-		.useSpawnerSteadyRate(40)
-		//.bindTriggerDomEvents()
+		.bindTriggerDomEvents()
 		.effectsStackBuilder()
+			.spawnerSteadyRate(40)
 			.position(Fireworks.createShapeSphere(0, 0, 0, 10))
 			.radialVelocity(100, 200)
 			.createEffect('gravity', {
@@ -47,8 +47,9 @@
 			// })
 			.createEffect('intensityChange')
 				.onIntensityChange(function(intensity){
-					emitter.spawner().rate(40*intensity);
-					console.log('intensity', emitter.intensity())
+					var spawner	= this.emitter().effect('spawner');
+					spawner.opts.rate	= 40*intensity;
+					console.log('intensity', this.emitter().intensity())
 				}).back()
 			.back()
 		.start()

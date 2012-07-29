@@ -1,38 +1,14 @@
 <!doctype html><title>Example of firework.js</title>
+<script src="../../build/fireworks-bundle.js"></script>
 <script src="../vendor/tquery-bundle.js"></script>
-
-<script src="../../src/core.js"></script>
-<script src="../../src/emitter.js"></script>
-<script src="../../src/particle.js"></script>
-<script src="../../src/effect.js"></script>
-<script src="../../src/spawner.js"></script>
-<script src="../../src/shape.js"></script>
-<script src="../../src/vector.js"></script>
-
-
-<script src="../plugins/spawner.steadyrate.js"></script>
-<script src="../plugins/shape.box.js"></script>
-<script src="../plugins/shape.sphere.js"></script>
-<script src="../plugins/shape.point.js"></script>
-
-<script src="../plugins/effect.friction.js"></script>
-<script src="../plugins/effect.lifetime.js"></script>
-<script src="../plugins/effect.position.js"></script>
-<script src="../plugins/effect.randomvelocitydrift.js"></script>
-<script src="../plugins/effect.rendertocanvas.js"></script>
-<script src="../plugins/effect.rendertothreejsobject3d.js"></script>
-<script src="../plugins/effect.rendertothreejsparticlesystem.js"></script>
-<script src="../plugins/effect.velocity.js"></script>
-<script src="../plugins/effect.radialvelocity.js"></script>
-
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
 	world.tRenderer().setClearColorHex( 0x000000, world.tRenderer().getClearAlpha() );
 
 	// create the emitter
 	var emitter	= Fireworks.createEmitter({nParticles : 400})
-		.useSpawnerSteadyRate(30)
 		.effectsStackBuilder()
+			.spawnerSteadyRate(30)
 			.position(Fireworks.createShapeSphere(0, 0, 0, 1))
 			.radialVelocity(2,2)
 			.friction(0.9)

@@ -1,28 +1,6 @@
 <!doctype html><title>Example of firework.js</title>
+<script src="../../build/fireworks-bundle.js"></script>
 <script src="../vendor/tquery-bundle.js"></script>
-
-<script src="../../src/core.js"></script>
-<script src="../../src/emitter.js"></script>
-<script src="../../src/particle.js"></script>
-<script src="../../src/effect.js"></script>
-<script src="../../src/spawner.js"></script>
-<script src="../../src/shape.js"></script>
-<script src="../../src/vector.js"></script>
-
-
-<script src="../plugins/spawner.steadyrate.js"></script>
-<script src="../plugins/shape.box.js"></script>
-<script src="../plugins/shape.sphere.js"></script>
-<script src="../plugins/shape.point.js"></script>
-
-<script src="../plugins/effect.friction.js"></script>
-<script src="../plugins/effect.lifetime.js"></script>
-<script src="../plugins/effect.position.js"></script>
-<script src="../plugins/effect.randomvelocitydrift.js"></script>
-<script src="../plugins/effect.rendertocanvas.js"></script>
-<script src="../plugins/effect.rendertothreejsobject3d.js"></script>
-<script src="../plugins/effect.velocity.js"></script>
-
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
 	var object	= tQuery.createTorus(0.8, 0.2, 32, 32).addTo(world)
@@ -33,8 +11,8 @@
 	var texture	= THREE.ImageUtils.loadTexture("../assets/images/tremulous/psaw/blue_particle.jpg");
 
 	var emitter	= Fireworks.createEmitter({nParticles : 20})
-		.useSpawnerSteadyRate(20)
 		.effectsStackBuilder()
+			.spawnerSteadyRate(20)
 			.position(Fireworks.createShapeSphere(0, 0, 0, 0.5))
 			.velocity(Fireworks.createShapePoint(0, 0, 0))
 			.createEffect('scale', {
