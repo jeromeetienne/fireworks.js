@@ -10,12 +10,17 @@ Fireworks.EffectsStackBuilder.prototype.spawnerSteadyRate	= function(rate)
 	// define local variables
 	var emitter	= this.emitter();
 	var nToCreate	= 1;
+	var spawning	= true;
 	
 	// create the effect itself
 	Fireworks.createEffect('spawner', {
-		rate	: rate
+		rate	: rate,
+		start	: function(){ spawning = true;	},
+		stop	: function(){ spawning = false;	},
 	}).onPreUpdate(function(deltaTime){
 		var rate	= this.opts.rate;
+		// if spawning is false, do nothing
+		if( spawning === false )	return;
 		// update nToCreate
 		nToCreate	+= rate * deltaTime;
 		// nParticles is the interger part of nToCreate as you spawn them one by one

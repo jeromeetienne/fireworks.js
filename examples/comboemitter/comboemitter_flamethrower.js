@@ -170,8 +170,8 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 		texture.needsUpdate = true;
 	
 		var emitter	= this._emitterJet	= Fireworks.createEmitter({nParticles : 100})
-			.useSpawnerSteadyRate(20)
 			.effectsStackBuilder()
+				.spawnerSteadyRate(20)
 				.position(Fireworks.createShapeSphere(0, 0,   0, 0.01))
 				.velocity(Fireworks.createShapeSphere(0, 0, -30, 0.1), 30)
 				.lifeTime(0.8, 1.5)
@@ -226,11 +226,12 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 					}.bind(this)).back()
 				.createEffect("spawnerIntensity")
 					.onIntensityChange(function(newIntensity, oldIntensity){
+						var spawner	= this.emitter().effect('spawner');
 						if( newIntensity === 0 ){
-							this.emitter().spawner().stop();						
+							spawner.opts.stop();
 						}
 						if( oldIntensity === 0 && newIntensity > 0 ){
-							this.emitter().spawner().start();
+							spawner.opts.start();
 						}
 					}).back()
 				.back()

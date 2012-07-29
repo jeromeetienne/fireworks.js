@@ -10,10 +10,15 @@ Fireworks.EffectsStackBuilder.prototype.spawnerOneShot	= function(nParticles)
 	// define local variables
 	var emitter	= this.emitter();
 	var nSent	= 0;
+	var spawning	= true;
 
 	// create the effect itself
-	Fireworks.createEffect('spawner')
-	.onPreUpdate(function(deltaTime){
+	Fireworks.createEffect('spawner', {
+		start	: function(){ spawning = true;	},
+		stop	: function(){ spawning = false;	},
+	}).onPreUpdate(function(deltaTime){
+		// if spawning is false, do nothing
+		if( spawning === false )	return;
 		// if already completed, do nothing
 		if( nParticles === nSent )	return;
 		// spawn each particle
