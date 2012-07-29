@@ -1,6 +1,5 @@
 Fireworks.Spawner	= function(){
 	this._isRunning	= false;
-	console.warn('use old spawners. considere port it to new effect version')
 }
 
 Fireworks.Spawner.prototype.start	= function(){

@@ -169,7 +169,7 @@ Fireworks.Emitter.prototype.destroy	= function()
 Fireworks.Emitter.prototype.effects	= function(){
 	return this._effects;
 }
-Fireworks.Emitter.prototype.effectByName= function(name){
+Fireworks.Emitter.prototype.effect	= function(name){
 	for(var i = 0; i < this._effects.length; i++){
 		var effect	= this._effects[i];
 		if( effect.name === name )	return effect;

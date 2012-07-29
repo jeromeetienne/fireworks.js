@@ -34,6 +34,7 @@ buildBundle: buildCore
 	cat build/fireworks.js			>> build/fireworks-bundle.js
 	cat examples/plugins/*.js		>> build/fireworks-bundle.js
 	cat examples/plugins/spawners/*.js	>> build/fireworks-bundle.js
+	cat examples/plugins/helpers/*.js	>> build/fireworks-bundle.js
 
 minifyBundle: buildBundle
 	curl --data-urlencode "js_code@build/fireworks-bundle.js" 	\

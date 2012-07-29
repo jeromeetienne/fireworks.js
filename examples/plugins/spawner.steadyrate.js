@@ -14,6 +14,9 @@ Fireworks.Emitter.prototype.useSpawnerSteadyRate	= function(rate){
  * @param {Number?} rate the rate at which it gonna emit
 */
 Fireworks.SpawnerSteadyRate	= function(rate){
+	console.warn('use old spawners. considere port it to new effect version')
+	console.trace();
+
 	// call constructor of parent calss
 	Fireworks.Spawner.call( this );
 	// init class variables

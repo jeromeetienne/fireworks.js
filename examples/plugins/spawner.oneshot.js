@@ -8,6 +8,9 @@ Fireworks.Emitter.prototype.useSpawnerOneShot	= function(nParticles){
 }
 
 Fireworks.SpawnerOneShot	= function(nParticles){
+	console.warn('use old spawners. considere port it to new effect version')
+	console.trace();
+
 	// call constructor of parent calss
 	Fireworks.Spawner.call( this );
 	// init class variables
