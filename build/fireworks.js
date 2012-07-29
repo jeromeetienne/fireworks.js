@@ -102,6 +102,9 @@ Fireworks.Effect	= function(){
 	this._emitter	= null;
 }
 
+Fireworks.Effect.prototype.destroy	= function(){
+}
+
 /**
  * Getter/Setter for the emitter 
 */
@@ -141,7 +144,6 @@ Fireworks.createEmitter	= function(opts){
 Fireworks.Emitter	= function(opts){
 	this._nParticles= opts.nParticles !== undefined ? opts.nParticles : 100;
 	this._particles	= [];
-	this._spawner	= null;
 	this._effects	= [];
 	this._started	= false;
 	this._onUpdated	= null;
@@ -155,7 +157,6 @@ Fireworks.Emitter.prototype.destroy	= function()
 	this._effects.forEach(function(effect){
 		effect.destroy();
 	});
-	this._spawner	&& this._spawner.destroy();
 	this._particles.forEach(function(particle){
 		particle.destroy();
 	});
@@ -193,14 +194,6 @@ Fireworks.Emitter.prototype.effectsStackBuilder	= function(){
 	return this._effectsStackBuilder;
 }
 
-/**
- * Getter/setter for spawner
-*/
-Fireworks.Emitter.prototype.spawner	= function(spawner){
-	if( spawner === undefined )	return this._spawner;
-	this._spawner	= spawner;
-	return this;	// for chained API
-}
 
 /**
  * Getter/setter for intensity
@@ -224,12 +217,6 @@ Fireworks.Emitter.prototype.intensity	= function(value){
 	}.bind(this));
 	return this;	// for chained API
 }
-
-/**
- * for backward compatibility only
-*/
-Fireworks.Emitter.prototype.setSpawner	= Fireworks.Emitter.prototype.spawner;
-
 
 //////////////////////////////////////////////////////////////////////////////////
 //		backward compatibility						//
@@ -275,8 +262,6 @@ Fireworks.Emitter.prototype.start	= function()
 }
 
 Fireworks.Emitter.prototype.update	= function(deltaTime){
-	// update the generator
-	this._spawner	 && this._spawner.update(this, deltaTime);
 	// honor effect.onPreUpdate
 	this._effects.forEach(function(effect){
 		if( !effect.onPreUpdate )	return;
@@ -383,21 +368,6 @@ Fireworks.LinearGradient.prototype.get	= function(x){
 	
 	return y;
 };
-Fireworks.Spawner	= function(){
-	this._isRunning	= false;
-}
-
-Fireworks.Spawner.prototype.start	= function(){
-	this._isRunning	= true;
-}
-
-Fireworks.Spawner.prototype.stop	= function(){
-	this._isRunning	= false;
-}
-
-Fireworks.Spawner.prototype.isRunning	= function(){
-	return this._isRunning;
-}
 /**
  * The emitter of particles
 */
