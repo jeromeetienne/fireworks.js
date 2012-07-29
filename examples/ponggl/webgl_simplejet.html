@@ -130,6 +130,7 @@
 				// compute luminance
 				var luminance	= (0.2126*p[i+0]) + (0.7152*p[i+1]) + (0.0722*p[i+2]);
 				// increase contrast of the luminance based on 'power'
+				// TODO experiment with normal tween funciton
 				luminance	= Math.pow(luminance/255, power)*255;
 				// set the luminance after mutiplying it
 				p[i+3]		= luminance * multiplier;
