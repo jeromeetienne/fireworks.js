@@ -17,7 +17,6 @@ buildCore:
 	cat src/effect.js		>> build/fireworks.js
 	cat src/emitter.js		>> build/fireworks.js
 	cat src/lineargradient.js	>> build/fireworks.js
-	cat src/spawner.js		>> build/fireworks.js
 	cat src/particle.js		>> build/fireworks.js
 	cat src/shape.js		>> build/fireworks.js
 	cat src/vector.js		>> build/fireworks.js

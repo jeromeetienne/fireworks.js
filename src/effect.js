@@ -101,6 +101,9 @@ Fireworks.Effect	= function(){
 	this._emitter	= null;
 }
 
+Fireworks.Effect.prototype.destroy	= function(){
+}
+
 /**
  * Getter/Setter for the emitter 
 */
