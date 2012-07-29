@@ -242,21 +242,21 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 	//		misc helpers						//
 	//////////////////////////////////////////////////////////////////////////
 	function loadTremulousFlameParticule(urls, onReady){
+		// load all the images from urls
 		tQuery.TextureUtils.loadImages(urls, function(images, urls){
-			//console.log('images', images)
+			// build a tiled spreadsheet canvas with images
 			var canvas	= tQuery.TextureUtils.buildTiledSpriteSheet({
 				images	: images,
 				spriteW	: images[0].width,
 				spriteH	: images[0].height,
 				nSpriteX: 1
 			});
-			//document.body.appendChild(canvas);
-
+			// create the texture
 			var texture	= new THREE.Texture( canvas );
 			texture.needsUpdate = true;
-
+			// generate Alpha as it got no alpha 
 			tQuery.TextureUtils.generateAlphaFromLuminance(texture, 16, 1);
-
+			// notify caller
 			onReady(texture, urls)
 		})
 	}
