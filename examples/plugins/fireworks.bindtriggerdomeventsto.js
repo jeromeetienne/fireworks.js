@@ -7,8 +7,8 @@ Fireworks.BindTriggerDomEvents	= function(emitter, domElement){
 	this._domElement= domElement	|| document.body;
 
 	// bind mouse event
-	this._onMouseDown	= function(){ emitter.spawner().start();	};
-	this._onMouseUp		= function(){ emitter.spawner().stop();		};
+	this._onMouseDown	= function(){ emitter.effect('spawner').opts.start();	};
+	this._onMouseUp		= function(){ emitter.effect('spawner').opts.stop();	};
 	this._domElement.addEventListener('mousedown'	, this._onMouseDown	);
 	this._domElement.addEventListener('mouseup'	, this._onMouseUp	);
 

@@ -1,34 +1,8 @@
 <!doctype html><title>Example of firework.js</title>
+<script src="../../build/fireworks-bundle.js"></script>
 <script src="../vendor/tquery-bundle.js"></script>
 
-<script src="../../src/core.js"></script>
-<script src="../../src/emitter.js"></script>
-<script src="../../src/particle.js"></script>
-<script src="../../src/effect.js"></script>
-<script src="../../src/spawner.js"></script>
-<script src="../../src/shape.js"></script>
-<script src="../../src/vector.js"></script>
-<script src="../../src/lineargradient.js"></script>
-
-<script src="../plugins/fireworks.bindtriggerdomeventsto.js"></script>
-
-<script src="../plugins/spawner.steadyrate.js"></script>
-<script src="../plugins/shape.box.js"></script>
-<script src="../plugins/shape.sphere.js"></script>
-<script src="../plugins/shape.point.js"></script>
-
-<script src="../plugins/effect.friction.js"></script>
-<script src="../plugins/effect.lifetime.js"></script>
-<script src="../plugins/effect.position.js"></script>
-<script src="../plugins/effect.velocity.js"></script>
-<script src="../plugins/effect.acceleration.js"></script>
-<script src="../plugins/effect.radialvelocity.js"></script>
-<script src="../plugins/effect.randomvelocitydrift.js"></script>
-<script src="../plugins/effect.rendertocanvas.js"></script>
-<script src="../plugins/effect.rendertothreejsobject3d.js"></script>
-
-<script src="../flamethrower/tremulousparticlesloader.js"></script>
-
+<script src="./tremulousparticlesloader.js"></script>
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
 	var container	= tQuery.createObject3D().translateY(-20).addTo(world);
@@ -80,9 +54,9 @@
 		texture.needsUpdate = true;
 	
 		var emitter	= Fireworks.createEmitter({nParticles : 200})
-			.useSpawnerSteadyRate(30)
 			.bindTriggerDomEvents()
 			.effectsStackBuilder()
+				.spawnerSteadyRate(30)
 				.position(Fireworks.createShapeBox(0, 0, 0, 2, 0.1, 0.1))
 				.velocity(Fireworks.createShapeSphere(0, 20, 0, 1))
 				.lifeTime(0.8, 1.2)
