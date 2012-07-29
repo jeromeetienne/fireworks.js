@@ -875,6 +875,243 @@ Fireworks.EffectsStackBuilder.prototype.randomVelocityDrift	= function(drift)
 	return this;	// for chained API
 };
 /**
+ * Create a velocity effect
+ * @param {Fireworks.Shape}	shape	set the direction of the velocity by a randompoint in this shape
+ * @param {Number?}		speed	set the speed itself. if undefined, keep randompoint length for speed
+*/
+Fireworks.EffectsStackBuilder.prototype.velocity	= function(shape, speed)
+{
+	Fireworks.createEffect('velocity', {
+		shape	: shape, 
+		speed	: speed !== undefined ? speed : -1
+	}).onCreate(function(particle){
+		particle.set('velocity', {
+			vector	: new Fireworks.Vector()
+		});
+	}).onBirth(function(particle){
+		var velocity	= particle.get('velocity').vector;
+		this.opts.shape.randomPoint(velocity)
+		if( this.opts.speed !== -1 )	velocity.setLength(this.opts.speed);
+	}).onUpdate(function(particle, deltaTime){
+		var position	= particle.get('position').vector;
+		var velocity	= particle.get('velocity').vector;
+		position.x	+= velocity.x * deltaTime;
+		position.y	+= velocity.y * deltaTime;
+		position.z	+= velocity.z * deltaTime;
+	}).pushTo(this._emitter);
+
+	return this;	// for chained API
+};
+/**
+ * Shortcut to create Fireworks.Shape.Box
+*/
+Fireworks.createShapeBox	= function(centerX, centerY, centerZ, sizeX, sizeY, sizeZ){
+	var center	= new Fireworks.Vector(centerX, centerY, centerZ);
+	var size	= new Fireworks.Vector(sizeX, sizeY, sizeZ);
+	return new Fireworks.Shape.Box(center, size);
+};
+
+/**
+ * Handle a Firework.Shape forming a sphere
+ *
+ * @param {Fireworks.Vector} center the center of the sphape
+ * @param {Fireworks.Vector} shape the size of the shape
+*/
+Fireworks.Shape.Box	= function(center, size)
+{
+	this.center	= center;
+	this.size	= size;
+	this._vector	= new Fireworks.Vector();
+}
+
+// inherit from Fireworks.Effect
+Fireworks.Shape.Box.prototype = new Fireworks.Shape();
+Fireworks.Shape.Box.prototype.constructor = Fireworks.Shape.Box;
+
+Fireworks.Shape.Box.prototype.contains	= function(point){
+	// compute delta between the point and the center
+	var delta	= this._vector.sub(point, this.center);
+	// test the delta is too far
+	if( Math.abs(delta.x) > this.size.x/2 )	return false;
+	if( Math.abs(delta.y) > this.size.y/2 )	return false;
+	if( Math.abs(delta.z) > this.size.z/2 )	return false;
+	// if all tests, passed true
+	return true;
+}
+
+Fireworks.Shape.Box.prototype.randomPoint	= function(vector){
+	var point	= vector	|| this._vector;
+	// get a random point
+	point.x	= Math.random() * this.size.x - this.size.x/2;
+	point.y	= Math.random() * this.size.y - this.size.y/2;
+	point.z	= Math.random() * this.size.z - this.size.z/2;
+	// add this.center
+	point.addSelf(this.center);
+	// return the point
+	return point;
+}
+/**
+ * Shortcut to create Fireworks.Shape.Point
+*/
+Fireworks.createShapePoint	= function(positionX, positionY, positionZ){
+	var position	= new Fireworks.Vector(positionX, positionY, positionZ);
+	return new Fireworks.Shape.Point(position);
+};
+
+/**
+ * Handle a Firework.Shape forming a point
+ *
+ * @param {Fireworks.Vector} position the position of the point
+*/
+Fireworks.Shape.Point	= function(position)
+{
+	this.position	= position;
+	this._vector	= new Fireworks.Vector();
+}
+
+// inherit from Fireworks.Effect
+Fireworks.Shape.Point.prototype = new Fireworks.Shape();
+Fireworks.Shape.Point.prototype.constructor = Fireworks.Shape.Point;
+
+Fireworks.Shape.Point.prototype.contains	= function(point){
+	if( point.x !== this.position.x )	return false;
+	if( point.y !== this.position.y )	return false;
+	if( point.z !== this.position.z )	return false;
+	// if all tests, passed true
+	return true;
+}
+
+Fireworks.Shape.Point.prototype.randomPoint	= function(vector){
+	var point	= vector	|| this._vector;
+	// get a random point
+	point.copy(this.position);
+	// return the point
+	return point;
+}
+/**
+ * Shortcut to create Fireworks.Shape.Box
+*/
+Fireworks.createShapeSphere	= function(centerX, centerY, centerZ, radius, boundingbox){
+	var center	= new Fireworks.Vector(centerX, centerY, centerZ);
+	return new Fireworks.ShapeSphere(center, radius);
+};
+
+
+/**
+ * Handle a Firework.Shape forming a sphere
+ *
+ * @param {Fireworks.Vector} center the center of the sphere
+ * @param {Number} radius the radius of the sphere
+*/
+Fireworks.ShapeSphere	= function(center, radius)
+{
+	this.center	= center;
+	this.radius	= radius;
+	this._vector	= new Fireworks.Vector();
+}
+
+// inherit from Fireworks.Effect
+Fireworks.ShapeSphere.prototype = new Fireworks.Shape();
+Fireworks.ShapeSphere.prototype.constructor = Fireworks.ShapeSphere;
+
+Fireworks.ShapeSphere.prototype.contains	= function(point){
+	// compute distance between the point and the center
+	var distance	= this._vector.sub(point, this.center).length();
+	// return true if this distance is <= than sphere radius
+	return distance <= this.radius;
+}
+
+Fireworks.ShapeSphere.prototype.randomPoint	= function(vector){
+	var point	= vector	|| this._vector;
+	// get a random point
+	point.x	= Math.random()-0.5;
+	point.y	= Math.random()-0.5;
+	point.z	= Math.random()-0.5;
+	// compute the length between the point 
+	var length	= Math.random()*this.radius;
+	// set the point at the proper distance;
+	point.setLength( length );
+	// add the center
+	point.addSelf(this.center);
+	// return the point
+	return point;
+}
+/**
+ * Spawner deliverying paricles in one shot
+ * 
+ * @param {Number?} the number of particle to emit
+*/
+Fireworks.EffectsStackBuilder.prototype.spawnerOneShot	= function(nParticles)
+{
+	// handle parameter polymorphism
+	nParticles	= nParticles	|| this.emitter().nParticles();
+	// define local variables
+	var emitter	= this.emitter();
+	var nSent	= 0;
+	var spawning	= true;
+
+	// create the effect itself
+	Fireworks.createEffect('spawner', {
+		start	: function(){ spawning = true;	},
+		stop	: function(){ spawning = false;	},
+	}).onPreUpdate(function(deltaTime){
+		// if spawning is false, do nothing
+		if( spawning === false )	return;
+		// if already completed, do nothing
+		if( nParticles === nSent )	return;
+		// spawn each particle
+		var amount	= nParticles - nSent;
+		amount		= Math.min(amount, emitter.deadParticles().length);
+		for(var i = 0; i < amount; i++){
+			emitter.spawnParticle();
+		}
+		// update the amount of sent particles
+		nSent	+= amount;
+	}).pushTo(this._emitter);
+	// return this for chained API
+	return this;
+};
+/**
+ * Spawner deliverying paricles at a steady rate
+ * 
+ * @param {Number?} rate the rate at which it gonna emit
+*/
+Fireworks.EffectsStackBuilder.prototype.spawnerSteadyRate	= function(rate)
+{
+	// handle parameter polymorphism
+	rate	= rate !== undefined ? rate	: 1;
+	// define local variables
+	var emitter	= this.emitter();
+	var nToCreate	= 1;
+	var spawning	= true;
+	
+	// create the effect itself
+	Fireworks.createEffect('spawner', {
+		rate	: rate,
+		start	: function(){ spawning = true;	},
+		stop	: function(){ spawning = false;	},
+	}).onPreUpdate(function(deltaTime){
+		var rate	= this.opts.rate;
+		// if spawning is false, do nothing
+		if( spawning === false )	return;
+		// update nToCreate
+		nToCreate	+= rate * deltaTime;
+		// nParticles is the interger part of nToCreate as you spawn them one by one
+		var nParticles	= Math.floor(nToCreate);
+		// dont spawn more particles than available
+		// TODO here estimate how much more is needed to never lack of it
+		nParticles	= Math.min(nParticles, emitter.deadParticles().length);
+		// update nToCreate
+		nToCreate	-= nParticles;
+		// spawn each particle
+		for(var i = 0; i < nParticles; i++){
+			emitter.spawnParticle();
+		}
+	}).pushTo(this._emitter);
+	// return this for chained API
+	return this;
+};
+/**
  * render to canvas
 */
 Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function(opts)
@@ -1097,34 +1334,6 @@ Fireworks.EffectsStackBuilder.prototype.renderToThreejsParticleSystem	= function
 	}
 };
 
-/**
- * Create a velocity effect
- * @param {Fireworks.Shape}	shape	set the direction of the velocity by a randompoint in this shape
- * @param {Number?}		speed	set the speed itself. if undefined, keep randompoint length for speed
-*/
-Fireworks.EffectsStackBuilder.prototype.velocity	= function(shape, speed)
-{
-	Fireworks.createEffect('velocity', {
-		shape	: shape, 
-		speed	: speed !== undefined ? speed : -1
-	}).onCreate(function(particle){
-		particle.set('velocity', {
-			vector	: new Fireworks.Vector()
-		});
-	}).onBirth(function(particle){
-		var velocity	= particle.get('velocity').vector;
-		this.opts.shape.randomPoint(velocity)
-		if( this.opts.speed !== -1 )	velocity.setLength(this.opts.speed);
-	}).onUpdate(function(particle, deltaTime){
-		var position	= particle.get('position').vector;
-		var velocity	= particle.get('velocity').vector;
-		position.x	+= velocity.x * deltaTime;
-		position.y	+= velocity.y * deltaTime;
-		position.z	+= velocity.z * deltaTime;
-	}).pushTo(this._emitter);
-
-	return this;	// for chained API
-};
 Fireworks.Emitter.prototype.bindTriggerDomEvents	= function(domElement){
 	var tmp	= new Fireworks.BindTriggerDomEvents(this, domElement);
 	return this;	// for chained API
@@ -1134,8 +1343,8 @@ Fireworks.BindTriggerDomEvents	= function(emitter, domElement){
 	this._domElement= domElement	|| document.body;
 
 	// bind mouse event
-	this._onMouseDown	= function(){ emitter.spawner().start();	};
-	this._onMouseUp		= function(){ emitter.spawner().stop();		};
+	this._onMouseDown	= function(){ emitter.effect('spawner').opts.start();	};
+	this._onMouseUp		= function(){ emitter.effect('spawner').opts.stop();	};
 	this._domElement.addEventListener('mousedown'	, this._onMouseDown	);
 	this._domElement.addEventListener('mouseup'	, this._onMouseUp	);
 
@@ -1182,324 +1391,7 @@ Fireworks.DatGui4Emitter	= function(emitter){
 	});
 	// return the built gui
 	return gui;
-};/**
- * Shortcut to create Fireworks.Shape.Box
-*/
-Fireworks.createShapeBox	= function(centerX, centerY, centerZ, sizeX, sizeY, sizeZ){
-	var center	= new Fireworks.Vector(centerX, centerY, centerZ);
-	var size	= new Fireworks.Vector(sizeX, sizeY, sizeZ);
-	return new Fireworks.Shape.Box(center, size);
-};
-
-/**
- * Handle a Firework.Shape forming a sphere
- *
- * @param {Fireworks.Vector} center the center of the sphape
- * @param {Fireworks.Vector} shape the size of the shape
-*/
-Fireworks.Shape.Box	= function(center, size)
-{
-	this.center	= center;
-	this.size	= size;
-	this._vector	= new Fireworks.Vector();
-}
-
-// inherit from Fireworks.Effect
-Fireworks.Shape.Box.prototype = new Fireworks.Shape();
-Fireworks.Shape.Box.prototype.constructor = Fireworks.Shape.Box;
-
-Fireworks.Shape.Box.prototype.contains	= function(point){
-	// compute delta between the point and the center
-	var delta	= this._vector.sub(point, this.center);
-	// test the delta is too far
-	if( Math.abs(delta.x) > this.size.x/2 )	return false;
-	if( Math.abs(delta.y) > this.size.y/2 )	return false;
-	if( Math.abs(delta.z) > this.size.z/2 )	return false;
-	// if all tests, passed true
-	return true;
-}
-
-Fireworks.Shape.Box.prototype.randomPoint	= function(vector){
-	var point	= vector	|| this._vector;
-	// get a random point
-	point.x	= Math.random() * this.size.x - this.size.x/2;
-	point.y	= Math.random() * this.size.y - this.size.y/2;
-	point.z	= Math.random() * this.size.z - this.size.z/2;
-	// add this.center
-	point.addSelf(this.center);
-	// return the point
-	return point;
-}
-/**
- * Shortcut to create Fireworks.Shape.Point
-*/
-Fireworks.createShapePoint	= function(positionX, positionY, positionZ){
-	var position	= new Fireworks.Vector(positionX, positionY, positionZ);
-	return new Fireworks.Shape.Point(position);
-};
-
-/**
- * Handle a Firework.Shape forming a point
- *
- * @param {Fireworks.Vector} position the position of the point
-*/
-Fireworks.Shape.Point	= function(position)
-{
-	this.position	= position;
-	this._vector	= new Fireworks.Vector();
-}
-
-// inherit from Fireworks.Effect
-Fireworks.Shape.Point.prototype = new Fireworks.Shape();
-Fireworks.Shape.Point.prototype.constructor = Fireworks.Shape.Point;
-
-Fireworks.Shape.Point.prototype.contains	= function(point){
-	if( point.x !== this.position.x )	return false;
-	if( point.y !== this.position.y )	return false;
-	if( point.z !== this.position.z )	return false;
-	// if all tests, passed true
-	return true;
-}
-
-Fireworks.Shape.Point.prototype.randomPoint	= function(vector){
-	var point	= vector	|| this._vector;
-	// get a random point
-	point.copy(this.position);
-	// return the point
-	return point;
-}
-/**
- * Shortcut to create Fireworks.Shape.Box
-*/
-Fireworks.createShapeSphere	= function(centerX, centerY, centerZ, radius, boundingbox){
-	var center	= new Fireworks.Vector(centerX, centerY, centerZ);
-	return new Fireworks.ShapeSphere(center, radius);
-};
-
-
-/**
- * Handle a Firework.Shape forming a sphere
- *
- * @param {Fireworks.Vector} center the center of the sphere
- * @param {Number} radius the radius of the sphere
-*/
-Fireworks.ShapeSphere	= function(center, radius)
-{
-	this.center	= center;
-	this.radius	= radius;
-	this._vector	= new Fireworks.Vector();
-}
-
-// inherit from Fireworks.Effect
-Fireworks.ShapeSphere.prototype = new Fireworks.Shape();
-Fireworks.ShapeSphere.prototype.constructor = Fireworks.ShapeSphere;
-
-Fireworks.ShapeSphere.prototype.contains	= function(point){
-	// compute distance between the point and the center
-	var distance	= this._vector.sub(point, this.center).length();
-	// return true if this distance is <= than sphere radius
-	return distance <= this.radius;
-}
-
-Fireworks.ShapeSphere.prototype.randomPoint	= function(vector){
-	var point	= vector	|| this._vector;
-	// get a random point
-	point.x	= Math.random()-0.5;
-	point.y	= Math.random()-0.5;
-	point.z	= Math.random()-0.5;
-	// compute the length between the point 
-	var length	= Math.random()*this.radius;
-	// set the point at the proper distance;
-	point.setLength( length );
-	// add the center
-	point.addSelf(this.center);
-	// return the point
-	return point;
-}
-/**
- * Make the emitter use a SpawnerSteadyRate
-*/
-Fireworks.Emitter.prototype.useSpawnerOneShot	= function(nParticles){
-	nParticles	= nParticles !== undefined ? nParticles : this.nParticles();
-	var spawner	= new Fireworks.SpawnerOneShot(nParticles);
-	return this.setSpawner(spawner);
-}
-
-Fireworks.SpawnerOneShot	= function(nParticles){
-	console.warn('use old spawners. considere port it to new effect version')
-	console.trace();
-
-	// call constructor of parent calss
-	Fireworks.Spawner.call( this );
-	// init class variables
-	this._nParticles	= nParticles	|| 1;
-	this._nSent		= 0;
-	// start the spawner on init
-	this.start();
-}
-
-// inherit from Fireworks.Spawner
-Fireworks.SpawnerOneShot.prototype = new Fireworks.Spawner();
-Fireworks.SpawnerOneShot.prototype.constructor = Fireworks.SpawnerOneShot;
-
-Fireworks.SpawnerOneShot.prototype.update	= function(emitter, deltaTime){
-	// if already completed, do nothing
-	if( this._nParticles === this._nSent )	return;
-	// spawn each particle
-	var nParticles	= this._nParticles - this._nSent;
-	nParticles	= Math.min(nParticles, emitter.deadParticles().length);
-	for(var i = 0; i < nParticles; i++){
-		emitter.spawnParticle();
-	}
-	// update the amount of sent particles
-	this._nSent	+= nParticles;
-	// mark it as completed
-	this._completed	= true;
-}
-
-/**
- * reset the spawner
-*/
-Fireworks.SpawnerOneShot.prototype.reset	= function(){
-	this._nSent	= 0;
-}/**
- * Make the emitter use a SpawnerSteadyRate
- * 
- * @param {Number?} rate the rate at which it gonna emit
-*/
-Fireworks.Emitter.prototype.useSpawnerSteadyRate	= function(rate){
-	var spawner	= new Fireworks.SpawnerSteadyRate(rate);
-	return this.setSpawner(spawner);
-}
-
-/**
- * Spawner deliverying paricles at a steady rate
- * 
- * @param {Number?} rate the rate at which it gonna emit
-*/
-Fireworks.SpawnerSteadyRate	= function(rate){
-	console.warn('use old spawners. considere port it to new effect version')
-	console.trace();
-
-	// call constructor of parent calss
-	Fireworks.Spawner.call( this );
-	// init class variables
-	this._rate	= rate	|| 10;
-	this._nToCreate	= 1;
-	// start the spawner on init
-	this.start();
-}
-
-// inherit from Fireworks.Spawner
-Fireworks.SpawnerSteadyRate.prototype = new Fireworks.Spawner();
-Fireworks.SpawnerSteadyRate.prototype.constructor = Fireworks.SpawnerSteadyRate;
-
-//////////////////////////////////////////////////////////////////////////////////
-//										//
-//////////////////////////////////////////////////////////////////////////////////
-
-/**
- * Getter/Setter for the rate
- * 
- * @param {Number?} value the value to change
- * @returns {Fireworks.SpawnerSteadyRate} for chained API
-*/
-Fireworks.SpawnerSteadyRate.prototype.rate	= function(value){
-	if( value === undefined )	return this._rate;
-	this._rate	= value;
-	return this;
-}
-
-/**
- * update the spawner
- *
- * @param {Fireworks.Emitter} emitter the emitter for which Fireworks.Spawner
- * @param {Number} deltaTime the amount of seconds since last iteration
-*/
-Fireworks.SpawnerSteadyRate.prototype.update	= function(emitter, deltaTime){
-	// if the spawner is not running, return now
-	if( this.isRunning() === false )	return;
-	// update this._nToCreate
-	this._nToCreate	+= this._rate * deltaTime;
-	// nParticles is the interger part of this._nToCreate as you spawn them one by one
-	var nParticles	= Math.floor(this._nToCreate);
-	// dont spawn more particles than available
-	// TODO here estimate how much more is needed to never lack of it
-	nParticles	= Math.min(nParticles, emitter.deadParticles().length);
-	// update this._nToCreate
-	this._nToCreate	-= nParticles;
-	// spawn each particle
-	for(var i = 0; i < nParticles; i++){
-		emitter.spawnParticle();
-	}
-}
-
-/**
- * Spawner deliverying paricles in one shot
- * 
- * @param {Number?} the number of particle to emit
-*/
-Fireworks.EffectsStackBuilder.prototype.spawnerOneShot	= function(nParticles)
-{
-	// handle parameter polymorphism
-	nParticles	= nParticles	|| this.emitter().nParticles;
-	// define local variables
-	var emitter	= this.emitter();
-	var nSent	= 0;
-
-	// create the effect itself
-	Fireworks.createEffect('spawner')
-	.onPreUpdate(function(deltaTime){
-		// if already completed, do nothing
-		if( nParticles === nSent )	return;
-		// spawn each particle
-		var amount	= nParticles - nSent;
-		amount		= Math.min(amount, emitter.deadParticles().length);
-		for(var i = 0; i < amount; i++){
-			emitter.spawnParticle();
-		}
-		// update the amount of sent particles
-		nSent	+= amount;
-	}).pushTo(this._emitter);
-	// return this for chained API
-	return this;
-};
-/**
- * Spawner deliverying paricles at a steady rate
- * 
- * @param {Number?} rate the rate at which it gonna emit
-*/
-Fireworks.EffectsStackBuilder.prototype.spawnerSteadyRate	= function(rate)
-{
-	// handle parameter polymorphism
-	rate	= rate !== undefined ? rate	: 1;
-	// define local variables
-	var emitter	= this.emitter();
-	var nToCreate	= 1;
-	
-	// create the effect itself
-	Fireworks.createEffect('spawner', {
-		rate	: rate
-	}).onPreUpdate(function(deltaTime){
-		var rate	= this.opts.rate;
-		// update nToCreate
-		nToCreate	+= rate * deltaTime;
-		// nParticles is the interger part of nToCreate as you spawn them one by one
-		var nParticles	= Math.floor(nToCreate);
-		// dont spawn more particles than available
-		// TODO here estimate how much more is needed to never lack of it
-		nParticles	= Math.min(nParticles, emitter.deadParticles().length);
-		// update nToCreate
-		nToCreate	-= nParticles;
-		// spawn each particle
-		for(var i = 0; i < nParticles; i++){
-			emitter.spawnParticle();
-		}
-	}).pushTo(this._emitter);
-	// return this for chained API
-	return this;
-};
-Fireworks.ProceduralTextures	= {};
+};Fireworks.ProceduralTextures	= {};
 
 Fireworks.ProceduralTextures.buildTexture	= function(size)
 {
