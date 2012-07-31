@@ -3,7 +3,7 @@
 <script src="../vendor/tquery-bundle.js"></script>
 
 <!-- for sound -->
-<script src="vendor/webaudio.js"></script>
+<script src="vendor/webaudio-bundle.js"></script>
 
 
 <script src="../flamethrower/tquery.textureutils.js"></script>
@@ -18,9 +18,11 @@
 	// world.removetCameraControls();
 	world.tCamera().position.z	= 20;
 
+	// world.getCameraControls().rangeX	*= 10;
+	// world.getCameraControls().rangeY	*= 10;
+
 	// create the container for the comboemitter
 	var container	= tQuery.createObject3D().addTo(world)
-//	container.scale(2)
 	// container.rotateX(-Math.PI/2).translateY(10)
 	// container.rotateX(Math.PI/2).translateY(-10)
 	// container.rotateY(-Math.PI/2).translateX(-10)
@@ -31,11 +33,16 @@
 		.translateZ(2)
 		.scale(2);
 
-	var flamethrower= new Fireworks.ComboEmitter.Flamethrower(function(){
-		flamethrower.start();
+	var flamethrower= new Fireworks.ComboEmitter.Flamethrower({
+		webaudio: new WebAudio(),
+		onReady	: function(){
+			flamethrower.start();
+		}
 	});
 	container.add( flamethrower.object3D() )
+	
 	flamethrower.object3D().scale	= container.get(0).scale;
+
 
 	document.body.addEventListener('mousedown', function(){
 		flamethrower.start();

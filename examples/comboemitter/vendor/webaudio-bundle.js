@@ -1,4 +1,5 @@
 
+
 /**
  * Tutorials:
  * http://www.html5rocks.com/en/tutorials/webaudio/games/
@@ -465,7 +466,7 @@ WebAudio.Sound.prototype.tone	= function(hertz, seconds){
 	// create the buffer
 	var buffer	= webaudio.context().createBuffer(nChannels, seconds*sampleRate, sampleRate);
 	var fArray	= buffer.getChannelData(0);
-	// filli the buffer
+	// fill the buffer
 	for(var i = 0; i < fArray.length; i++){
 		var time	= i / buffer.sampleRate;
 		var angle	= hertz * time * Math.PI;
@@ -588,3 +589,206 @@ WebAudio.Flow	= function(){
 		}
 	}
 };
+/**
+ * Update the source with object3d. usefull for positional sounds
+ * 
+ * @param {THREE.Object3D} object3d the object which originate the source
+ * @param {Number} deltaTime the number of seconds since last update
+*/
+WebAudio.Sound.fn.updateWithObject3d	= function(object3d, deltaTime){
+	// sanity check on parameters
+	console.assert( object3d instanceof THREE.Object3D );
+	console.assert( typeof(deltaTime) === 'number' );
+
+	// ensure object3d.matrixWorld is up to date
+	object3d.updateMatrixWorld();
+	
+	this.updateWithMatrix4(object3d.matrixWorld, deltaTime);
+	
+	return this;	// for chained API
+}
+
+/**
+ * Update the source with a matrixWorld. usefull for positional sounds
+ * 
+ * @param {THREE.Matrix4} matrixWorld the matrixWorld describing the position of the sound
+ * @param {Number} deltaTime the number of seconds since last update
+*/
+WebAudio.Sound.fn.updateWithMatrix4	= function(matrixWorld, deltaTime){
+	// sanity check on parameters
+	console.assert( matrixWorld instanceof THREE.Matrix4 );
+	console.assert( typeof(deltaTime) === 'number' );
+
+	////////////////////////////////////////////////////////////////////////
+	// set position
+	var position	= matrixWorld.getPosition();
+	this._panner.setPosition(position.x, position.y, position.z);
+
+	////////////////////////////////////////////////////////////////////////
+	// set orientation
+	var vOrientation= new THREE.Vector3(0,0,1);
+	var mOrientation= matrixWorld.clone();
+	// zero the translation
+	mOrientation.setPosition({x : 0, y: 0, z: 0});
+	// Multiply the 0,0,1 vector by the world matrix and normalize the result.
+	mOrientation.multiplyVector3(vOrientation);
+	vOrientation.normalize();
+	// Set panner orientation
+	this._panner.setOrientation(vOrientation.x, vOrientation.y, vOrientation.z);
+	
+	////////////////////////////////////////////////////////////////////////
+	// set velocity
+	if( this._prevPos === undefined ){
+		this._prevPos	= matrixWorld.getPosition().clone();
+	}else{
+		var position	= matrixWorld.getPosition();
+		var velocity	= position.clone().subSelf(this._prevPos).divideScalar(deltaTime);
+		this._prevPos	= matrixWorld.getPosition().clone();
+		this._panner.setVelocity(velocity.x, velocity.y, velocity.z);
+	}
+}
+/**
+ * follow a object3D
+*/
+WebAudio.Sound.fn.follow	= function(object3d, world){
+	console.assert( this.isFollowing() === false );
+	// handle parameter
+	if( object3d instanceof tQuery.Object3D ){
+		console.assert(object3d.length === 1)
+		object3d	= object3d.get(0);
+	}
+	// sanity check on parameters
+	console.assert( object3d instanceof THREE.Object3D );
+
+	// hook the world loop
+	this._followCb		= function(deltaTime){
+		this.updateWithObject3d(object3d, deltaTime);
+	}.bind(this);
+	world.loop().hook(this._followCb);
+	// for chained API
+	return this;
+}
+
+/**
+ * unfollow the object3D if any
+*/
+WebAudio.Sound.fn.unfollow	= function(world){
+	this._world.loop().unhook(this._followCb);
+	this._followCb		= null;
+	// for chained API
+	return this;
+}
+
+/**
+ * @returns {Boolean} true if this sound is following a object3d, false overwise
+*/
+WebAudio.Sound.prototype.isFollowing	= function(){
+	return this._followCb ? true : false;
+	// for chained API
+	return this;
+}
+/**
+ * @fileoverview WebAudio.js plugin for tQuery
+*/
+tQuery.World.register('enableWebAudio', function(){
+	// sanity check
+	console.assert( this.hasWebAudio() === false, "there is already a webaudio" );
+	// intenciate a tQuery.World.WebAudio
+	var webaudio	= new WebAudio();
+	// follow the listener
+	var world	= this;
+	webaudio.followListener(world);
+	// store webaudio in the world
+	tQuery.data(this, "webaudio", webaudio);
+	// for chained API
+	return this;
+});
+
+tQuery.World.register('disabledWebAudio', function(){
+	if( this.hasWebAudio() === false )	return this;
+	var webaudio	= tQuery.data(this, "webaudio");
+	webaudio.destroy();
+	tQuery.removeData(this, "webaudio");
+	return this;	// for chained API
+});
+
+tQuery.World.register('getWebAudio', function(){
+	var webaudio	= tQuery.data(this, "webaudio");
+	return webaudio;
+});
+
+tQuery.World.register('hasWebAudio', function(){
+	var webaudio	= tQuery.data(this, "webaudio");
+	return webaudio ? true : false;
+});
+
+tQuery.World.register('supportWebAudio', function(){
+	return WebAudio.isAvailable;
+});
+
+tQuery.register('createSound', function(world, nodeChain){
+	world	= world || tQuery.world;
+	return new WebAudio.Sound(world.getWebAudio(), nodeChain);
+});
+
+
+//////////////////////////////////////////////////////////////////////////////////
+//										//
+//////////////////////////////////////////////////////////////////////////////////
+
+WebAudio.fn.followListener	= function(world){
+	this._$followListenerCb	= function(deltaTime){
+		this._followListenerCb(world.tCamera(), deltaTime);
+	}.bind(this);
+	world.loop().hook(this._$followListenerCb);
+}
+
+WebAudio.fn.unfollowListener	= function(world){
+	// unhook this._updateCb from this.world.loop()
+	world.loop().unhook(this._$followListenerCb);
+	this._$followListenerCb	= null;
+}
+
+WebAudio.fn._followListenerCb	= function(object3d, deltaTime){
+	var context	= this._ctx;
+	// sanity check on parameters
+	console.assert( object3d instanceof THREE.Object3D );
+	console.assert( typeof(deltaTime) === 'number' );
+
+	// ensure object3d.matrixWorld is up to date
+	object3d.updateMatrixWorld();
+	
+	////////////////////////////////////////////////////////////////////////
+	// set position
+	var position	= object3d.matrixWorld.getPosition();
+	context.listener.setPosition(position.x, position.y, position.z);
+
+	////////////////////////////////////////////////////////////////////////
+	// set orientation
+	var mOrientation= object3d.matrixWorld.clone();
+	// zero the translation
+	mOrientation.setPosition({x : 0, y: 0, z: 0});
+	// Compute Front vector: Multiply the 0,0,1 vector by the world matrix and normalize the result.
+	var vFront= new THREE.Vector3(0,0,1);
+	mOrientation.multiplyVector3(vFront);
+	vFront.normalize();
+	// Compute UP vector: Multiply the 0,-1,0 vector by the world matrix and normalize the result.
+	var vUp= new THREE.Vector3(0,-1, 0);
+	mOrientation.multiplyVector3(vUp);
+	vUp.normalize();
+	// Set panner orientation
+	context.listener.setOrientation(vFront.x, vFront.y, vFront.z, vUp.x, vUp.y, vUp.z);
+
+	////////////////////////////////////////////////////////////////////////
+	// set velocity
+	if( this._prevPos === undefined ){
+		this._prevPos	= object3d.matrixWorld.getPosition().clone();
+	}else{
+		var position	= object3d.matrixWorld.getPosition();
+		var velocity	= position.clone().subSelf(this._prevPos).divideScalar(deltaTime);
+		this._prevPos	= object3d.matrixWorld.getPosition().clone();
+		context.listener.setVelocity(velocity.x, velocity.y, velocity.z);
+	}
+}
+
+

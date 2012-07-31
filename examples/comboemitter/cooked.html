@@ -1,0 +1,93 @@
+<!doctype html><title>Example of firework.js</title>
+<script src="../../build/fireworks-bundle.js"></script>
+<script src="../vendor/tquery-bundle.js"></script>
+
+<!-- for sound -->
+<script src="vendor/webaudio-bundle.js"></script>
+
+
+<script src="../flamethrower/tquery.textureutils.js"></script>
+
+<script src="./comboemitter.js"></script>
+<script src="./comboemitter_flamethrower.js"></script>
+
+
+<script src="vendor/tquery/tquery.cubetexture.js"></script>
+<script src="vendor/tquery/tquery.skymap.js"></script>
+
+<body><script>
+	var world	= tQuery.createWorld().boilerplate().start();
+	//world.tRenderer().setClearColorHex( 0x00bbff, world.tRenderer().getClearAlpha() );
+	world.tRenderer().setClearColorHex( 0x000000, world.tRenderer().getClearAlpha() );
+	// world.removetCameraControls();
+	world.tCamera().position.z	= -40;
+
+	world.getCameraControls().rangeX	*= 10;
+	world.getCameraControls().rangeY	*= 10;
+
+	// create the container for the comboemitter
+	var container	= tQuery.createObject3D().addTo(world)
+	// container.rotateX(-Math.PI/2).translateY(10)
+	// container.rotateX(Math.PI/2).translateY(-10)
+	// container.rotateY(-Math.PI/2).translateX(-10)
+	
+	// create a torch and add it to the container
+	tQuery.createCylinder(0.55, 0.0001, 2).addTo(container)
+		.geometry().rotateX(-Math.PI/2).back()
+		.translateZ(2)
+		.scale(2);
+
+	world.enableWebAudio();
+
+	var cone	= tQuery.createCylinder(0.55, 0.0001, 2).addTo(container)
+		.translateZ(-5)
+		.scale(4);
+	var flamethrower= new Fireworks.ComboEmitter.Flamethrower({
+		webaudio: world.getWebAudio(),
+		onReady	: function(){
+			flamethrower.start();
+		}
+	});
+	container.add( flamethrower.object3D() )
+
+	// make the sound follow this._container
+	flamethrower.sound().follow(container, world);
+	
+	flamethrower.object3D().scale	= container.get(0).scale;
+
+	world.loop().hook(function(delta, now){
+		var angle	= 1 * now * Math.PI/2;
+		container.get(0).position.x	= Math.cos(angle)*20;
+		container.get(0).position.z	= Math.sin(angle)*20;
+	})
+
+
+	document.body.addEventListener('mousedown', function(){
+		flamethrower.start();
+	});
+	document.body.addEventListener('mouseup', function(){
+		flamethrower.stop();
+	});
+	document.body.addEventListener('keydown', function(event){
+		// if the pressed key isnt 'esc', return now
+		if( event.keyCode !== 27 )	return;
+		flamethrower.ungracefullStop();
+	});
+	
+	// cube map
+	var urls	= tQuery.TextureCube.createUrls('skybox', '.jpg', 'images');
+	var skymap	= tQuery.createSkymap({
+		textureCube	: tQuery.createCubeTexture(urls)
+	}).addTo(world);
+</script></body>
+
+
+
+
+
+
+
+
+
+
+

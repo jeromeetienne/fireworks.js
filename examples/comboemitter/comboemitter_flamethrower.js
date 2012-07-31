@@ -1,10 +1,9 @@
-Fireworks.ComboEmitter.Flamethrower	= function(onReady){
+Fireworks.ComboEmitter.Flamethrower	= function(opts){
 	this._container	= new THREE.Object3D();
 	this._emitterJet= null;	
-	this._onReady	= onReady	|| function(comboEmitter){};
-
+	this._onReady	= opts.onReady	|| function(comboEmitter){};
+	this._webaudio	= opts.webaudio	|| new WebAudio();
 	this._baseSound	= null;
-	this._webaudio	= null;
 	this._sound	= null;
 	
 	// data to handle attackTime/releaseTime
@@ -80,6 +79,9 @@ Fireworks.ComboEmitter.Flamethrower.prototype.object3D	= function(){
 	return this._container;
 }
 
+Fireworks.ComboEmitter.Flamethrower.prototype.sound	= function(){
+	return this._baseSound;
+}
 
 //////////////////////////////////////////////////////////////////////////////////
 //		rendering loop function						//
@@ -272,10 +274,8 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetDtor	= function(){
 
 Fireworks.ComboEmitter.Flamethrower.prototype._soundCtor	= function()
 {
-	// init the library
-	var webaudio	= new WebAudio();
 	// create a sound 
-	this._baseSound	= webaudio.createSound().loop(true);	
+	this._baseSound	= this._webaudio.createSound().loop(true);	
 	// load the sound
 	this._baseSound.load('sounds/flamethrower-freesoundloop.wav', function(sound){
 		// notify the caller it is ready if possible
@@ -287,7 +287,6 @@ Fireworks.ComboEmitter.Flamethrower.prototype._soundDtor	= function()
 {
 	this._sound	&& this._sound.stop();
 	this._baseSound.destroy();
-	this._webaudio.destroy();
 }
 
 Fireworks.ComboEmitter.Flamethrower.prototype._soundSetIntensity= function(newIntensity, oldIntensity)
