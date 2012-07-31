@@ -6,12 +6,13 @@ Fireworks.createEmitter	= function(opts){
  * The emitter of particles
 */
 Fireworks.Emitter	= function(opts){
-	this._nParticles= opts.nParticles !== undefined ? opts.nParticles : 100;
-	this._particles	= [];
-	this._effects	= [];
-	this._started	= false;
-	this._onUpdated	= null;
-	this._intensity	= 0;
+	this._nParticles	= opts.nParticles !== undefined ? opts.nParticles : 100;
+	this._particles		= [];
+	this._effects		= [];
+	this._started		= false;
+	this._onUpdated		= null;
+	this._intensity		= 0;
+	this._maxDeltaTime	= 1/3;
 
 	this._effectsStackBuilder	= new Fireworks.EffectsStackBuilder(this)
 }
@@ -54,6 +55,7 @@ Fireworks.Emitter.prototype.deadParticles	= function(){
 Fireworks.Emitter.prototype.nParticles	= function(){
 	return this._nParticles;
 }
+
 Fireworks.Emitter.prototype.effectsStackBuilder	= function(){
 	return this._effectsStackBuilder;
 }
@@ -80,6 +82,15 @@ Fireworks.Emitter.prototype.intensity	= function(value){
 		effect.onIntensityChange(this._intensity, oldValue);			
 	}.bind(this));
 	return this;	// for chained API
+}
+
+/**
+ * Getter/setter for intensity
+*/
+Fireworks.Emitter.prototype.maxDeltaTime	= function(value){
+	if( value === undefined )	return this._maxDeltaTime;
+	this._maxDeltaTime	= value;
+	return this;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -126,6 +137,8 @@ Fireworks.Emitter.prototype.start	= function()
 }
 
 Fireworks.Emitter.prototype.update	= function(deltaTime){
+	// bound the deltaTime to this._maxDeltaTime
+	deltaTime	= Math.min(this._maxDeltaTime, deltaTime)
 	// honor effect.onPreUpdate
 	this._effects.forEach(function(effect){
 		if( !effect.onPreUpdate )	return;
