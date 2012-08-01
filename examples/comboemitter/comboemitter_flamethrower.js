@@ -44,15 +44,15 @@ Fireworks.ComboEmitter.Flamethrower.prototype.start	= function(){
 
 Fireworks.ComboEmitter.Flamethrower.prototype.stop	= function(){
 	if( this._state === 'stopped' )	return;
-	console.assert( this._state === 'started' )
+	console.assert( this._state === 'started' );
 	this._state	= 'stopped';
 	this._lastStop	= Date.now()/1000;
-}
+};
 
 Fireworks.ComboEmitter.Flamethrower.prototype.ungracefullStop	= function(){
 	this._state	= 'stopped';
 	this._lastStop	= 0;
-}
+};
 
 /**
  * @return {boolean} true if it is ready, false otherwise
@@ -64,12 +64,12 @@ Fireworks.ComboEmitter.Flamethrower.prototype.isReady	= function(){
 	if( !this._emitterJet )			return false;
 	// if all previous tests passed, it is ready
 	return true;
-}
+};
 
 Fireworks.ComboEmitter.Flamethrower.prototype._notifyReadyIfPossible	= function(){
 	if( this.isReady() === false )	return;
 	this._onReady(this);
-}
+};
 
 //////////////////////////////////////////////////////////////////////////////////
 //		Getter								//
@@ -77,11 +77,11 @@ Fireworks.ComboEmitter.Flamethrower.prototype._notifyReadyIfPossible	= function(
 
 Fireworks.ComboEmitter.Flamethrower.prototype.object3D	= function(){
 	return this._container;
-}
+};
 
 Fireworks.ComboEmitter.Flamethrower.prototype.sound	= function(){
 	return this._baseSound;
-}
+};
 
 //////////////////////////////////////////////////////////////////////////////////
 //		rendering loop function						//
