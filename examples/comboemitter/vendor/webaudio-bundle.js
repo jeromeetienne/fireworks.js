@@ -49,12 +49,19 @@ WebAudio	= function(){
 	// create the context
 	this._ctx	= new webkitAudioContext();
 
+	// setup internal variable
+	this._muted	= false;
+	this._volume	= 1;
+	
 	// setup the end of the node chain
 	// TODO later code the clipping detection from http://www.html5rocks.com/en/tutorials/webaudio/games/ 
 	this._gainNode	= this._ctx.createGainNode();
 	this._compressor= this._ctx.createDynamicsCompressor();
 	this._gainNode.connect( this._compressor );
 	this._compressor.connect( this._ctx.destination );	
+
+	// init page visibility
+	this._pageVisibilityCtor();	
 };
 
 
@@ -69,6 +76,7 @@ WebAudio.fn	= WebAudio.prototype;
  * destructor
 */
 WebAudio.prototype.destroy	= function(){
+	this._pageVisibilityDtor();
 };
 
 /**
@@ -112,16 +120,76 @@ WebAudio.prototype._entryNode	= function(){
 	return this._gainNode;
 }
 
+//////////////////////////////////////////////////////////////////////////////////
+//		volume/mute							//
+//////////////////////////////////////////////////////////////////////////////////
+
 /**
  * getter/setter on the volume
 */
 WebAudio.prototype.volume	= function(value){
-	if( value === undefined )	return this._gainNode.gain.value;
-	this._gainNode.gain.value	= value;
+	if( value === undefined )	return this._volume;
+	// update volume
+	this._volume	= value;
+	// update actual volume IIF not muted
+	if( this._muted  === false ){
+		this._gainNode.gain.value	= this._volume;	
+	}
+	// return this for chained API
 	return this;
 };
 
+/** 
+ * getter/setter for mute
+*/
+WebAudio.prototype.mute	= function(value){
+	if( value === undefined )	return this._muted;
+	this._muted	= value;
+	this._gainNode.gain.value	= this._muted ? 0 : this._volume;
+	return this;	// for chained API
+}
+
 /**
+ * to toggle the mute
+*/
+WebAudio.prototype.toggleMute	= function(){
+	if( this.mute() )	this.mute(false);
+	else			this.mute(true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+//		pageVisibility							//
+//////////////////////////////////////////////////////////////////////////////////
+
+
+WebAudio.prototype._pageVisibilityCtor	= function(){
+	// shim to handle browser vendor
+	this._pageVisibilityEventStr	= (document.hidden !== undefined	? 'visibilitychange'	:
+		(document.mozHidden	!== undefined		? 'mozvisibilitychange'	:
+		(document.msHidden	!== undefined		? 'msvisibilitychange'	:
+		(document.webkitHidden	!== undefined		? 'webkitvisibilitychange' :
+		console.assert(false, "Page Visibility API unsupported")
+	))));
+	this._pageVisibilityDocumentStr	= (document.hidden !== undefined ? 'hidden' :
+		(document.mozHidden	!== undefined ? 'mozHidden' :
+		(document.msHidden	!== undefined ? 'msHidden' :
+		(document.webkitHidden	!== undefined ? 'webkitHidden' :
+		console.assert(false, "Page Visibility API unsupported")
+	))));
+	// event handler for visibilitychange event
+	this._$pageVisibilityCallback	= function(){
+		console.log('dddd')
+		var isHidden	= document[this._pageVisibilityDocumentStr] ? true : false;
+		this.mute( isHidden ? true : false );
+	}.bind(this);
+	// bind the event itself
+	document.addEventListener(this._pageVisibilityEventStr, this._$pageVisibilityCallback, false);
+}
+
+WebAudio.prototype._pageVisibilityDtor	= function(){
+	// unbind the event itself
+	document.removeEventListener(this._pageVisibilityEventStr, this._$pageVisibilityCallback, false);
+}/**
  * Constructor
  *
  * @class builder to generate nodes chains. Used in WebAudio.Sound

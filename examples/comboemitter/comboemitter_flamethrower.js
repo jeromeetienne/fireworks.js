@@ -206,7 +206,7 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 							blending		: THREE.AdditiveBlending,
 							transparent		: true
 						});
-						object3d.opacity	= 0.9;
+						object3d.opacity	= 0.5;
 						object3d.uvScale.set(1, 1/urls.length);
 						return object3d;
 					}
@@ -301,7 +301,7 @@ Fireworks.ComboEmitter.Flamethrower.prototype._soundSetIntensity= function(newIn
 
 	var sound	= this._sound;
 	sound.node.playbackRate.value	= 0.5+newIntensity*1.5;
-	sound.node.gain.value		= newIntensity*10;
+	sound.node.gain.value		= newIntensity*3;
 }
 
 

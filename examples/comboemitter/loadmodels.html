@@ -1,0 +1,32 @@
+<!doctype html><title>Minimal tQuery Page</title>
+<script src="../vendor/tquery-bundle.js"></script>
+<script src="vendor/tquery/ColladaLoader.js"></script>
+<body><script>
+	var world	= tQuery.createWorld().boilerplate().start();
+	//var object	= tQuery.createTorus().addTo(world);
+
+	var scene	= world.tScene();
+	
+	world.add( new THREE.AmbientLight( 0x444444 ) );
+	
+	var directionalLight = new THREE.DirectionalLight( 0xffffff );
+	directionalLight.position.set(1, 1, 1);
+	directionalLight.position.normalize();
+	world.add( directionalLight );
+	var directionalLight = new THREE.DirectionalLight( 0xffffff );
+	directionalLight.position.set(-1, 1, -1);
+	directionalLight.position.normalize();
+	world.add( directionalLight );
+
+	var loader	= new THREE.ColladaLoader();
+	loader.options.convertUpAxis = true;
+	var url		= "./models/wallace_rocket_2/models/model.dae";
+	var url		= "./models/TINTINROCKET/models/TIN TIN ROCKET.dae"
+	//var url		= "./models/tintin_expmoon/models/tintin_expmoon.dae"
+	loader.load(url, function colladaReady( collada ){
+		var mesh	= collada.scene;
+		var scale	= 0.01;
+		mesh.scale.set(scale, scale, scale);
+		world.add( mesh )
+	});
+</script></body>
