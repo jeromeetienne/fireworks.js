@@ -16,7 +16,7 @@ Fireworks.EffectsStackBuilder.prototype.spawnerSteadyRate	= function(rate)
 	Fireworks.createEffect('spawner', {
 		rate	: rate,
 		start	: function(){ spawning = true;	},
-		stop	: function(){ spawning = false;	},
+		stop	: function(){ spawning = false;	}
 	}).onPreUpdate(function(deltaTime){
 		var rate	= this.opts.rate;
 		// if spawning is false, do nothing
