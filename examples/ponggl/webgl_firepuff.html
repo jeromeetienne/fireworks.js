@@ -51,9 +51,9 @@
 		var emitter	= Fireworks.createEmitter({nParticles : 200})
 			.bindTriggerDomEvents()
 			.effectsStackBuilder()
-				.spawnerSteadyRate(1)
+				.spawnerOneShot(1)
 				.position(Fireworks.createShapeSphere(0, 0, 0, 0.1))
-				.velocity(Fireworks.createShapePoint(0, 60, 0))
+				.velocity(Fireworks.createShapeSphere(0, 60, 0, 20))
 				.lifeTime(1.5)
 				.friction(0.90)
 				//.randomVelocityDrift(Fireworks.createVector(10,10,0))
@@ -117,6 +117,11 @@
 		world.loop().hook(function(delta, now){
 			emitter.update(delta).render();
 		})
+
+		document.addEventListener('click', function(){
+			// reset nSent thus it puff again
+			emitter.effect('spawner').opts.reset();
+		});
 	});
 
 

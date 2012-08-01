@@ -2,7 +2,7 @@
 <script src="../vendor/tquery-bundle.js"></script>
 <script src="../../build/fireworks-bundle.js"></script>
 
-<script src="./tquery.textureutils.js"></script>
+<script src="../flamethrower/tquery.textureutils.js"></script>
 <body><script>
 	var world	= tQuery.createWorld().boilerplate().start();
 	world.tRenderer().setClearColorHex( 0x00bbff, world.tRenderer().getClearAlpha() );
@@ -15,8 +15,8 @@
 	container.position.y	= -3;
 	world.add(container);
 
-	//var url		= "../assets/images/lensflare2.jpg";	
-	var url	= "../assets/images/tremulous/psaw/blue_particle.jpg";
+	var url		= "../assets/images/lensflare2.jpg";	
+	//var url	= "../assets/images/tremulous/psaw/blue_particle.jpg";
 	var texture	= THREE.ImageUtils.loadTexture( url, undefined, function(){
 		tQuery.TextureUtils.generateAlphaFromLuminance(texture, 4, 4);
 	});

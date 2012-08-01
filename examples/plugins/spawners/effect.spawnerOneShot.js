@@ -14,8 +14,9 @@ Fireworks.EffectsStackBuilder.prototype.spawnerOneShot	= function(nParticles)
 
 	// create the effect itself
 	Fireworks.createEffect('spawner', {
-		start	: function(){ spawning = true;	},
-		stop	: function(){ spawning = false;	}
+		reset	: function(){ nSent	= 0;	},
+		start	: function(){ spawning	= true;	},
+		stop	: function(){ spawning	= false;}
 	}).onPreUpdate(function(deltaTime){
 		// if spawning is false, do nothing
 		if( spawning === false )	return;

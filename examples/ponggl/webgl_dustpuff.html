@@ -61,7 +61,7 @@
 						//color		: 0x668844,
 						//color		: 0x88aa66,
 						// color		: 0x888888,
-						color		: 0x666666,
+						color			: 0x666666,
 						useScreenCoordinates	: false,
 						map			: texture,
 						//blending		: THREE.AdditiveBlending,
@@ -71,6 +71,12 @@
 			})
 			.back()
 		.start();
+
+
+	document.addEventListener('click', function(){
+		// reset nSent thus it puff again
+		emitter.effect('spawner').opts.reset();
+	});
 
 	// update the emitter in rendering loop
 	world.loop().hook(function(delta, now){
