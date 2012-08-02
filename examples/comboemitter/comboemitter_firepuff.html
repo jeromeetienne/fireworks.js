@@ -1,0 +1,49 @@
+<!doctype html><title>Example of firework.js</title>
+<script src="../../build/fireworks-bundle.js"></script>
+<script src="../vendor/tquery-bundle.js"></script>
+
+<!-- for sound -->
+<script src="vendor/webaudio-bundle.js"></script>
+<script src="vendor/jsfx/audio.js"></script>
+<script src="vendor/jsfx/jsfx.js"></script>
+<script src="vendor/jsfx/jsfxlib.js"></script>
+
+
+
+<script src="../flamethrower/tquery.textureutils.js"></script>
+
+<script src="./comboemitter.js"></script>
+<script src="./comboemitter3d.js"></script>
+<script src="./comboemitter_firepuff.js"></script>
+
+
+<body><script>
+	var world	= tQuery.createWorld().boilerplate().start();
+	world.tRenderer().setClearColorHex( 0x000000, world.tRenderer().getClearAlpha() );
+
+	world.removeCameraControls()
+	world.tCamera().position.z	= 50;
+
+	var firepuff	= new Fireworks.ComboEmitter.Firepuff({
+		webaudio: new WebAudio(),
+		onReady	: function(){
+			flamethrower.start();
+		}
+	});
+	world.add( firepuff.object3D() );
+	
+	document.addEventListener('click', function(){
+		firepuff.shoot();
+	});
+</script></body>
+
+
+
+
+
+
+
+
+
+
+

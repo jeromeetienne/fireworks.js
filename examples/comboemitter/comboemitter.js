@@ -5,10 +5,28 @@
 Fireworks.ComboEmitter	= function(){
 };
 
+
+//////////////////////////////////////////////////////////////////////////////////
+//										//
+//////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @return {boolean} true if it is ready, false otherwise
+*/
+Fireworks.ComboEmitter.prototype.isReady	= function(){
+	// if all previous tests passed, it is ready
+	return true;
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+//										//
+//////////////////////////////////////////////////////////////////////////////////
+
 /**
  * Start the emitter
 */
 Fireworks.ComboEmitter.prototype.start	= function(){
+	throw "not implemented";
 };
 
 /**
@@ -16,10 +34,12 @@ Fireworks.ComboEmitter.prototype.start	= function(){
  * keep emit for a while, the time 
 */
 Fireworks.ComboEmitter.prototype.stop	= function(){
+	throw "not implemented";
 };
 
 /**
  * Stop immediatly the emitter
 */
 Fireworks.ComboEmitter.prototype.ungracefullStop	= function(){
+	throw "not implemented";
 };

@@ -89,7 +89,7 @@ Fireworks.ComboEmitter.Flamethrower.prototype.sound	= function(){
 
 
 Fireworks.ComboEmitter.Flamethrower.prototype._loopCb	= function(delta, now){
-	if( !this._emitterJet ) return;
+	if( !this.isReady() ) return;
 	
 	// render this._emitterJet
 	this._emitterJet.update(delta).render();
