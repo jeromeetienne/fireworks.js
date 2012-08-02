@@ -72,7 +72,16 @@ tQuery.TextureUtils.generateAlphaFromLuminance	= function(texture, multiplier, p
 //										//
 //////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Load multiple images 
+ * 
+ * @param {array.<string>} urls the urls to load
+ * @param {function(Array.<Image>, Array.<string>)} onLoad the function 
+ *        called when all the images are loaded
+*/
 tQuery.TextureUtils.loadImages	= function(urls, onLoad){
+	// handle parameter polymorphism
+	if( typeof(urls) === 'string' )	urls	= [urls];
 	// init images
 	var images	= new Array(urls.length);
 	// load all the images and convert them
@@ -80,6 +89,7 @@ tQuery.TextureUtils.loadImages	= function(urls, onLoad){
 	urls.forEach(function(url, idx){
 		flow.par(function(next){
 			var image	= new Image;
+			// TODO what if the images isnt properly loaded
 			image.onload	= function(){
 				images[idx]	= image;
 				next();
