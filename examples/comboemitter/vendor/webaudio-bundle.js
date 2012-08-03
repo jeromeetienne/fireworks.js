@@ -52,7 +52,7 @@ WebAudio	= function(){
 	// setup internal variable
 	this._muted	= false;
 	this._volume	= 1;
-	
+
 	// setup the end of the node chain
 	// TODO later code the clipping detection from http://www.html5rocks.com/en/tutorials/webaudio/games/ 
 	this._gainNode	= this._ctx.createGainNode();
@@ -178,7 +178,6 @@ WebAudio.prototype._pageVisibilityCtor	= function(){
 	))));
 	// event handler for visibilitychange event
 	this._$pageVisibilityCallback	= function(){
-		console.log('dddd')
 		var isHidden	= document[this._pageVisibilityDocumentStr] ? true : false;
 		this.mute( isHidden ? true : false );
 	}.bind(this);

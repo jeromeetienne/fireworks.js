@@ -89,18 +89,18 @@ Fireworks.ComboEmitter.Flamethrower.prototype.sound	= function(){
 
 
 Fireworks.ComboEmitter.Flamethrower.prototype._loopCb	= function(delta, now){
-	if( !this.isReady() ) return;
+	// if this.is_ready() is false, return now
+	if( this.isReady() === false ) return;
 	
-	// render this._emitterJet
+	// update and render this._emitterJet
 	this._emitterJet.update(delta).render();
-	
+
 	// handle intensity depending on attackTime/releaseTime
 	console.assert( this._state === 'started' || this._state === 'stopped' );	
 	var present	= Date.now()/1000;
 	if( this._state === 'started' ){
 		if( present - this._lastStart <= this._attackTime ){
 			var intensity	= (present - this._lastStart) / this._attackTime;		
-			//console.log('starting', intensity);		
 		}else{
 			var intensity	= 1;
 		}
@@ -108,19 +108,18 @@ Fireworks.ComboEmitter.Flamethrower.prototype._loopCb	= function(delta, now){
 	}else if( this._state === 'stopped' ){
 		if( present - this._lastStop <= this._releaseTime ){
 			var intensity	= 1 - (present - this._lastStop) / this._releaseTime;			
-			//console.log('stopping', intensity)		
 		}else{
 			var intensity	= 0;
 		}
 		this._emitterJet.intensity( intensity );
 	}
-	
+
 	// set gravity in local space
 	var emitter	= this._emitterJet;
 	var container	= this._container;
 	var effect	= emitter.effect('gravity');
-	var matrix	= container.matrixWorld.clone().setPosition({x:0,y:0,z:0}).transpose();
 	var position	= effect.opts.shape.position.set(0, 10, 0);
+	var matrix	= container.matrixWorld.clone().setPosition({x:0,y:0,z:0}).transpose();
 	matrix.multiplyVector3(position);
 }
 
