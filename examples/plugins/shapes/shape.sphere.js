@@ -1,21 +1,21 @@
 /**
  * Shortcut to create Fireworks.Shape.Box
 */
-Fireworks.createShapeSphere	= function(centerX, centerY, centerZ, radius, boundingbox){
-	var center	= new Fireworks.Vector(centerX, centerY, centerZ);
-	return new Fireworks.ShapeSphere(center, radius);
+Fireworks.createShapeSphere	= function(positionX, positionY, positionZ, radius, boundingbox){
+	var position	= new Fireworks.Vector(positionX, positionY, positionZ);
+	return new Fireworks.ShapeSphere(position, radius);
 };
 
 
 /**
  * Handle a Firework.Shape forming a sphere
  *
- * @param {Fireworks.Vector} center the center of the sphere
+ * @param {Fireworks.Vector} position the position of the sphere
  * @param {Number} radius the radius of the sphere
 */
-Fireworks.ShapeSphere	= function(center, radius)
+Fireworks.ShapeSphere	= function(position, radius)
 {
-	this.center	= center;
+	this.position	= position;
 	this.radius	= radius;
 	this._vector	= new Fireworks.Vector();
 }
@@ -25,8 +25,8 @@ Fireworks.ShapeSphere.prototype = new Fireworks.Shape();
 Fireworks.ShapeSphere.prototype.constructor = Fireworks.ShapeSphere;
 
 Fireworks.ShapeSphere.prototype.contains	= function(point){
-	// compute distance between the point and the center
-	var distance	= this._vector.sub(point, this.center).length();
+	// compute distance between the point and the position
+	var distance	= this._vector.sub(point, this.position).length();
 	// return true if this distance is <= than sphere radius
 	return distance <= this.radius;
 }
@@ -41,8 +41,8 @@ Fireworks.ShapeSphere.prototype.randomPoint	= function(vector){
 	var length	= Math.random()*this.radius;
 	// set the point at the proper distance;
 	point.setLength( length );
-	// add the center
-	point.addSelf(this.center);
+	// add the position
+	point.addSelf(this.position);
 	// return the point
 	return point;
 }
