@@ -27,23 +27,50 @@
 	// container.rotateX(-Math.PI/2).translateY(10)
 	// container.rotateX(Math.PI/2).translateY(-10)
 	// container.rotateY(-Math.PI/2).translateX(-10)
+
+
 	
 	// create a torch and add it to the container
-	tQuery.createCylinder(0.55, 0.0001, 2).addTo(container)
-		.geometry().rotateX(-Math.PI/2).back()
-		.translateZ(2)
-		.scale(2);
+	// tQuery.createCylinder(0.55, 0.0001, 2).addTo(container)
+	// 	.geometry()
+	// 		.rotateX(-Math.PI/2)
+	// 		.scaleBy(2)
+	// 		.translateZ(2)
+	// 		.back()
 
 	var flamethrower= new Fireworks.ComboEmitter.Flamethrower({
-		webaudio: new WebAudio(),
-		onReady	: function(){
+		container	: container.get(0),
+		webaudio	: new WebAudio(),
+		onReady		: function(){
 			flamethrower.start();
 		}
 	});
-	container.add( flamethrower.object3D() )
-	
-	flamethrower.object3D().scale	= container.get(0).scale;
 
+	var source3D	= tQuery.createCylinder(0.55, 0.0001, 2).addTo(container)
+		.geometry()
+			.rotateX(Math.PI/2)
+			.scaleBy(2)
+			.translateZ(-2)
+			.back();
+	flamethrower.source3D(source3D.get(0))
+	world.loop().hook(function(){
+		source3D.get(0).lookAt(target3D.get(0).position)
+	})
+
+	var target3D	= tQuery.createSphere().addTo(world).translateZ(-5)
+	flamethrower.target3D(target3D.get(0))
+	
+	
+	world.loop().hook(function(delta, now){
+		var angle	= 0.3 * now * Math.PI*2;
+		var position	= target3D.get(0).position;
+		position.x	= 5 * Math.cos(angle);
+
+		var angle	= 0.1 * now * Math.PI*2;
+		var position	= source3D.get(0).position;
+		position.x	= 3 * Math.cos(angle);
+		position.y	= 2 * Math.sin(angle);
+	});
 
 	document.body.addEventListener('mousedown', function(){
 		flamethrower.start();

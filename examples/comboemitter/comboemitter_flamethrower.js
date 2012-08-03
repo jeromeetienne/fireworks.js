@@ -1,10 +1,16 @@
 Fireworks.ComboEmitter.Flamethrower	= function(opts){
-	this._container	= new THREE.Object3D();
-	this._emitterJet= null;	
+	this._container	= opts.container|| console.assert(false, "container MUST be defined");
+	this._emitter	= null;	
 	this._onReady	= opts.onReady	|| function(comboEmitter){};
-	this._webaudio	= opts.webaudio	|| new WebAudio();
-	this._baseSound	= null;
-	this._sound	= null;
+	
+	if( WebAudio.isAvailable ){
+		this._webaudio	= opts.webaudio	|| new WebAudio();
+		this._baseSound	= null;
+		this._sound	= null;		
+	}
+	
+	this._source3D	= null;
+	this._target3D	= null;
 	
 	// data to handle attackTime/releaseTime
 	this._state	= 'stopped';
@@ -13,9 +19,10 @@ Fireworks.ComboEmitter.Flamethrower	= function(opts){
 	this._attackTime	= 1.0;
 	this._releaseTime	= 0.3;
 	
-	
-	this._flamejetCtor();
-	this._soundCtor();
+	// contruct each parts
+	this._emitterCtor();
+	WebAudio.isAvailable && this._soundCtor();
+
 	// update the emitter in rendering loop
 	this._$loopCb	= world.loop().hook(this._loopCb.bind(this));
 }
@@ -23,8 +30,8 @@ Fireworks.ComboEmitter.Flamethrower	= function(opts){
 Fireworks.ComboEmitter.Flamethrower.prototype._destroy	= function()
 {
 	world.loop().unhook(this._$loopCb);
-	this._flamejetDtor();
-	this._soundDtor();
+	this._emitterDtor();
+	WebAudio.isAvailable && this._soundDtor();
 }
 
 // inherit from Fireworks.ComboEmitter
@@ -61,7 +68,7 @@ Fireworks.ComboEmitter.Flamethrower.prototype.isReady	= function(){
 	// test if the sound has been loaded
 	if( !this._baseSound.isPlayable() )	return false;
 	// test the spritesheet has been loaded
-	if( !this._emitterJet )			return false;
+	if( !this._emitter )			return false;
 	// if all previous tests passed, it is ready
 	return true;
 };
@@ -83,6 +90,20 @@ Fireworks.ComboEmitter.Flamethrower.prototype.sound	= function(){
 	return this._baseSound;
 };
 
+Fireworks.ComboEmitter.Flamethrower.prototype.source3D	= function(value){
+	if( value === undefined )	return this._source3D;
+	console.assert(value instanceof THREE.Object3D);
+	this._source3D	= value;
+	return this;
+};
+
+Fireworks.ComboEmitter.Flamethrower.prototype.target3D	= function(value){
+	if( value === undefined )	return this._source3D;
+	console.assert(value instanceof THREE.Object3D);
+	this._target3D	= value;
+	return this;
+};
+
 //////////////////////////////////////////////////////////////////////////////////
 //		rendering loop function						//
 //////////////////////////////////////////////////////////////////////////////////
@@ -92,8 +113,8 @@ Fireworks.ComboEmitter.Flamethrower.prototype._loopCb	= function(delta, now){
 	// if this.is_ready() is false, return now
 	if( this.isReady() === false ) return;
 	
-	// update and render this._emitterJet
-	this._emitterJet.update(delta).render();
+	// update and render this._emitter
+	this._emitter.update(delta).render();
 
 	// handle intensity depending on attackTime/releaseTime
 	console.assert( this._state === 'started' || this._state === 'stopped' );	
@@ -104,22 +125,39 @@ Fireworks.ComboEmitter.Flamethrower.prototype._loopCb	= function(delta, now){
 		}else{
 			var intensity	= 1;
 		}
-		this._emitterJet.intensity( intensity );
+		this._emitter.intensity( intensity );
 	}else if( this._state === 'stopped' ){
 		if( present - this._lastStop <= this._releaseTime ){
 			var intensity	= 1 - (present - this._lastStop) / this._releaseTime;			
 		}else{
 			var intensity	= 0;
 		}
-		this._emitterJet.intensity( intensity );
+		this._emitter.intensity( intensity );
 	}
 
+	if( this._target3D && this._source3D ){
+		// TODO should i recompute the matrix ??
+		var posSource	= this._source3D.matrixWorld.getPosition().clone();
+		var posTarget	= this._target3D.matrixWorld.getPosition().clone();
+		var velocity	= posTarget.subSelf(posSource);
+		this._emitter.effect('velocity').opts.shape.position.copy(velocity);	
+	}
+
+	// if this._source3D is defined use it for setting position
+	if( this._source3D ){
+		// TODO should i recompute the matrix ??
+		var posSource	= this._source3D.matrixWorld.getPosition().clone();
+		var posContainer= this._container.matrixWorld.getPosition().clone();
+		var position	= posSource.subSelf(posContainer);
+		this._emitter.effect('position').opts.shape.position.copy(position);	
+	}
+
+
 	// set gravity in local space
-	var emitter	= this._emitterJet;
-	var container	= this._container;
-	var effect	= emitter.effect('gravity');
+	var effect	= this._emitter.effect('gravity');
 	var position	= effect.opts.shape.position.set(0, 10, 0);
-	var matrix	= container.matrixWorld.clone().setPosition({x:0,y:0,z:0}).transpose();
+	// TODO should i recompute the matrix ??
+	var matrix	= this._container.matrixWorld.clone().setPosition({x:0,y:0,z:0}).transpose();
 	matrix.multiplyVector3(position);
 }
 
@@ -131,7 +169,7 @@ Fireworks.ComboEmitter.Flamethrower.prototype._loopCb	= function(delta, now){
 /**
  * Create the flame jet
 */
-Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
+Fireworks.ComboEmitter.Flamethrower.prototype._emitterCtor	= function(){
 	var urls	= [
 		// "../assets/images/flame/flame00.png",
 		// "../assets/images/flame/flame01.png",
@@ -167,7 +205,7 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 	function buildEmitter(texture){
 		//console.log("spriteSheet loaded");
 		var cemitter	= this;
-		var emitter	= this._emitterJet	= Fireworks.createEmitter({nParticles : 100})
+		var emitter	= this._emitter	= Fireworks.createEmitter({nParticles : 100})
 			.effectsStackBuilder()
 				.spawnerSteadyRate(20)
 				.position(Fireworks.createShapeSphere(0, 0,   0, 0.01))
@@ -263,7 +301,7 @@ Fireworks.ComboEmitter.Flamethrower.prototype._flamejetCtor	= function(){
 	}
 }
 
-Fireworks.ComboEmitter.Flamethrower.prototype._flamejetDtor	= function(){
+Fireworks.ComboEmitter.Flamethrower.prototype._emitterDtor	= function(){
 }
 
 
@@ -290,6 +328,8 @@ Fireworks.ComboEmitter.Flamethrower.prototype._soundDtor	= function()
 
 Fireworks.ComboEmitter.Flamethrower.prototype._soundSetIntensity= function(newIntensity, oldIntensity)
 {
+	// if WebAudio isnt available, do nothing
+	if( WebAudio.isAvailable === false )	return;
 	//console.log('isPlayable', this._baseSound.isPlayable())
 	// if sound isnt yet playable (like not loaded), return now
 	if( this._baseSound.isPlayable() === false )	return;
