@@ -135,17 +135,18 @@ Fireworks.ComboEmitter.Flamethrower.prototype._loopCb	= function(delta, now){
 		this._emitter.intensity( intensity );
 	}
 
+	// if target3D and source3D are defined, use it to set velocity
+	// TODO should i recompute the matrixWorld ??
 	if( this._target3D && this._source3D ){
-		// TODO should i recompute the matrix ??
 		var posSource	= this._source3D.matrixWorld.getPosition().clone();
 		var posTarget	= this._target3D.matrixWorld.getPosition().clone();
 		var velocity	= posTarget.subSelf(posSource);
 		this._emitter.effect('velocity').opts.shape.position.copy(velocity);	
 	}
 
-	// if this._source3D is defined use it for setting position
+	// if this._source3D is defined, use it for setting position
+	// TODO should i recompute the matrixWorld ??
 	if( this._source3D ){
-		// TODO should i recompute the matrix ??
 		var posSource	= this._source3D.matrixWorld.getPosition().clone();
 		var posContainer= this._container.matrixWorld.getPosition().clone();
 		var position	= posSource.subSelf(posContainer);
@@ -154,9 +155,9 @@ Fireworks.ComboEmitter.Flamethrower.prototype._loopCb	= function(delta, now){
 
 
 	// set gravity in local space
+	// TODO should i recompute the matrix ??
 	var effect	= this._emitter.effect('gravity');
 	var position	= effect.opts.shape.position.set(0, 10, 0);
-	// TODO should i recompute the matrix ??
 	var matrix	= this._container.matrixWorld.clone().setPosition({x:0,y:0,z:0}).transpose();
 	matrix.multiplyVector3(position);
 }
