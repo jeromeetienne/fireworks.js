@@ -2,6 +2,7 @@ Fireworks.ComboEmitter.Firepuff	= function(opts){
 	// parse parameters
 	opts		= {};
 	this._webaudio	= opts.webaudio	|| new WebAudio();
+	this._loop	= opts.loop	|| tQuery.world.loop();
 	this._onReady	= opts.onReady	|| function(comboEmitter){};
 
 	this._container	= new THREE.Object3D();
@@ -11,11 +12,11 @@ Fireworks.ComboEmitter.Firepuff	= function(opts){
 	this._soundCtor();
 
 	// update the emitter in rendering loop
-	this._$loopCb	= world.loop().hook(this._loopCb.bind(this));
+	this._$loopCb	= this._loop.hook(this._loopCb.bind(this));
 }
 
 Fireworks.ComboEmitter.Firepuff.prototype._destroy	= function(){
-	world.loop().unhook(this._$loopCb);
+	this._loop.unhook(this._$loopCb);
 	this._emitterDtor();
 	this._soundDtor();
 }

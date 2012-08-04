@@ -1,6 +1,7 @@
 Fireworks.ComboEmitter.Smokepuff	= function(opts){
 	opts		= {};
 	this._webaudio	= opts.webaudio	|| new WebAudio();
+	this._loop	= opts.loop	|| tQuery.world.loop();
 	this._container	= new THREE.Object3D();
 	this._emitter	= null;	
 	
@@ -8,11 +9,11 @@ Fireworks.ComboEmitter.Smokepuff	= function(opts){
 	this._soundCtor();
 
 	// update the emitter in rendering loop
-	this._$loopCb	= world.loop().hook(this._loopCb.bind(this));
+	this._$loopCb	= this._loop.hook(this._loopCb.bind(this));
 }
 
 Fireworks.ComboEmitter.Smokepuff.prototype._destroy	= function(){
-	world.loop().unhook(this._$loopCb);
+	this._loop.unhook(this._$loopCb);
 	this._emitterDtor();
 	this._soundDtor();
 }

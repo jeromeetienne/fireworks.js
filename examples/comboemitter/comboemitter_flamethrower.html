@@ -13,6 +13,7 @@
 <script src="./comboemitter_flamethrower.js"></script>
 
 <body><script>
+(function(){
 	var world	= tQuery.createWorld().boilerplate().start();
 	//world.tRenderer().setClearColorHex( 0x00bbff, world.tRenderer().getClearAlpha() );
 	world.tRenderer().setClearColorHex( 0x000000, world.tRenderer().getClearAlpha() );
@@ -82,7 +83,8 @@
 		// if the pressed key isnt 'esc', return now
 		if( event.keyCode !== 27 )	return;
 		flamethrower.ungracefullStop();
-	});
+	});	
+})()
 </script></body>
 
 

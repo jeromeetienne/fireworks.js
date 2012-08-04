@@ -1,14 +1,20 @@
 Fireworks.ComboEmitter.Flamethrower	= function(opts){
 	this._container	= opts.container|| console.assert(false, "container MUST be defined");
-	this._emitter	= null;	
+	// init parameters
+	this._loop	= opts.loop	|| tQuery.world.loop();
 	this._onReady	= opts.onReady	|| function(comboEmitter){};
-	
+	this._imagesUrl	= opts.imagesUrl|| '../assets/images/flame/';
+	this._soundsUrl	= opts.soundsUrl|| 'sounds/';
+
+
+	// init sound if availble	
 	if( WebAudio.isAvailable ){
 		this._webaudio	= opts.webaudio	|| new WebAudio();
 		this._baseSound	= null;
 		this._sound	= null;		
 	}
 	
+	this._emitter	= null;	
 	this._source3D	= null;
 	this._target3D	= null;
 	
@@ -24,12 +30,12 @@ Fireworks.ComboEmitter.Flamethrower	= function(opts){
 	WebAudio.isAvailable && this._soundCtor();
 
 	// update the emitter in rendering loop
-	this._$loopCb	= world.loop().hook(this._loopCb.bind(this));
+	this._$loopCb	= this._loop.hook(this._loopCb.bind(this));
 }
 
 Fireworks.ComboEmitter.Flamethrower.prototype._destroy	= function()
 {
-	world.loop().unhook(this._$loopCb);
+	this._loop.unhook(this._$loopCb);
 	this._emitterDtor();
 	WebAudio.isAvailable && this._soundDtor();
 }
@@ -153,7 +159,6 @@ Fireworks.ComboEmitter.Flamethrower.prototype._loopCb	= function(delta, now){
 		this._emitter.effect('position').opts.shape.position.copy(position);	
 	}
 
-
 	// set gravity in local space
 	// TODO should i recompute the matrix ??
 	var effect	= this._emitter.effect('gravity');
@@ -172,31 +177,31 @@ Fireworks.ComboEmitter.Flamethrower.prototype._loopCb	= function(delta, now){
 */
 Fireworks.ComboEmitter.Flamethrower.prototype._emitterCtor	= function(){
 	var urls	= [
-		// "../assets/images/flame/flame00.png",
-		// "../assets/images/flame/flame01.png",
-		"../assets/images/flame/flame02.png",
-		"../assets/images/flame/flame03.png",
-		"../assets/images/flame/flame04.png",
-		"../assets/images/flame/flame05.png",
-		"../assets/images/flame/flame06.png",
-		"../assets/images/flame/flame07.png",
-		"../assets/images/flame/flame08.png",
-		"../assets/images/flame/flame09.png",
-		"../assets/images/flame/flame10.png",
-		"../assets/images/flame/flame11.png",
-		"../assets/images/flame/flame12.png",
-		"../assets/images/flame/flame13.png",
-		"../assets/images/flame/flame14.png",
-		"../assets/images/flame/flame15.png",
-		"../assets/images/flame/flame16.png",
-		"../assets/images/flame/flame17.png",
-		"../assets/images/flame/flame18.png",
-		"../assets/images/flame/flame19.png",
-		"../assets/images/flame/flame20.png",
-		"../assets/images/flame/flame21.png",
-		"../assets/images/flame/flame22.png",
-		"../assets/images/flame/flame23.png",
-		"../assets/images/flame/flame24.png"
+		// this._imagesUrl + "flame00.png",
+		// this._imagesUrl + "flame01.png",
+		this._imagesUrl + "flame02.png",
+		this._imagesUrl + "flame03.png",
+		this._imagesUrl + "flame04.png",
+		this._imagesUrl + "flame05.png",
+		this._imagesUrl + "flame06.png",
+		this._imagesUrl + "flame07.png",
+		this._imagesUrl + "flame08.png",
+		this._imagesUrl + "flame09.png",
+		this._imagesUrl + "flame10.png",
+		this._imagesUrl + "flame11.png",
+		this._imagesUrl + "flame12.png",
+		this._imagesUrl + "flame13.png",
+		this._imagesUrl + "flame14.png",
+		this._imagesUrl + "flame15.png",
+		this._imagesUrl + "flame16.png",
+		this._imagesUrl + "flame17.png",
+		this._imagesUrl + "flame18.png",
+		this._imagesUrl + "flame19.png",
+		this._imagesUrl + "flame20.png",
+		this._imagesUrl + "flame21.png",
+		this._imagesUrl + "flame22.png",
+		this._imagesUrl + "flame23.png",
+		this._imagesUrl + "flame24.png"
 	];
 
 
@@ -315,7 +320,7 @@ Fireworks.ComboEmitter.Flamethrower.prototype._soundCtor	= function()
 	// create a sound 
 	this._baseSound	= this._webaudio.createSound().loop(true);	
 	// load the sound
-	this._baseSound.load('sounds/flamethrower-freesoundloop.wav', function(sound){
+	this._baseSound.load(this._soundsUrl + 'flamethrower-freesoundloop.wav', function(sound){
 		// notify the caller it is ready if possible
 		this._notifyReadyIfPossible();
 	}.bind(this));
