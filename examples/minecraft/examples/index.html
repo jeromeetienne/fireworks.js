@@ -112,7 +112,7 @@ if( true ){
 		imagesUrl	: '../../assets/images/flame/',
 		soundsUrl	: '../../comboemitter/sounds/',
 		container	: container.get(0),
-		webaudio	: new WebAudio(),
+		webaudio	: (new WebAudio()).volume(0.1),
 		onReady		: function(){
 			flamethrower.start();
 		}
