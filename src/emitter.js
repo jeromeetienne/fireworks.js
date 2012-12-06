@@ -95,11 +95,11 @@ Fireworks.Emitter.prototype.maxDeltaTime	= function(value){
 //////////////////////////////////////////////////////////////////////////////////
 
 Fireworks.Emitter.prototype.setParticleData	= function(particle, namespace, value){
-	particle.set(namespace, value);
+	particle.[namespace] = value;
 }
 
 Fireworks.Emitter.prototype.getParticleData	= function(particle, namespace){
-	return particle.get(namespace);
+	return particle[namespace];
 }
 
 //////////////////////////////////////////////////////////////////////////////////

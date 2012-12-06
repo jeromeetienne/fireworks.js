@@ -38,12 +38,12 @@ Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function(opts)
 
 	function ctorTypeArc(){
 		return effect.onCreate(function(particle, particleIdx){
-			particle.set('renderToCanvas', {
+			particle.renderToCanvas = {
 				size	: 3
 			});
 		}).onRender(function(particle){
-			var position	= particle.get('position').vector;
-			var size	= particle.get('renderToCanvas').size;
+			var position	= particle.position.vector;
+			var size	= particle.renderToCanvas.size;
 
 			ctx.beginPath();
 			ctx.arc(position.x + canvas.width /2, 
@@ -63,15 +63,15 @@ Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function(opts)
 		}else	console.assert(false, 'invalid .renderToCanvas() options')
 
 		return effect.onCreate(function(particle, particleIdx){
-			particle.set('renderToCanvas', {
+			particle.renderToCanvas = {
 				scale		: 1,	// should that be there ? or in its own effect ?
 				opacity		: 1,	// should that be there ? or in its own effect ?
 				rotation	: 0*Math.PI
-			});
+			};
 		}).onRender(function(particle){
-			var position	= particle.get('position').vector;
-			var data	= particle.get('renderToCanvas');
-			var canonAge	= particle.get('lifeTime').normalizedAge();
+			var position	= particle.position.vector;
+			var data	= particle.renderToCanvas;
+			var canonAge	= particle.lifeTime.normalizedAge();
 			var imageIdx	= Math.floor(canonAge * images.length);
 			var image	= images[imageIdx];
 			// save the context
