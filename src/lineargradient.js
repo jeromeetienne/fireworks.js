@@ -29,8 +29,6 @@ Fireworks.LinearGradient.prototype.get	= function(x){
 
 	if( i === 0 )	return this._keyPoints[0].y;
 
-	console.assert(i < this._keyPoints.length )
-
 	var prev	= this._keyPoints[i-1];
 	var next	= this._keyPoints[i];
 	
