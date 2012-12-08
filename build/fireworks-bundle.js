@@ -1,6 +1,7 @@
 
 
-var Fireworks	= {};//////////////////////////////////////////////////////////////////////////////////
+var Fireworks = {};
+//////////////////////////////////////////////////////////////////////////////////
 //										//
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -206,9 +207,6 @@ Fireworks.Emitter.prototype.intensity	= function(value){
 	if( value === undefined )	return this._intensity;
 	// if the value didnt change, return for chained api
 	if( value === this._intensity )	return this;
-	// sanity check
-	console.assert( value >= 0, 'Fireworks.Emitter.intensity: invalid value.', value);
-	console.assert( value <= 1, 'Fireworks.Emitter.intensity: invalid value.', value);
 	// backup the old value
 	var oldValue	= this._intensity;
 	// update the value
@@ -235,11 +233,11 @@ Fireworks.Emitter.prototype.maxDeltaTime	= function(value){
 //////////////////////////////////////////////////////////////////////////////////
 
 Fireworks.Emitter.prototype.setParticleData	= function(particle, namespace, value){
-	particle.set(namespace, value);
+	particle[namespace] = value;
 }
 
 Fireworks.Emitter.prototype.getParticleData	= function(particle, namespace){
-	return particle.get(namespace);
+	return particle[namespace];
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -319,7 +317,6 @@ Fireworks.Emitter.prototype.render	= function(){
 Fireworks.Emitter.prototype.killParticle	= function(particle)
 {
 	var idx	= this._liveParticles.indexOf(particle);
-	console.assert( idx !== -1 )
 	this._liveParticles.splice(idx, 1)
 	this._deadParticles.push(particle);
 	// do the death on all effects
@@ -332,7 +329,6 @@ Fireworks.Emitter.prototype.killParticle	= function(particle)
  * Spawn a particle
 */
 Fireworks.Emitter.prototype.spawnParticle	= function(){
-	console.assert(this._deadParticles.length >= 1, 'no more particle available' );
 	// change the particles 
 	var particle	= this.deadParticles().pop();
 	this.liveParticles().push(particle);
@@ -372,8 +368,6 @@ Fireworks.LinearGradient.prototype.get	= function(x){
 
 	if( i === 0 )	return this._keyPoints[0].y;
 
-	console.assert(i < this._keyPoints.length )
-
 	var prev	= this._keyPoints[i-1];
 	var next	= this._keyPoints[i];
 	
@@ -389,13 +383,11 @@ Fireworks.Particle	= function(){
 }
 
 Fireworks.Particle.prototype.set	= function(key, value){
-	console.assert( this[key] === undefined, "key already defined: "+key );
 	this[key]	= value;
 	return this[key];
 }
 
 Fireworks.Particle.prototype.get	= function(key){
-	console.assert( this[key] !== undefined, "key undefined: "+key );
 	return this[key];
 }
 
@@ -712,15 +704,15 @@ Fireworks.EffectsStackBuilder.prototype.acceleration	= function(opts)
 	Fireworks.createEffect(effectId, {
 		shape	: opts.shape
 	}).onCreate(function(particle){
-		particle.set('acceleration', {
+		particle.acceleration = {
 			vector	: new Fireworks.Vector()
-		});
+		};
 	}).onBirth(function(particle){
-		var acceleration= particle.get('acceleration').vector;
+		var acceleration= particle.acceleration.vector;
 		this.opts.shape.randomPoint(acceleration)
 	}).onUpdate(function(particle, deltaTime){
-		var velocity	= particle.get('velocity').vector;
-		var acceleration= particle.get('acceleration').vector;
+		var velocity	= particle.velocity.vector;
+		var acceleration= particle.acceleration.vector;
 		velocity.x	+= acceleration.x * deltaTime;
 		velocity.y	+= acceleration.y * deltaTime;
 		velocity.z	+= acceleration.z * deltaTime;
@@ -733,26 +725,26 @@ Fireworks.EffectsStackBuilder.prototype.acceleration	= function(opts)
  *
  * @param {Number} value the friction number between 0 and 1
 */
-Fireworks.EffectsStackBuilder.prototype.friction	= function(value)
+Fireworks.EffectsStackBuilder.prototype.friction = function(value)
 {
 	// handle parameter polymorphism
-	value	= value !== undefined ? value	: 1;
+	value = value !== undefined ? value : 1;
 	// sanity check
 	console.assert( value >= 0 && value <= 1.0 );
 	// create the effect itself
 	Fireworks.createEffect('friction')
 	.onCreate(function(particle, particleIdx){
-		particle.set('friction', {
-			value	: value
-		});
+		particle.friction = {
+			value: value
+		};
 	})
 	.onBirth(function(particle){
-		var data	= particle.get('friction');
-		data.value	= value
+		var data = particle.friction;
+		data.value = value
 	})
 	.onUpdate(function(particle){
-		var friction	= particle.get('friction').value;
-		var velocity	= particle.get('velocity').vector;
+		var friction = particle.friction.value;
+		var velocity = particle.velocity.vector;
 		velocity.multiplyScalar(friction);
 	})
 	.pushTo(this._emitter);
@@ -762,8 +754,8 @@ Fireworks.EffectsStackBuilder.prototype.friction	= function(value)
 /**
  * Shortcut to create Fireworks.EffectRandomDriftVelocity
 */
-Fireworks.EffectsStackBuilder.prototype.lifeTime	= function(minAge, maxAge)
-{	
+Fireworks.EffectsStackBuilder.prototype.lifeTime = function(minAge, maxAge)
+{
 	// sanity check
 	console.assert( minAge !== undefined )
 	// if maxAge isnt 
@@ -775,20 +767,20 @@ Fireworks.EffectsStackBuilder.prototype.lifeTime	= function(minAge, maxAge)
 		minAge	: minAge,
 		maxAge	: maxAge
 	}).onCreate(function(particle){
-		var data	= particle.set('lifeTime', {
+		var data	= particle.lifeTime = {
 			curAge	: 0,
 			minAge	: 0,
 			maxAge	: 0,
 			normalizedAge	: function(){
 				return (data.curAge - data.minAge) / (data.maxAge - data.minAge);
 			}
-		});
+		};
 	}).onBirth(function(particle){
-		var lifeTime	= particle.get('lifeTime');
+		var lifeTime	= particle.lifeTime;
 		lifeTime.curAge	= 0;
-		lifeTime.maxAge	= this.opts.minAge + Math.random()*(this.opts.maxAge-this.opts.minAge);
+		lifeTime.maxAge	= this.opts.minAge + Math.random() * (this.opts.maxAge - this.opts.minAge);
 	}).onUpdate(function(particle, deltaTime){
-		var lifeTime	= particle.get('lifeTime');
+		var lifeTime	= particle.lifeTime;
 		lifeTime.curAge	+= deltaTime;
 		if( lifeTime.curAge > lifeTime.maxAge )	emitter.killParticle(particle);
 	}).pushTo(this._emitter);
@@ -798,47 +790,47 @@ Fireworks.EffectsStackBuilder.prototype.lifeTime	= function(minAge, maxAge)
 /**
  * Shortcut to create Fireworks.EffectRandomDriftVelocity
 */
-Fireworks.EffectsStackBuilder.prototype.position	= function(shape)
+Fireworks.EffectsStackBuilder.prototype.position = function(shape)
 {
 	console.assert( shape instanceof Fireworks.Shape );
 	Fireworks.createEffect('position', {
-		shape	: shape
+		shape: shape
 	}).onCreate(function(particle){
-		particle.set('position', {
-			vector	: new Fireworks.Vector()
-		});
+		particle.position = {
+			vector: new Fireworks.Vector()
+		};
 	}).onBirth(function(particle){
-		var position	= particle.get('position').vector;
+		var position = particle.position.vector;
 		this.opts.shape.randomPoint(position)
 	}).pushTo(this._emitter);
-	return this;	// for chained API
+	return this; // for chained API
 };
 /**
  * Shortcut to create Fireworks.EffectRandomDriftVelocity
 */
-Fireworks.EffectsStackBuilder.prototype.radialVelocity	= function(minSpeed, maxSpeed)
+Fireworks.EffectsStackBuilder.prototype.radialVelocity = function(minSpeed, maxSpeed)
 {
 	Fireworks.createEffect('radialVelocity', {
-		minSpeed	: minSpeed,
-		maxSpeed	: maxSpeed	
+		minSpeed: minSpeed,
+		maxSpeed: maxSpeed
 	}).onCreate(function(particle){
-		particle.set('velocity', {
-			vector	: new Fireworks.Vector()
-		});
+		particle.velocity = {
+			vector: new Fireworks.Vector()
+		};
 	}).onBirth(function(particle, deltaTime){
-		var position	= particle.get('position').vector;
-		var velocity	= particle.get('velocity').vector;
-		var length	= this.opts.minSpeed + (this.opts.maxSpeed - this.opts.minSpeed)*Math.random();
+		var position = particle.position.vector;
+		var velocity = particle.velocity.vector;
+		var length = this.opts.minSpeed + (this.opts.maxSpeed - this.opts.minSpeed) * Math.random();
 		velocity.copy(position).setLength(length);
 	}).onUpdate(function(particle, deltaTime){
-		var position	= particle.get('position').vector;
-		var velocity	= particle.get('velocity').vector;
-		position.x	+= velocity.x * deltaTime;
-		position.y	+= velocity.y * deltaTime;
-		position.z	+= velocity.z * deltaTime;
+		var position = particle.position.vector;
+		var velocity = particle.velocity.vector;
+		position.x += velocity.x * deltaTime;
+		position.y += velocity.y * deltaTime;
+		position.z += velocity.z * deltaTime;
 	}).pushTo(this._emitter);
 
-	return this;	// for chained API
+	return this; // for chained API
 };
 /**
  * Shortcut to create Fireworks.EffectRandomDriftVelocity
@@ -849,7 +841,7 @@ Fireworks.EffectsStackBuilder.prototype.randomVelocityDrift	= function(drift)
 	Fireworks.createEffect('randomVelocityDrift', {
 		drift	: drift
 	}).onUpdate(function(particle, deltaTime){
-		var velocity	= particle.get('velocity').vector;
+		var velocity	= particle.velocity.vector;
 		velocity.x	+= (Math.random()*2 - 1) * this.opts.drift.x * deltaTime;
 		velocity.y	+= (Math.random()*2 - 1) * this.opts.drift.y * deltaTime;
 		velocity.z	+= (Math.random()*2 - 1) * this.opts.drift.z * deltaTime;
@@ -868,16 +860,16 @@ Fireworks.EffectsStackBuilder.prototype.velocity	= function(shape, speed)
 		shape	: shape, 
 		speed	: speed !== undefined ? speed : -1
 	}).onCreate(function(particle){
-		particle.set('velocity', {
+		particle.velocity = {
 			vector	: new Fireworks.Vector()
-		});
+		};
 	}).onBirth(function(particle){
-		var velocity	= particle.get('velocity').vector;
+		var velocity	= particle.velocity.vector;
 		this.opts.shape.randomPoint(velocity)
 		if( this.opts.speed !== -1 )	velocity.setLength(this.opts.speed);
 	}).onUpdate(function(particle, deltaTime){
-		var position	= particle.get('position').vector;
-		var velocity	= particle.get('velocity').vector;
+		var position	= particle.position.vector;
+		var velocity	= particle.velocity.vector;
 		position.x	+= velocity.x * deltaTime;
 		position.y	+= velocity.y * deltaTime;
 		position.z	+= velocity.z * deltaTime;
@@ -1135,12 +1127,12 @@ Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function(opts)
 
 	function ctorTypeArc(){
 		return effect.onCreate(function(particle, particleIdx){
-			particle.set('renderToCanvas', {
+			particle.renderToCanvas = {
 				size	: 3
-			});
+			};
 		}).onRender(function(particle){
-			var position	= particle.get('position').vector;
-			var size	= particle.get('renderToCanvas').size;
+			var position	= particle.position.vector;
+			var size	= particle.renderToCanvas.size;
 
 			ctx.beginPath();
 			ctx.arc(position.x + canvas.width /2, 
@@ -1160,15 +1152,15 @@ Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function(opts)
 		}else	console.assert(false, 'invalid .renderToCanvas() options')
 
 		return effect.onCreate(function(particle, particleIdx){
-			particle.set('renderToCanvas', {
+			particle.renderToCanvas = {
 				scale		: 1,	// should that be there ? or in its own effect ?
 				opacity		: 1,	// should that be there ? or in its own effect ?
 				rotation	: 0*Math.PI
-			});
+			};
 		}).onRender(function(particle){
-			var position	= particle.get('position').vector;
-			var data	= particle.get('renderToCanvas');
-			var canonAge	= particle.get('lifeTime').normalizedAge();
+			var position	= particle.position.vector;
+			var data	= particle.renderToCanvas;
+			var canonAge	= particle.lifeTime.normalizedAge();
 			var imageIdx	= Math.floor(canonAge * images.length);
 			var image	= images[imageIdx];
 			// save the context
@@ -1208,25 +1200,24 @@ Fireworks.EffectsStackBuilder.prototype.renderToThreejsObject3D	= function(opts)
 	// create the effect itself
 	Fireworks.createEffect(effectId)
 	.onCreate(function(particle, particleIdx){
-		particle.set('threejsObject3D', {
+		particle.threejsObject3D = {
 			object3d	: opts.create()
-		});
-		console.assert(particle.get('threejsObject3D').object3d instanceof THREE.Object3D);
+		};
 		
-		var object3d	= particle.get('threejsObject3D').object3d;
+		var object3d	= particle.threejsObject3D.object3d;
 
 //		object3d.visible= false;
 	}).onBirth(function(particle){
-		var object3d	= particle.get('threejsObject3D').object3d;
+		var object3d	= particle.threejsObject3D.object3d;
 //		object3d.visible= true;
-container.add(object3d);
+		container.add(object3d);
 	}).onDeath(function(particle){
-		var object3d	= particle.get('threejsObject3D').object3d;
+		var object3d	= particle.threejsObject3D.object3d;
 //		object3d.visible= false;
-container.remove(object3d);
+		container.remove(object3d);
 	}).onRender(function(particle){
-		var object3d	= particle.get('threejsObject3D').object3d;
-		var position	= particle.get('position').vector;
+		var object3d	= particle.threejsObject3D.object3d;
+		var position	= particle.position.vector;
 		object3d.position.set(position.x, position.y, position.z);
 	}).pushTo(this._emitter);
 	return this;	// for chained API
@@ -1250,19 +1241,19 @@ Fireworks.EffectsStackBuilder.prototype.renderToThreejsParticleSystem	= function
 	Fireworks.createEffect(effectId, {
 		particleSystem	: particleSystem
 	}).onCreate(function(particle, particleIdx){
-		particle.set('threejsParticle', {
+		particle.threejsParticle = {
 			particleIdx	: particleIdx
-		});
+		};
 		var vertex	= geometry.vertices[particleIdx];
 		vertex.set(Infinity, Infinity, Infinity);
 	}).onDeath(function(particle){
-		var particleIdx	= particle.get('threejsParticle').particleIdx;
+		var particleIdx	= particle.threejsParticle.particleIdx;
 		var vertex	= geometry.vertices[particleIdx];
 		vertex.set(Infinity, Infinity, Infinity);
 	}).onRender(function(particle){
-		var particleIdx	= particle.get('threejsParticle').particleIdx;
+		var particleIdx	= particle.threejsParticle.particleIdx;
 		var vertex	= geometry.vertices[particleIdx];
-		var position	= particle.get('position').vector;
+		var position	= particle.position.vector;
 		vertex.set(position.x, position.y, position.z);
 	}).pushTo(this._emitter);
 	return this;	// for chained API

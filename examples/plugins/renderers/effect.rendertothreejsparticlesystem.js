@@ -17,19 +17,19 @@ Fireworks.EffectsStackBuilder.prototype.renderToThreejsParticleSystem	= function
 	Fireworks.createEffect(effectId, {
 		particleSystem	: particleSystem
 	}).onCreate(function(particle, particleIdx){
-		particle.set('threejsParticle', {
+		particle.threejsParticle = {
 			particleIdx	: particleIdx
-		});
+		};
 		var vertex	= geometry.vertices[particleIdx];
 		vertex.set(Infinity, Infinity, Infinity);
 	}).onDeath(function(particle){
-		var particleIdx	= particle.get('threejsParticle').particleIdx;
+		var particleIdx	= particle.threejsParticle.particleIdx;
 		var vertex	= geometry.vertices[particleIdx];
 		vertex.set(Infinity, Infinity, Infinity);
 	}).onRender(function(particle){
-		var particleIdx	= particle.get('threejsParticle').particleIdx;
+		var particleIdx	= particle.threejsParticle.particleIdx;
 		var vertex	= geometry.vertices[particleIdx];
-		var position	= particle.get('position').vector;
+		var position	= particle.position.vector;
 		vertex.set(position.x, position.y, position.z);
 	}).pushTo(this._emitter);
 	return this;	// for chained API

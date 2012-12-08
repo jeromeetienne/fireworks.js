@@ -12,25 +12,24 @@ Fireworks.EffectsStackBuilder.prototype.renderToThreejsObject3D	= function(opts)
 	// create the effect itself
 	Fireworks.createEffect(effectId)
 	.onCreate(function(particle, particleIdx){
-		particle.set('threejsObject3D', {
+		particle.threejsObject3D = {
 			object3d	: opts.create()
-		});
-		console.assert(particle.get('threejsObject3D').object3d instanceof THREE.Object3D);
+		};
 		
-		var object3d	= particle.get('threejsObject3D').object3d;
+		var object3d	= particle.threejsObject3D.object3d;
 
 //		object3d.visible= false;
 	}).onBirth(function(particle){
-		var object3d	= particle.get('threejsObject3D').object3d;
+		var object3d	= particle.threejsObject3D.object3d;
 //		object3d.visible= true;
-container.add(object3d);
+		container.add(object3d);
 	}).onDeath(function(particle){
-		var object3d	= particle.get('threejsObject3D').object3d;
+		var object3d	= particle.threejsObject3D.object3d;
 //		object3d.visible= false;
-container.remove(object3d);
+		container.remove(object3d);
 	}).onRender(function(particle){
-		var object3d	= particle.get('threejsObject3D').object3d;
-		var position	= particle.get('position').vector;
+		var object3d	= particle.threejsObject3D.object3d;
+		var position	= particle.position.vector;
 		object3d.position.set(position.x, position.y, position.z);
 	}).pushTo(this._emitter);
 	return this;	// for chained API
