@@ -14,7 +14,7 @@ Fireworks.EffectsStackBuilder.prototype.renderToThreejsObject3D	= function(opts)
 	.onCreate(function(particle, particleIdx){
 		particle.threejsObject3D = {
 			object3d	: opts.create()
-		});
+		};
 		
 		var object3d	= particle.threejsObject3D.object3d;
 

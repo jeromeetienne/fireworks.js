@@ -19,7 +19,7 @@ Fireworks.EffectsStackBuilder.prototype.renderToThreejsParticleSystem	= function
 	}).onCreate(function(particle, particleIdx){
 		particle.threejsParticle = {
 			particleIdx	: particleIdx
-		});
+		};
 		var vertex	= geometry.vertices[particleIdx];
 		vertex.set(Infinity, Infinity, Infinity);
 	}).onDeath(function(particle){

@@ -40,7 +40,7 @@ Fireworks.EffectsStackBuilder.prototype.renderToCanvas	= function(opts)
 		return effect.onCreate(function(particle, particleIdx){
 			particle.renderToCanvas = {
 				size	: 3
-			});
+			};
 		}).onRender(function(particle){
 			var position	= particle.position.vector;
 			var size	= particle.renderToCanvas.size;
