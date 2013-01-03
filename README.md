@@ -4,5 +4,5 @@ fireworks.js
 Particles engine in javascript
 
 
-ChangeLog:
+ChangeLog: 
 * massive boost by removing console.assert() from fast path (from @tapio)
