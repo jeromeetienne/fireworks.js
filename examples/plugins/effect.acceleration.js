@@ -10,15 +10,15 @@ Fireworks.EffectsStackBuilder.prototype.acceleration	= function(opts)
 	Fireworks.createEffect(effectId, {
 		shape	: opts.shape
 	}).onCreate(function(particle){
-		particle.set('acceleration', {
+		particle.acceleration = {
 			vector	: new Fireworks.Vector()
-		});
+		};
 	}).onBirth(function(particle){
-		var acceleration= particle.get('acceleration').vector;
+		var acceleration= particle.acceleration.vector;
 		this.opts.shape.randomPoint(acceleration)
 	}).onUpdate(function(particle, deltaTime){
-		var velocity	= particle.get('velocity').vector;
-		var acceleration= particle.get('acceleration').vector;
+		var velocity	= particle.velocity.vector;
+		var acceleration= particle.acceleration.vector;
 		velocity.x	+= acceleration.x * deltaTime;
 		velocity.y	+= acceleration.y * deltaTime;
 		velocity.z	+= acceleration.z * deltaTime;

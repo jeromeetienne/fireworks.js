@@ -1,1 +1,1 @@
-var Fireworks	= {};
+var Fireworks = {};
