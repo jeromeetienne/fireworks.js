@@ -69,6 +69,9 @@ Fireworks.Emitter.prototype.intensity	= function(value){
 	if( value === undefined )	return this._intensity;
 	// if the value didnt change, return for chained api
 	if( value === this._intensity )	return this;
+	// sanity check
+	Fireworks.debug && console.assert( value >= 0, 'Fireworks.Emitter.intensity: invalid value.', value);
+	Fireworks.debug && console.assert( value <= 1, 'Fireworks.Emitter.intensity: invalid value.', value);
 	// backup the old value
 	var oldValue	= this._intensity;
 	// update the value
@@ -179,6 +182,8 @@ Fireworks.Emitter.prototype.render	= function(){
 Fireworks.Emitter.prototype.killParticle	= function(particle)
 {
 	var idx	= this._liveParticles.indexOf(particle);
+	// sanity check
+	Fireworks.debug && console.assert( idx !== -1 );
 	this._liveParticles.splice(idx, 1)
 	this._deadParticles.push(particle);
 	// do the death on all effects
@@ -191,6 +196,8 @@ Fireworks.Emitter.prototype.killParticle	= function(particle)
  * Spawn a particle
 */
 Fireworks.Emitter.prototype.spawnParticle	= function(){
+	// sanity check
+	Fireworks.debug && console.assert(this._deadParticles.length >= 1, 'no more particle available' );
 	// change the particles 
 	var particle	= this.deadParticles().pop();
 	this.liveParticles().push(particle);

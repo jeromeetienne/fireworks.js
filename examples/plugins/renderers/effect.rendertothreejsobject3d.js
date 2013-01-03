@@ -15,6 +15,7 @@ Fireworks.EffectsStackBuilder.prototype.renderToThreejsObject3D	= function(opts)
 		particle.threejsObject3D = {
 			object3d	: opts.create()
 		};
+		Fireworks.debug && console.assert(particle.threejsObject3D.object3d instanceof THREE.Object3D);
 		
 		var object3d	= particle.threejsObject3D.object3d;
 

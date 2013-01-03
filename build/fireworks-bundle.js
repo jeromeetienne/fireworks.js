@@ -1,7 +1,17 @@
 
 
-var Fireworks = {};
-//////////////////////////////////////////////////////////////////////////////////
+/**
+ * Global namespace for the whole library
+ * @namespace Global namespace for the whole library
+ * @type {Object}
+ */
+var Fireworks	= {};
+
+/**
+ * enable or disable debug in the library
+ * @type {Boolean}
+ */
+Fireworks.debug	= true;//////////////////////////////////////////////////////////////////////////////////
 //										//
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -207,6 +217,9 @@ Fireworks.Emitter.prototype.intensity	= function(value){
 	if( value === undefined )	return this._intensity;
 	// if the value didnt change, return for chained api
 	if( value === this._intensity )	return this;
+	// sanity check
+	Fireworks.debug && console.assert( value >= 0, 'Fireworks.Emitter.intensity: invalid value.', value);
+	Fireworks.debug && console.assert( value <= 1, 'Fireworks.Emitter.intensity: invalid value.', value);
 	// backup the old value
 	var oldValue	= this._intensity;
 	// update the value
@@ -317,6 +330,8 @@ Fireworks.Emitter.prototype.render	= function(){
 Fireworks.Emitter.prototype.killParticle	= function(particle)
 {
 	var idx	= this._liveParticles.indexOf(particle);
+	// sanity check
+	Fireworks.debug && console.assert( idx !== -1 );
 	this._liveParticles.splice(idx, 1)
 	this._deadParticles.push(particle);
 	// do the death on all effects
@@ -329,6 +344,8 @@ Fireworks.Emitter.prototype.killParticle	= function(particle)
  * Spawn a particle
 */
 Fireworks.Emitter.prototype.spawnParticle	= function(){
+	// sanity check
+	Fireworks.debug && console.assert(this._deadParticles.length >= 1, 'no more particle available' );
 	// change the particles 
 	var particle	= this.deadParticles().pop();
 	this.liveParticles().push(particle);
@@ -368,6 +385,9 @@ Fireworks.LinearGradient.prototype.get	= function(x){
 
 	if( i === 0 )	return this._keyPoints[0].y;
 
+	// sanity check
+	Fireworks.debug && console.assert(i < this._keyPoints.length );
+
 	var prev	= this._keyPoints[i-1];
 	var next	= this._keyPoints[i];
 	
@@ -383,11 +403,15 @@ Fireworks.Particle	= function(){
 }
 
 Fireworks.Particle.prototype.set	= function(key, value){
+	// sanity check
+	Fireworks.debug && console.assert( this[key] === undefined, "key already defined: "+key );
+	
 	this[key]	= value;
 	return this[key];
 }
 
 Fireworks.Particle.prototype.get	= function(key){
+	Fireworks.debug && console.assert( this[key] !== undefined, "key undefined: "+key );
 	return this[key];
 }
 
@@ -1203,6 +1227,7 @@ Fireworks.EffectsStackBuilder.prototype.renderToThreejsObject3D	= function(opts)
 		particle.threejsObject3D = {
 			object3d	: opts.create()
 		};
+		Fireworks.debug && console.assert(particle.threejsObject3D.object3d instanceof THREE.Object3D);
 		
 		var object3d	= particle.threejsObject3D.object3d;
 
